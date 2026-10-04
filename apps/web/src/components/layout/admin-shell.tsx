@@ -1,0 +1,24 @@
+'use client';
+
+import { useRouter, usePathname } from 'next/navigation';
+import { useSession, useMe } from '@/lib/session';
+import { useState, useEffect } from 'react';
+import { LayoutDashboard, Package, Store, Handshake, MessageCircle, Settings, ShieldCheck, LogOut, X, Menu } from 'lucide-react';
+import { Notice, Button } from "../ui/primitives";
+import Link from 'next/link';
+import { ProfileAvatar } from '../../features/profile/avatar';
+
+export function AdminAppShell({ children }: { children: React.ReactNode }) {
+  const router = useRouter(); const pathname = usePathname(); const session = useSession(); const me = useMe(); const [open, setOpen] = useState(false);
+  useEffect(() => { if (session.state === 'GUEST') router.replace('/masuk?next=' + encodeURIComponent(pathname)); }, [session.state, pathname, router]);
+  async function logout() { await session.logout(); }
+  const nav = [ { href: '/app', label: 'Ringkasan', Icon: LayoutDashboard }, { href: '/app/barang', label: 'Barang saya', Icon: Package }, { href: '/app/listings', label: 'Listing saya', Icon: Store }, { href: '/app/penawaran', label: 'Penawaran', Icon: Handshake }, { href: '/app/transaksi', label: 'Transaksi', Icon: Handshake }, { href: '/app/pesan', label: 'Pesan', Icon: MessageCircle }, { href: '/app/impact', label: 'Impact saya', Icon: LayoutDashboard }, { href: '/app/profil', label: 'Profil', Icon: Settings }, ...(me.data?.role === 'ADMIN' ? [{ href: '/app/admin', label: 'Admin', Icon: ShieldCheck }, { href: '/app/admin/moderasi', label: 'Review Listing', Icon: ShieldCheck }, { href: '/app/admin/laporan', label: 'Laporan', Icon: ShieldCheck }, { href: '/app/admin/sengketa', label: 'Sengketa', Icon: ShieldCheck }, { href: '/app/admin/transaksi', label: 'Transaksi & koreksi', Icon: Handshake }, { href: '/app/admin/pengguna', label: 'Pengguna', Icon: ShieldCheck }, { href: '/app/admin/rubrik', label: 'Rubrik & kategori', Icon: ShieldCheck }, { href: '/app/admin/analitik', label: 'Analitik', Icon: LayoutDashboard }, { href: '/app/admin/audit', label: 'Audit & retensi', Icon: ShieldCheck }] : []) ];
+  if (session.state === 'LOGOUT_PENDING') return <div className="container section"><Notice>Permintaan keluar belum terkonfirmasi. Data privat disembunyikan.</Notice><Button disabled={session.logoutBusy} onClick={logout}>Coba keluar lagi</Button></div>;
+  if (session.state === 'RESTRICTED') return <div className="container section"><Notice kind="error">Akun ini tidak dapat digunakan.</Notice><Button onClick={logout}>Keluar</Button></div>;
+  if (session.state === 'UNAVAILABLE') return <div className="container section"><Notice kind="error">Koneksi sesi belum tersedia.</Notice><Button onClick={() => session.refresh()}>Coba lagi</Button></div>;
+  if (session.state !== 'AUTHENTICATED' || session.verifiedPath !== pathname || !me.data) return <div className="container section" role="status">Menyiapkan akun…</div>;
+  if (pathname.startsWith('/app/admin') && me.data.role !== 'ADMIN') return <div className="container section"><Notice kind="error">Halaman ini hanya untuk admin.</Notice><Link href="/app">Kembali ke ringkasan</Link></div>;
+  const activeHref = nav.filter(({ href }) => pathname === href || pathname.startsWith(href + '/')).sort((a, b) => b.href.length - a.href.length)[0]?.href;
+  const links = nav.map(({ href, label, Icon }) => <Link key={href} href={href} aria-current={href === activeHref ? 'page' : undefined} onClick={() => setOpen(false)}><Icon size={18} strokeWidth={1.7} aria-hidden="true" />{label}</Link>);
+  return <div className="app-layout"><aside className="app-sidebar"><Link className="wordmark" href="/">valora</Link><nav className="app-nav" aria-label="Navigasi akun">{links}</nav><div className="app-sidebar-bottom"><div className="app-sidebar-profile"><ProfileAvatar photoUrl={me.data.profilePhotoUrl} displayName={me.data.displayName} className="app-sidebar-avatar" /><div><strong>{me.data.displayName}</strong><span>{me.data.city.name}</span></div></div><button className="button button-quiet button-small" onClick={logout}><LogOut size={16} /> Keluar</button></div></aside><div><header className="app-mobile-header"><div className="app-mobile-header-top"><Link className="wordmark" href="/app">valora</Link><button className="header-menu-button" style={{ display: 'inline-flex' }} aria-label={open ? 'Tutup menu' : 'Buka menu'} aria-expanded={open} onClick={() => setOpen(!open)}>{open ? <X size={23} /> : <Menu size={23} />}</button></div>{open && <nav aria-label="Navigasi akun seluler">{links}<button onClick={logout}>Keluar</button></nav>}</header><main className="app-main">{!me.data.emailVerifiedAt && <div style={{ marginBottom: 28 }}><Notice>Alamat email belum diverifikasi. <Link href={`/verifikasi-email?email=${encodeURIComponent(me.data.email)}`}>Kirim ulang tautan</Link>. Kamu tetap bisa menyimpan Item.</Notice></div>}{children}</main></div></div>;
+}

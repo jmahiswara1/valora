@@ -1,0 +1,1572 @@
+{
+  "observations": [
+    {
+      "route": "/layanan",
+      "width": 1440,
+      "status": 200,
+      "title": "Layanan | Valora",
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "groups": [
+        "Jelajahi",
+        "Layanan",
+        "Tentang kami",
+        "Akun"
+      ],
+      "grid": "162.609px 162.609px 162.609px 162.609px",
+      "links": [
+        {
+          "name": "Market",
+          "href": "/market",
+          "left": 596,
+          "right": 642.734375
+        },
+        {
+          "name": "Cara kerja",
+          "href": "/cara-kerja",
+          "left": 596,
+          "right": 662.734375
+        },
+        {
+          "name": "Impact",
+          "href": "/impact",
+          "left": 596,
+          "right": 643.890625
+        },
+        {
+          "name": "Valora Passport",
+          "href": "/layanan#passport",
+          "left": 801.796875,
+          "right": 906.390625
+        },
+        {
+          "name": "Penilaian kondisi",
+          "href": "/layanan#penilaian",
+          "left": 801.796875,
+          "right": 911.96875
+        },
+        {
+          "name": "Catatan perawatan",
+          "href": "/layanan#perawatan",
+          "left": 801.796875,
+          "right": 929.59375
+        },
+        {
+          "name": "Jual, tukar & donasi",
+          "href": "/layanan#jual-tukar-donasi",
+          "left": 801.796875,
+          "right": 928.296875
+        },
+        {
+          "name": "Tentang Valora",
+          "href": "/tentang-kami#valora",
+          "left": 1007.59375,
+          "right": 1106.15625
+        },
+        {
+          "name": "Misi & nilai",
+          "href": "/tentang-kami#misi",
+          "left": 1007.59375,
+          "right": 1074.890625
+        },
+        {
+          "name": "Pertanyaan umum",
+          "href": "/tentang-kami#faq",
+          "left": 1007.59375,
+          "right": 1127.296875
+        },
+        {
+          "name": "Daftar",
+          "href": "/daftar",
+          "left": 1213.390625,
+          "right": 1255.859375
+        },
+        {
+          "name": "Masuk",
+          "href": "/masuk",
+          "left": 1213.390625,
+          "right": 1256.5
+        }
+      ],
+      "faq": null,
+      "errors": []
+    },
+    {
+      "route": "/tentang-kami",
+      "width": 1440,
+      "status": 200,
+      "title": "Tentang kami | Valora",
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "groups": [
+        "Jelajahi",
+        "Layanan",
+        "Tentang kami",
+        "Akun"
+      ],
+      "grid": "162.609px 162.609px 162.609px 162.609px",
+      "links": [
+        {
+          "name": "Market",
+          "href": "/market",
+          "left": 596,
+          "right": 642.734375
+        },
+        {
+          "name": "Cara kerja",
+          "href": "/cara-kerja",
+          "left": 596,
+          "right": 662.734375
+        },
+        {
+          "name": "Impact",
+          "href": "/impact",
+          "left": 596,
+          "right": 643.890625
+        },
+        {
+          "name": "Valora Passport",
+          "href": "/layanan#passport",
+          "left": 801.796875,
+          "right": 906.390625
+        },
+        {
+          "name": "Penilaian kondisi",
+          "href": "/layanan#penilaian",
+          "left": 801.796875,
+          "right": 911.96875
+        },
+        {
+          "name": "Catatan perawatan",
+          "href": "/layanan#perawatan",
+          "left": 801.796875,
+          "right": 929.59375
+        },
+        {
+          "name": "Jual, tukar & donasi",
+          "href": "/layanan#jual-tukar-donasi",
+          "left": 801.796875,
+          "right": 928.296875
+        },
+        {
+          "name": "Tentang Valora",
+          "href": "/tentang-kami#valora",
+          "left": 1007.59375,
+          "right": 1106.15625
+        },
+        {
+          "name": "Misi & nilai",
+          "href": "/tentang-kami#misi",
+          "left": 1007.59375,
+          "right": 1074.890625
+        },
+        {
+          "name": "Pertanyaan umum",
+          "href": "/tentang-kami#faq",
+          "left": 1007.59375,
+          "right": 1127.296875
+        },
+        {
+          "name": "Daftar",
+          "href": "/daftar",
+          "left": 1213.390625,
+          "right": 1255.859375
+        },
+        {
+          "name": "Masuk",
+          "href": "/masuk",
+          "left": 1213.390625,
+          "right": 1256.5
+        }
+      ],
+      "faq": {
+        "keyboardExpanded": true,
+        "keyboardCollapsed": true
+      },
+      "errors": []
+    },
+    {
+      "route": "/",
+      "width": 1440,
+      "status": 200,
+      "title": "Valora - jaga nilai barang",
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "groups": [
+        "Jelajahi",
+        "Layanan",
+        "Tentang kami",
+        "Akun"
+      ],
+      "grid": "162.609px 162.609px 162.609px 162.609px",
+      "links": [
+        {
+          "name": "Market",
+          "href": "/market",
+          "left": 596,
+          "right": 642.734375
+        },
+        {
+          "name": "Cara kerja",
+          "href": "/cara-kerja",
+          "left": 596,
+          "right": 662.734375
+        },
+        {
+          "name": "Impact",
+          "href": "/impact",
+          "left": 596,
+          "right": 643.890625
+        },
+        {
+          "name": "Valora Passport",
+          "href": "/layanan#passport",
+          "left": 801.796875,
+          "right": 906.390625
+        },
+        {
+          "name": "Penilaian kondisi",
+          "href": "/layanan#penilaian",
+          "left": 801.796875,
+          "right": 911.96875
+        },
+        {
+          "name": "Catatan perawatan",
+          "href": "/layanan#perawatan",
+          "left": 801.796875,
+          "right": 929.59375
+        },
+        {
+          "name": "Jual, tukar & donasi",
+          "href": "/layanan#jual-tukar-donasi",
+          "left": 801.796875,
+          "right": 928.296875
+        },
+        {
+          "name": "Tentang Valora",
+          "href": "/tentang-kami#valora",
+          "left": 1007.59375,
+          "right": 1106.15625
+        },
+        {
+          "name": "Misi & nilai",
+          "href": "/tentang-kami#misi",
+          "left": 1007.59375,
+          "right": 1074.890625
+        },
+        {
+          "name": "Pertanyaan umum",
+          "href": "/tentang-kami#faq",
+          "left": 1007.59375,
+          "right": 1127.296875
+        },
+        {
+          "name": "Daftar",
+          "href": "/daftar",
+          "left": 1213.390625,
+          "right": 1255.859375
+        },
+        {
+          "name": "Masuk",
+          "href": "/masuk",
+          "left": 1213.390625,
+          "right": 1256.5
+        }
+      ],
+      "faq": null,
+      "errors": []
+    },
+    {
+      "route": "/market",
+      "width": 1440,
+      "status": 200,
+      "title": "Market | Valora",
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "groups": [
+        "Jelajahi",
+        "Layanan",
+        "Tentang kami",
+        "Akun"
+      ],
+      "grid": "171px 171px 171px 171px",
+      "links": [
+        {
+          "name": "Market",
+          "href": "/market",
+          "left": 596,
+          "right": 644.078125
+        },
+        {
+          "name": "Cara kerja",
+          "href": "/cara-kerja",
+          "left": 596,
+          "right": 664.640625
+        },
+        {
+          "name": "Impact",
+          "href": "/impact",
+          "left": 596,
+          "right": 645.25
+        },
+        {
+          "name": "Valora Passport",
+          "href": "/layanan#passport",
+          "left": 799,
+          "right": 906.578125
+        },
+        {
+          "name": "Penilaian kondisi",
+          "href": "/layanan#penilaian",
+          "left": 799,
+          "right": 912.328125
+        },
+        {
+          "name": "Catatan perawatan",
+          "href": "/layanan#perawatan",
+          "left": 799,
+          "right": 930.453125
+        },
+        {
+          "name": "Jual, tukar & donasi",
+          "href": "/layanan#jual-tukar-donasi",
+          "left": 799,
+          "right": 929.109375
+        },
+        {
+          "name": "Tentang Valora",
+          "href": "/tentang-kami#valora",
+          "left": 1002,
+          "right": 1103.390625
+        },
+        {
+          "name": "Misi & nilai",
+          "href": "/tentang-kami#misi",
+          "left": 1002,
+          "right": 1071.21875
+        },
+        {
+          "name": "Pertanyaan umum",
+          "href": "/tentang-kami#faq",
+          "left": 1002,
+          "right": 1125.125
+        },
+        {
+          "name": "Daftar",
+          "href": "/daftar",
+          "left": 1205,
+          "right": 1248.6875
+        },
+        {
+          "name": "Masuk",
+          "href": "/masuk",
+          "left": 1205,
+          "right": 1249.34375
+        }
+      ],
+      "faq": null,
+      "errors": []
+    },
+    {
+      "route": "/layanan",
+      "width": 768,
+      "status": 200,
+      "title": "Layanan | Valora",
+      "documentWidth": 768,
+      "viewportWidth": 768,
+      "groups": [
+        "Jelajahi",
+        "Layanan",
+        "Tentang kami",
+        "Akun"
+      ],
+      "grid": "316px 316px",
+      "links": [
+        {
+          "name": "Market",
+          "href": "/market",
+          "left": 56,
+          "right": 102.734375
+        },
+        {
+          "name": "Cara kerja",
+          "href": "/cara-kerja",
+          "left": 56,
+          "right": 122.734375
+        },
+        {
+          "name": "Impact",
+          "href": "/impact",
+          "left": 56,
+          "right": 103.890625
+        },
+        {
+          "name": "Valora Passport",
+          "href": "/layanan#passport",
+          "left": 396,
+          "right": 500.59375
+        },
+        {
+          "name": "Penilaian kondisi",
+          "href": "/layanan#penilaian",
+          "left": 396,
+          "right": 506.171875
+        },
+        {
+          "name": "Catatan perawatan",
+          "href": "/layanan#perawatan",
+          "left": 396,
+          "right": 523.796875
+        },
+        {
+          "name": "Jual, tukar & donasi",
+          "href": "/layanan#jual-tukar-donasi",
+          "left": 396,
+          "right": 522.5
+        },
+        {
+          "name": "Tentang Valora",
+          "href": "/tentang-kami#valora",
+          "left": 56,
+          "right": 154.5625
+        },
+        {
+          "name": "Misi & nilai",
+          "href": "/tentang-kami#misi",
+          "left": 56,
+          "right": 123.296875
+        },
+        {
+          "name": "Pertanyaan umum",
+          "href": "/tentang-kami#faq",
+          "left": 56,
+          "right": 175.703125
+        },
+        {
+          "name": "Daftar",
+          "href": "/daftar",
+          "left": 396,
+          "right": 438.46875
+        },
+        {
+          "name": "Masuk",
+          "href": "/masuk",
+          "left": 396,
+          "right": 439.109375
+        }
+      ],
+      "faq": null,
+      "errors": []
+    },
+    {
+      "route": "/tentang-kami",
+      "width": 768,
+      "status": 200,
+      "title": "Tentang kami | Valora",
+      "documentWidth": 768,
+      "viewportWidth": 768,
+      "groups": [
+        "Jelajahi",
+        "Layanan",
+        "Tentang kami",
+        "Akun"
+      ],
+      "grid": "316px 316px",
+      "links": [
+        {
+          "name": "Market",
+          "href": "/market",
+          "left": 56,
+          "right": 102.734375
+        },
+        {
+          "name": "Cara kerja",
+          "href": "/cara-kerja",
+          "left": 56,
+          "right": 122.734375
+        },
+        {
+          "name": "Impact",
+          "href": "/impact",
+          "left": 56,
+          "right": 103.890625
+        },
+        {
+          "name": "Valora Passport",
+          "href": "/layanan#passport",
+          "left": 396,
+          "right": 500.59375
+        },
+        {
+          "name": "Penilaian kondisi",
+          "href": "/layanan#penilaian",
+          "left": 396,
+          "right": 506.171875
+        },
+        {
+          "name": "Catatan perawatan",
+          "href": "/layanan#perawatan",
+          "left": 396,
+          "right": 523.796875
+        },
+        {
+          "name": "Jual, tukar & donasi",
+          "href": "/layanan#jual-tukar-donasi",
+          "left": 396,
+          "right": 522.5
+        },
+        {
+          "name": "Tentang Valora",
+          "href": "/tentang-kami#valora",
+          "left": 56,
+          "right": 154.5625
+        },
+        {
+          "name": "Misi & nilai",
+          "href": "/tentang-kami#misi",
+          "left": 56,
+          "right": 123.296875
+        },
+        {
+          "name": "Pertanyaan umum",
+          "href": "/tentang-kami#faq",
+          "left": 56,
+          "right": 175.703125
+        },
+        {
+          "name": "Daftar",
+          "href": "/daftar",
+          "left": 396,
+          "right": 438.46875
+        },
+        {
+          "name": "Masuk",
+          "href": "/masuk",
+          "left": 396,
+          "right": 439.109375
+        }
+      ],
+      "faq": {
+        "keyboardExpanded": true,
+        "keyboardCollapsed": true
+      },
+      "errors": []
+    },
+    {
+      "route": "/",
+      "width": 768,
+      "status": 200,
+      "title": "Valora - jaga nilai barang",
+      "documentWidth": 768,
+      "viewportWidth": 768,
+      "groups": [
+        "Jelajahi",
+        "Layanan",
+        "Tentang kami",
+        "Akun"
+      ],
+      "grid": "316px 316px",
+      "links": [
+        {
+          "name": "Market",
+          "href": "/market",
+          "left": 56,
+          "right": 102.734375
+        },
+        {
+          "name": "Cara kerja",
+          "href": "/cara-kerja",
+          "left": 56,
+          "right": 122.734375
+        },
+        {
+          "name": "Impact",
+          "href": "/impact",
+          "left": 56,
+          "right": 103.890625
+        },
+        {
+          "name": "Valora Passport",
+          "href": "/layanan#passport",
+          "left": 396,
+          "right": 500.59375
+        },
+        {
+          "name": "Penilaian kondisi",
+          "href": "/layanan#penilaian",
+          "left": 396,
+          "right": 506.171875
+        },
+        {
+          "name": "Catatan perawatan",
+          "href": "/layanan#perawatan",
+          "left": 396,
+          "right": 523.796875
+        },
+        {
+          "name": "Jual, tukar & donasi",
+          "href": "/layanan#jual-tukar-donasi",
+          "left": 396,
+          "right": 522.5
+        },
+        {
+          "name": "Tentang Valora",
+          "href": "/tentang-kami#valora",
+          "left": 56,
+          "right": 154.5625
+        },
+        {
+          "name": "Misi & nilai",
+          "href": "/tentang-kami#misi",
+          "left": 56,
+          "right": 123.296875
+        },
+        {
+          "name": "Pertanyaan umum",
+          "href": "/tentang-kami#faq",
+          "left": 56,
+          "right": 175.703125
+        },
+        {
+          "name": "Daftar",
+          "href": "/daftar",
+          "left": 396,
+          "right": 438.46875
+        },
+        {
+          "name": "Masuk",
+          "href": "/masuk",
+          "left": 396,
+          "right": 439.109375
+        }
+      ],
+      "faq": null,
+      "errors": []
+    },
+    {
+      "route": "/market",
+      "width": 768,
+      "status": 200,
+      "title": "Market | Valora",
+      "documentWidth": 768,
+      "viewportWidth": 768,
+      "groups": [
+        "Jelajahi",
+        "Layanan",
+        "Tentang kami",
+        "Akun"
+      ],
+      "grid": "312px 312px",
+      "links": [
+        {
+          "name": "Market",
+          "href": "/market",
+          "left": 56,
+          "right": 104.078125
+        },
+        {
+          "name": "Cara kerja",
+          "href": "/cara-kerja",
+          "left": 56,
+          "right": 124.640625
+        },
+        {
+          "name": "Impact",
+          "href": "/impact",
+          "left": 56,
+          "right": 105.25
+        },
+        {
+          "name": "Valora Passport",
+          "href": "/layanan#passport",
+          "left": 400,
+          "right": 507.578125
+        },
+        {
+          "name": "Penilaian kondisi",
+          "href": "/layanan#penilaian",
+          "left": 400,
+          "right": 513.328125
+        },
+        {
+          "name": "Catatan perawatan",
+          "href": "/layanan#perawatan",
+          "left": 400,
+          "right": 531.453125
+        },
+        {
+          "name": "Jual, tukar & donasi",
+          "href": "/layanan#jual-tukar-donasi",
+          "left": 400,
+          "right": 530.109375
+        },
+        {
+          "name": "Tentang Valora",
+          "href": "/tentang-kami#valora",
+          "left": 56,
+          "right": 157.390625
+        },
+        {
+          "name": "Misi & nilai",
+          "href": "/tentang-kami#misi",
+          "left": 56,
+          "right": 125.21875
+        },
+        {
+          "name": "Pertanyaan umum",
+          "href": "/tentang-kami#faq",
+          "left": 56,
+          "right": 179.125
+        },
+        {
+          "name": "Daftar",
+          "href": "/daftar",
+          "left": 400,
+          "right": 443.6875
+        },
+        {
+          "name": "Masuk",
+          "href": "/masuk",
+          "left": 400,
+          "right": 444.34375
+        }
+      ],
+      "faq": null,
+      "errors": []
+    },
+    {
+      "route": "/layanan",
+      "width": 390,
+      "status": 200,
+      "title": "Layanan | Valora",
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "groups": [
+        "Jelajahi",
+        "Layanan",
+        "Tentang kami",
+        "Akun"
+      ],
+      "grid": "139px 139px",
+      "links": [
+        {
+          "name": "Market",
+          "href": "/market",
+          "left": 44,
+          "right": 87.40625
+        },
+        {
+          "name": "Cara kerja",
+          "href": "/cara-kerja",
+          "left": 44,
+          "right": 105.96875
+        },
+        {
+          "name": "Impact",
+          "href": "/impact",
+          "left": 44,
+          "right": 88.46875
+        },
+        {
+          "name": "Valora Passport",
+          "href": "/layanan#passport",
+          "left": 207,
+          "right": 304.125
+        },
+        {
+          "name": "Penilaian kondisi",
+          "href": "/layanan#penilaian",
+          "left": 207,
+          "right": 309.3125
+        },
+        {
+          "name": "Catatan perawatan",
+          "href": "/layanan#perawatan",
+          "left": 207,
+          "right": 325.671875
+        },
+        {
+          "name": "Jual, tukar & donasi",
+          "href": "/layanan#jual-tukar-donasi",
+          "left": 207,
+          "right": 324.46875
+        },
+        {
+          "name": "Tentang Valora",
+          "href": "/tentang-kami#valora",
+          "left": 44,
+          "right": 135.53125
+        },
+        {
+          "name": "Misi & nilai",
+          "href": "/tentang-kami#misi",
+          "left": 44,
+          "right": 106.484375
+        },
+        {
+          "name": "Pertanyaan umum",
+          "href": "/tentang-kami#faq",
+          "left": 44,
+          "right": 155.15625
+        },
+        {
+          "name": "Daftar",
+          "href": "/daftar",
+          "left": 207,
+          "right": 246.4375
+        },
+        {
+          "name": "Masuk",
+          "href": "/masuk",
+          "left": 207,
+          "right": 247.03125
+        }
+      ],
+      "faq": null,
+      "errors": []
+    },
+    {
+      "route": "/tentang-kami",
+      "width": 390,
+      "status": 200,
+      "title": "Tentang kami | Valora",
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "groups": [
+        "Jelajahi",
+        "Layanan",
+        "Tentang kami",
+        "Akun"
+      ],
+      "grid": "139px 139px",
+      "links": [
+        {
+          "name": "Market",
+          "href": "/market",
+          "left": 44,
+          "right": 87.40625
+        },
+        {
+          "name": "Cara kerja",
+          "href": "/cara-kerja",
+          "left": 44,
+          "right": 105.96875
+        },
+        {
+          "name": "Impact",
+          "href": "/impact",
+          "left": 44,
+          "right": 88.46875
+        },
+        {
+          "name": "Valora Passport",
+          "href": "/layanan#passport",
+          "left": 207,
+          "right": 304.125
+        },
+        {
+          "name": "Penilaian kondisi",
+          "href": "/layanan#penilaian",
+          "left": 207,
+          "right": 309.3125
+        },
+        {
+          "name": "Catatan perawatan",
+          "href": "/layanan#perawatan",
+          "left": 207,
+          "right": 325.671875
+        },
+        {
+          "name": "Jual, tukar & donasi",
+          "href": "/layanan#jual-tukar-donasi",
+          "left": 207,
+          "right": 324.46875
+        },
+        {
+          "name": "Tentang Valora",
+          "href": "/tentang-kami#valora",
+          "left": 44,
+          "right": 135.53125
+        },
+        {
+          "name": "Misi & nilai",
+          "href": "/tentang-kami#misi",
+          "left": 44,
+          "right": 106.484375
+        },
+        {
+          "name": "Pertanyaan umum",
+          "href": "/tentang-kami#faq",
+          "left": 44,
+          "right": 155.15625
+        },
+        {
+          "name": "Daftar",
+          "href": "/daftar",
+          "left": 207,
+          "right": 246.4375
+        },
+        {
+          "name": "Masuk",
+          "href": "/masuk",
+          "left": 207,
+          "right": 247.03125
+        }
+      ],
+      "faq": {
+        "keyboardExpanded": true,
+        "keyboardCollapsed": true
+      },
+      "errors": []
+    },
+    {
+      "route": "/",
+      "width": 390,
+      "status": 200,
+      "title": "Valora - jaga nilai barang",
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "groups": [
+        "Jelajahi",
+        "Layanan",
+        "Tentang kami",
+        "Akun"
+      ],
+      "grid": "139px 139px",
+      "links": [
+        {
+          "name": "Market",
+          "href": "/market",
+          "left": 44,
+          "right": 87.40625
+        },
+        {
+          "name": "Cara kerja",
+          "href": "/cara-kerja",
+          "left": 44,
+          "right": 105.96875
+        },
+        {
+          "name": "Impact",
+          "href": "/impact",
+          "left": 44,
+          "right": 88.46875
+        },
+        {
+          "name": "Valora Passport",
+          "href": "/layanan#passport",
+          "left": 207,
+          "right": 304.125
+        },
+        {
+          "name": "Penilaian kondisi",
+          "href": "/layanan#penilaian",
+          "left": 207,
+          "right": 309.3125
+        },
+        {
+          "name": "Catatan perawatan",
+          "href": "/layanan#perawatan",
+          "left": 207,
+          "right": 325.671875
+        },
+        {
+          "name": "Jual, tukar & donasi",
+          "href": "/layanan#jual-tukar-donasi",
+          "left": 207,
+          "right": 324.46875
+        },
+        {
+          "name": "Tentang Valora",
+          "href": "/tentang-kami#valora",
+          "left": 44,
+          "right": 135.53125
+        },
+        {
+          "name": "Misi & nilai",
+          "href": "/tentang-kami#misi",
+          "left": 44,
+          "right": 106.484375
+        },
+        {
+          "name": "Pertanyaan umum",
+          "href": "/tentang-kami#faq",
+          "left": 44,
+          "right": 155.15625
+        },
+        {
+          "name": "Daftar",
+          "href": "/daftar",
+          "left": 207,
+          "right": 246.4375
+        },
+        {
+          "name": "Masuk",
+          "href": "/masuk",
+          "left": 207,
+          "right": 247.03125
+        }
+      ],
+      "faq": null,
+      "errors": []
+    },
+    {
+      "route": "/market",
+      "width": 390,
+      "status": 200,
+      "title": "Market | Valora",
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "groups": [
+        "Jelajahi",
+        "Layanan",
+        "Tentang kami",
+        "Akun"
+      ],
+      "grid": "139px 139px",
+      "links": [
+        {
+          "name": "Market",
+          "href": "/market",
+          "left": 44,
+          "right": 92.078125
+        },
+        {
+          "name": "Cara kerja",
+          "href": "/cara-kerja",
+          "left": 44,
+          "right": 112.640625
+        },
+        {
+          "name": "Impact",
+          "href": "/impact",
+          "left": 44,
+          "right": 93.25
+        },
+        {
+          "name": "Valora Passport",
+          "href": "/layanan#passport",
+          "left": 207,
+          "right": 314.578125
+        },
+        {
+          "name": "Penilaian kondisi",
+          "href": "/layanan#penilaian",
+          "left": 207,
+          "right": 320.328125
+        },
+        {
+          "name": "Catatan perawatan",
+          "href": "/layanan#perawatan",
+          "left": 207,
+          "right": 338.453125
+        },
+        {
+          "name": "Jual, tukar & donasi",
+          "href": "/layanan#jual-tukar-donasi",
+          "left": 207,
+          "right": 337.109375
+        },
+        {
+          "name": "Tentang Valora",
+          "href": "/tentang-kami#valora",
+          "left": 44,
+          "right": 145.390625
+        },
+        {
+          "name": "Misi & nilai",
+          "href": "/tentang-kami#misi",
+          "left": 44,
+          "right": 113.21875
+        },
+        {
+          "name": "Pertanyaan umum",
+          "href": "/tentang-kami#faq",
+          "left": 44,
+          "right": 167.125
+        },
+        {
+          "name": "Daftar",
+          "href": "/daftar",
+          "left": 207,
+          "right": 250.6875
+        },
+        {
+          "name": "Masuk",
+          "href": "/masuk",
+          "left": 207,
+          "right": 251.34375
+        }
+      ],
+      "faq": null,
+      "errors": []
+    },
+    {
+      "route": "/layanan",
+      "width": 320,
+      "status": 200,
+      "title": "Layanan | Valora",
+      "documentWidth": 320,
+      "viewportWidth": 320,
+      "groups": [
+        "Jelajahi",
+        "Layanan",
+        "Tentang kami",
+        "Akun"
+      ],
+      "grid": "104px 104px",
+      "links": [
+        {
+          "name": "Market",
+          "href": "/market",
+          "left": 44,
+          "right": 87.40625
+        },
+        {
+          "name": "Cara kerja",
+          "href": "/cara-kerja",
+          "left": 44,
+          "right": 105.96875
+        },
+        {
+          "name": "Impact",
+          "href": "/impact",
+          "left": 44,
+          "right": 88.46875
+        },
+        {
+          "name": "Valora Passport",
+          "href": "/layanan#passport",
+          "left": 172,
+          "right": 269.125
+        },
+        {
+          "name": "Penilaian kondisi",
+          "href": "/layanan#penilaian",
+          "left": 172,
+          "right": 274.3125
+        },
+        {
+          "name": "Catatan perawatan",
+          "href": "/layanan#perawatan",
+          "left": 172,
+          "right": 276
+        },
+        {
+          "name": "Jual, tukar & donasi",
+          "href": "/layanan#jual-tukar-donasi",
+          "left": 172,
+          "right": 276
+        },
+        {
+          "name": "Tentang Valora",
+          "href": "/tentang-kami#valora",
+          "left": 44,
+          "right": 135.53125
+        },
+        {
+          "name": "Misi & nilai",
+          "href": "/tentang-kami#misi",
+          "left": 44,
+          "right": 106.484375
+        },
+        {
+          "name": "Pertanyaan umum",
+          "href": "/tentang-kami#faq",
+          "left": 44,
+          "right": 148
+        },
+        {
+          "name": "Daftar",
+          "href": "/daftar",
+          "left": 172,
+          "right": 211.4375
+        },
+        {
+          "name": "Masuk",
+          "href": "/masuk",
+          "left": 172,
+          "right": 212.03125
+        }
+      ],
+      "faq": null,
+      "errors": []
+    },
+    {
+      "route": "/tentang-kami",
+      "width": 320,
+      "status": 200,
+      "title": "Tentang kami | Valora",
+      "documentWidth": 320,
+      "viewportWidth": 320,
+      "groups": [
+        "Jelajahi",
+        "Layanan",
+        "Tentang kami",
+        "Akun"
+      ],
+      "grid": "104px 104px",
+      "links": [
+        {
+          "name": "Market",
+          "href": "/market",
+          "left": 44,
+          "right": 87.40625
+        },
+        {
+          "name": "Cara kerja",
+          "href": "/cara-kerja",
+          "left": 44,
+          "right": 105.96875
+        },
+        {
+          "name": "Impact",
+          "href": "/impact",
+          "left": 44,
+          "right": 88.46875
+        },
+        {
+          "name": "Valora Passport",
+          "href": "/layanan#passport",
+          "left": 172,
+          "right": 269.125
+        },
+        {
+          "name": "Penilaian kondisi",
+          "href": "/layanan#penilaian",
+          "left": 172,
+          "right": 274.3125
+        },
+        {
+          "name": "Catatan perawatan",
+          "href": "/layanan#perawatan",
+          "left": 172,
+          "right": 276
+        },
+        {
+          "name": "Jual, tukar & donasi",
+          "href": "/layanan#jual-tukar-donasi",
+          "left": 172,
+          "right": 276
+        },
+        {
+          "name": "Tentang Valora",
+          "href": "/tentang-kami#valora",
+          "left": 44,
+          "right": 135.53125
+        },
+        {
+          "name": "Misi & nilai",
+          "href": "/tentang-kami#misi",
+          "left": 44,
+          "right": 106.484375
+        },
+        {
+          "name": "Pertanyaan umum",
+          "href": "/tentang-kami#faq",
+          "left": 44,
+          "right": 148
+        },
+        {
+          "name": "Daftar",
+          "href": "/daftar",
+          "left": 172,
+          "right": 211.4375
+        },
+        {
+          "name": "Masuk",
+          "href": "/masuk",
+          "left": 172,
+          "right": 212.03125
+        }
+      ],
+      "faq": {
+        "keyboardExpanded": true,
+        "keyboardCollapsed": true
+      },
+      "errors": []
+    },
+    {
+      "route": "/",
+      "width": 320,
+      "status": 200,
+      "title": "Valora - jaga nilai barang",
+      "documentWidth": 320,
+      "viewportWidth": 320,
+      "groups": [
+        "Jelajahi",
+        "Layanan",
+        "Tentang kami",
+        "Akun"
+      ],
+      "grid": "104px 104px",
+      "links": [
+        {
+          "name": "Market",
+          "href": "/market",
+          "left": 44,
+          "right": 87.40625
+        },
+        {
+          "name": "Cara kerja",
+          "href": "/cara-kerja",
+          "left": 44,
+          "right": 105.96875
+        },
+        {
+          "name": "Impact",
+          "href": "/impact",
+          "left": 44,
+          "right": 88.46875
+        },
+        {
+          "name": "Valora Passport",
+          "href": "/layanan#passport",
+          "left": 172,
+          "right": 269.125
+        },
+        {
+          "name": "Penilaian kondisi",
+          "href": "/layanan#penilaian",
+          "left": 172,
+          "right": 274.3125
+        },
+        {
+          "name": "Catatan perawatan",
+          "href": "/layanan#perawatan",
+          "left": 172,
+          "right": 276
+        },
+        {
+          "name": "Jual, tukar & donasi",
+          "href": "/layanan#jual-tukar-donasi",
+          "left": 172,
+          "right": 276
+        },
+        {
+          "name": "Tentang Valora",
+          "href": "/tentang-kami#valora",
+          "left": 44,
+          "right": 135.53125
+        },
+        {
+          "name": "Misi & nilai",
+          "href": "/tentang-kami#misi",
+          "left": 44,
+          "right": 106.484375
+        },
+        {
+          "name": "Pertanyaan umum",
+          "href": "/tentang-kami#faq",
+          "left": 44,
+          "right": 148
+        },
+        {
+          "name": "Daftar",
+          "href": "/daftar",
+          "left": 172,
+          "right": 211.4375
+        },
+        {
+          "name": "Masuk",
+          "href": "/masuk",
+          "left": 172,
+          "right": 212.03125
+        }
+      ],
+      "faq": null,
+      "errors": []
+    },
+    {
+      "route": "/market",
+      "width": 320,
+      "status": 200,
+      "title": "Market | Valora",
+      "documentWidth": 320,
+      "viewportWidth": 320,
+      "groups": [
+        "Jelajahi",
+        "Layanan",
+        "Tentang kami",
+        "Akun"
+      ],
+      "grid": "104px 104px",
+      "links": [
+        {
+          "name": "Market",
+          "href": "/market",
+          "left": 44,
+          "right": 92.078125
+        },
+        {
+          "name": "Cara kerja",
+          "href": "/cara-kerja",
+          "left": 44,
+          "right": 112.640625
+        },
+        {
+          "name": "Impact",
+          "href": "/impact",
+          "left": 44,
+          "right": 93.25
+        },
+        {
+          "name": "Valora Passport",
+          "href": "/layanan#passport",
+          "left": 172,
+          "right": 276
+        },
+        {
+          "name": "Penilaian kondisi",
+          "href": "/layanan#penilaian",
+          "left": 172,
+          "right": 276
+        },
+        {
+          "name": "Catatan perawatan",
+          "href": "/layanan#perawatan",
+          "left": 172,
+          "right": 276
+        },
+        {
+          "name": "Jual, tukar & donasi",
+          "href": "/layanan#jual-tukar-donasi",
+          "left": 172,
+          "right": 276
+        },
+        {
+          "name": "Tentang Valora",
+          "href": "/tentang-kami#valora",
+          "left": 44,
+          "right": 145.390625
+        },
+        {
+          "name": "Misi & nilai",
+          "href": "/tentang-kami#misi",
+          "left": 44,
+          "right": 113.21875
+        },
+        {
+          "name": "Pertanyaan umum",
+          "href": "/tentang-kami#faq",
+          "left": 44,
+          "right": 148
+        },
+        {
+          "name": "Daftar",
+          "href": "/daftar",
+          "left": 172,
+          "right": 215.6875
+        },
+        {
+          "name": "Masuk",
+          "href": "/masuk",
+          "left": 172,
+          "right": 216.34375
+        }
+      ],
+      "faq": null,
+      "errors": []
+    }
+  ],
+  "anchors": [
+    {
+      "href": "/layanan#passport",
+      "width": 1440,
+      "targetFound": true,
+      "headingTop": 161.375,
+      "headerBottom": 88
+    },
+    {
+      "href": "/layanan#penilaian",
+      "width": 1440,
+      "targetFound": true,
+      "headingTop": 161.46875,
+      "headerBottom": 88
+    },
+    {
+      "href": "/layanan#perawatan",
+      "width": 1440,
+      "targetFound": true,
+      "headingTop": 160.65625,
+      "headerBottom": 88
+    },
+    {
+      "href": "/layanan#jual-tukar-donasi",
+      "width": 1440,
+      "targetFound": true,
+      "headingTop": 160.84375,
+      "headerBottom": 88
+    },
+    {
+      "href": "/tentang-kami#valora",
+      "width": 1440,
+      "targetFound": true,
+      "headingTop": 170.703125,
+      "headerBottom": 88
+    },
+    {
+      "href": "/tentang-kami#misi",
+      "width": 1440,
+      "targetFound": true,
+      "headingTop": 160.375,
+      "headerBottom": 88
+    },
+    {
+      "href": "/tentang-kami#faq",
+      "width": 1440,
+      "targetFound": true,
+      "headingTop": 120.375,
+      "headerBottom": 88
+    },
+    {
+      "href": "/layanan#passport",
+      "width": 320,
+      "targetFound": true,
+      "headingTop": 132.5625,
+      "headerBottom": 72
+    },
+    {
+      "href": "/layanan#penilaian",
+      "width": 320,
+      "targetFound": true,
+      "headingTop": 133.171875,
+      "headerBottom": 72
+    },
+    {
+      "href": "/layanan#perawatan",
+      "width": 320,
+      "targetFound": true,
+      "headingTop": 132.78125,
+      "headerBottom": 72
+    },
+    {
+      "href": "/layanan#jual-tukar-donasi",
+      "width": 320,
+      "targetFound": true,
+      "headingTop": 133.390625,
+      "headerBottom": 72
+    },
+    {
+      "href": "/tentang-kami#valora",
+      "width": 320,
+      "targetFound": true,
+      "headingTop": 94,
+      "headerBottom": 72
+    },
+    {
+      "href": "/tentang-kami#misi",
+      "width": 320,
+      "targetFound": true,
+      "headingTop": 131.6875,
+      "headerBottom": 72
+    },
+    {
+      "href": "/tentang-kami#faq",
+      "width": 320,
+      "targetFound": true,
+      "headingTop": 103.90625,
+      "headerBottom": 72
+    }
+  ]
+}

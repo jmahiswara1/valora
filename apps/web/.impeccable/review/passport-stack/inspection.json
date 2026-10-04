@@ -1,0 +1,271 @@
+{
+  "observations": [
+    {
+      "device": "desktop",
+      "title": "Profil barang",
+      "viewport": 1440,
+      "documentWidth": 1440,
+      "activeLabel": "Profil barang01",
+      "visiblePanels": 1,
+      "triggerHeights": [
+        44,
+        43.98907470703125,
+        44
+      ],
+      "overflowingChildren": [],
+      "transition": "1e-05s"
+    },
+    {
+      "device": "desktop",
+      "title": "Kondisi & perawatan",
+      "viewport": 1440,
+      "documentWidth": 1440,
+      "activeLabel": "Kondisi & perawatan02",
+      "visiblePanels": 1,
+      "triggerHeights": [
+        44,
+        44,
+        43.98907470703125
+      ],
+      "overflowingChildren": [],
+      "transition": "1e-05s"
+    },
+    {
+      "device": "desktop",
+      "title": "Cerita berikutnya",
+      "viewport": 1440,
+      "documentWidth": 1440,
+      "activeLabel": "Cerita berikutnya03",
+      "visiblePanels": 1,
+      "triggerHeights": [
+        43.98907470703125,
+        44,
+        44
+      ],
+      "overflowingChildren": [],
+      "transition": "1e-05s"
+    },
+    {
+      "device": "desktop",
+      "state": "keyboard",
+      "selected": "true",
+      "focused": true,
+      "focusOutline": "3px"
+    },
+    {
+      "device": "tablet",
+      "title": "Profil barang",
+      "viewport": 768,
+      "documentWidth": 768,
+      "activeLabel": "Profil barang01",
+      "visiblePanels": 1,
+      "triggerHeights": [
+        44,
+        43.98907470703125,
+        44
+      ],
+      "overflowingChildren": [],
+      "transition": "1e-05s"
+    },
+    {
+      "device": "tablet",
+      "title": "Kondisi & perawatan",
+      "viewport": 768,
+      "documentWidth": 768,
+      "activeLabel": "Kondisi & perawatan02",
+      "visiblePanels": 1,
+      "triggerHeights": [
+        44,
+        44,
+        43.98907470703125
+      ],
+      "overflowingChildren": [],
+      "transition": "1e-05s"
+    },
+    {
+      "device": "tablet",
+      "title": "Cerita berikutnya",
+      "viewport": 768,
+      "documentWidth": 768,
+      "activeLabel": "Cerita berikutnya03",
+      "visiblePanels": 1,
+      "triggerHeights": [
+        43.98907470703125,
+        44,
+        44
+      ],
+      "overflowingChildren": [],
+      "transition": "1e-05s"
+    },
+    {
+      "device": "tablet",
+      "state": "keyboard",
+      "selected": "true",
+      "focused": true,
+      "focusOutline": "3px"
+    },
+    {
+      "device": "mobile",
+      "title": "Profil barang",
+      "viewport": 390,
+      "documentWidth": 390,
+      "activeLabel": "Profil barang01",
+      "visiblePanels": 1,
+      "triggerHeights": [
+        44,
+        43.98907470703125,
+        44
+      ],
+      "overflowingChildren": [],
+      "transition": "1e-05s"
+    },
+    {
+      "device": "mobile",
+      "title": "Kondisi & perawatan",
+      "viewport": 390,
+      "documentWidth": 390,
+      "activeLabel": "Kondisi & perawatan02",
+      "visiblePanels": 1,
+      "triggerHeights": [
+        44,
+        44,
+        43.98907470703125
+      ],
+      "overflowingChildren": [],
+      "transition": "1e-05s"
+    },
+    {
+      "device": "mobile",
+      "title": "Cerita berikutnya",
+      "viewport": 390,
+      "documentWidth": 390,
+      "activeLabel": "Cerita berikutnya03",
+      "visiblePanels": 1,
+      "triggerHeights": [
+        43.98907470703125,
+        44,
+        44
+      ],
+      "overflowingChildren": [],
+      "transition": "1e-05s"
+    },
+    {
+      "device": "mobile",
+      "state": "keyboard",
+      "selected": "true",
+      "focused": true,
+      "focusOutline": "3px"
+    },
+    {
+      "device": "narrow",
+      "title": "Profil barang",
+      "viewport": 320,
+      "documentWidth": 320,
+      "activeLabel": "Profil barang01",
+      "visiblePanels": 1,
+      "triggerHeights": [
+        44,
+        43.98907470703125,
+        44
+      ],
+      "overflowingChildren": [],
+      "transition": "1e-05s"
+    },
+    {
+      "device": "narrow",
+      "title": "Kondisi & perawatan",
+      "viewport": 320,
+      "documentWidth": 320,
+      "activeLabel": "Kondisi & perawatan02",
+      "visiblePanels": 1,
+      "triggerHeights": [
+        44,
+        44,
+        43.98907470703125
+      ],
+      "overflowingChildren": [],
+      "transition": "1e-05s"
+    },
+    {
+      "device": "narrow",
+      "title": "Cerita berikutnya",
+      "viewport": 320,
+      "documentWidth": 320,
+      "activeLabel": "Cerita berikutnya03",
+      "visiblePanels": 1,
+      "triggerHeights": [
+        43.98907470703125,
+        44,
+        44
+      ],
+      "overflowingChildren": [],
+      "transition": "1e-05s"
+    },
+    {
+      "device": "narrow",
+      "state": "keyboard",
+      "selected": "true",
+      "focused": true,
+      "focusOutline": "3px"
+    },
+    {
+      "device": "wide",
+      "title": "Profil barang",
+      "viewport": 1920,
+      "documentWidth": 1920,
+      "activeLabel": "Profil barang01",
+      "visiblePanels": 1,
+      "triggerHeights": [
+        44,
+        43.98907470703125,
+        44
+      ],
+      "overflowingChildren": [],
+      "transition": "1e-05s"
+    },
+    {
+      "device": "wide",
+      "title": "Kondisi & perawatan",
+      "viewport": 1920,
+      "documentWidth": 1920,
+      "activeLabel": "Kondisi & perawatan02",
+      "visiblePanels": 1,
+      "triggerHeights": [
+        44,
+        44,
+        43.98907470703125
+      ],
+      "overflowingChildren": [],
+      "transition": "1e-05s"
+    },
+    {
+      "device": "wide",
+      "title": "Cerita berikutnya",
+      "viewport": 1920,
+      "documentWidth": 1920,
+      "activeLabel": "Cerita berikutnya03",
+      "visiblePanels": 1,
+      "triggerHeights": [
+        43.98907470703125,
+        44,
+        44
+      ],
+      "overflowingChildren": [],
+      "transition": "1e-05s"
+    },
+    {
+      "device": "wide",
+      "state": "keyboard",
+      "selected": "true",
+      "focused": true,
+      "focusOutline": "3px"
+    },
+    {
+      "device": "desktop",
+      "state": "motion",
+      "selected": "Profil barang01",
+      "transition": "0.35s, 0.2s"
+    }
+  ],
+  "errors": []
+}

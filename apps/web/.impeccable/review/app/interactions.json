@@ -1,0 +1,158 @@
+[
+  {
+    "name": "sidebar active on nested route",
+    "status": "passed"
+  },
+  {
+    "name": "correction retains transaction context",
+    "status": "passed"
+  },
+  {
+    "name": "correction mobile drawer retains transaction group",
+    "status": "passed"
+  },
+  {
+    "name": "assessment creation breadcrumb names the task",
+    "status": "passed"
+  },
+  {
+    "name": "assessment recommendation columns have a gutter",
+    "status": "passed"
+  },
+  {
+    "name": "phone chat composer typing space 320",
+    "status": "passed"
+  },
+  {
+    "name": "phone chat composer typing space 390",
+    "status": "passed"
+  },
+  {
+    "name": "sticky shadowless toolbar",
+    "status": "passed"
+  },
+  {
+    "name": "mobile drawer focus Escape and route close",
+    "status": "passed"
+  },
+  {
+    "name": "account popover Escape",
+    "status": "passed"
+  },
+  {
+    "name": "dashboard live data and recent limit",
+    "status": "passed"
+  },
+  {
+    "name": "notification mark read",
+    "status": "passed"
+  },
+  {
+    "name": "unverified email notice once",
+    "status": "passed"
+  },
+  {
+    "name": "guest redirect retains destination",
+    "status": "passed"
+  },
+  {
+    "name": "session unavailable hides private data",
+    "status": "passed"
+  },
+  {
+    "name": "user cannot open admin",
+    "status": "passed"
+  },
+  {
+    "name": "gallery keyboard selection",
+    "status": "passed"
+  },
+  {
+    "name": "photo deletion consent and one request",
+    "status": "passed"
+  },
+  {
+    "name": "reserved item disables edits and deletion",
+    "status": "passed"
+  },
+  {
+    "name": "item pagination error retains rows",
+    "status": "passed"
+  },
+  {
+    "name": "item create payload and pending duplicate guard",
+    "status": "passed"
+  },
+  {
+    "name": "item conflict preserves fields",
+    "status": "passed"
+  },
+  {
+    "name": "listing status filter and reset",
+    "status": "passed"
+  },
+  {
+    "name": "listing city keyboard selection and type-specific field",
+    "status": "passed"
+  },
+  {
+    "name": "withdraw Listing protected by dialog",
+    "status": "passed"
+  },
+  {
+    "name": "offer acceptance creates transaction after consent",
+    "status": "passed"
+  },
+  {
+    "name": "transaction confirmation respects role and consent",
+    "status": "passed"
+  },
+  {
+    "name": "transaction pagination error retains rows",
+    "status": "passed"
+  },
+  {
+    "name": "chat send pending and successful message",
+    "status": "passed"
+  },
+  {
+    "name": "chat failed retry uses stable message ID",
+    "status": "passed"
+  },
+  {
+    "name": "chat older messages retain position",
+    "status": "passed"
+  },
+  {
+    "name": "Impact period and coverage retained",
+    "status": "passed"
+  },
+  {
+    "name": "profile password reveal and mismatch",
+    "status": "passed"
+  },
+  {
+    "name": "session revocation explicit consent",
+    "status": "passed"
+  },
+  {
+    "name": "closure requires exact typed confirmation",
+    "status": "passed"
+  },
+  {
+    "name": "partial assessment keeps contract",
+    "status": "passed"
+  },
+  {
+    "name": "care recording keeps privacy choices",
+    "status": "passed"
+  },
+  {
+    "name": "profile save refreshes session identity",
+    "status": "passed"
+  },
+  {
+    "name": "offer counter keeps price version and message",
+    "status": "passed"
+  }
+]

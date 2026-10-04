@@ -1,0 +1,117 @@
+{
+  "checks": [
+    "safeNext allows only valid Market targets and retains redirect/admin protections",
+    "Guest -> mocked login -> same listing detail",
+    "Unverified session exposes verification link, no offer form",
+    "RESELL collapsed form, correct payload, one request on duplicate submit, success link",
+    "EXCHANGE collapsed form, correct payload, one request on duplicate submit, success link",
+    "DONATE collapsed form, correct payload, one request on duplicate submit, success link",
+    "Keyboard gallery changes main photo and close form restores trigger focus",
+    "Identical offer retry preserves clientRequestId",
+    "Revision conflict provides reload; changed payload gets new request ID",
+    "Chat error retry and duplicate guard navigate to existing conversation route",
+    "reserved detail state",
+    "missing detail state",
+    "error detail state retries successfully",
+    "loading detail state",
+    "Exchange items empty state with recovery",
+    "Exchange items error state with recovery",
+    "Missing photo fallback and empty related section hidden",
+    "Long title/description, missing Score and broken photo remain readable at320px",
+    "Broken main photo can recover by choosing another thumbnail",
+    "EMAIL_UNVERIFIED response offers verification recovery",
+    "Unavailable session retries before enabling actions"
+  ],
+  "allWrites": [
+    {
+      "path": "/api/v1/auth/login",
+      "body": {
+        "email": "mock@example.com",
+        "password": "password-simulasi-123"
+      }
+    },
+    {
+      "path": "/api/v1/listings/9268a6ec-9024-4b7d-a402-0aff5366057f/offers",
+      "body": {
+        "listingRevisionId": "7b6c5433-b5a4-4b3d-a530-ef81aa629937",
+        "expectedListingVersion": 4,
+        "priceIdr": 170000,
+        "message": "Pesan simulasi",
+        "clientRequestId": "9b35cabb-a806-46c3-a02e-16e5ee6ec381"
+      }
+    },
+    {
+      "path": "/api/v1/listings/9268a6ec-9024-4b7d-a402-0aff5366057f/offers",
+      "body": {
+        "listingRevisionId": "7b6c5433-b5a4-4b3d-a530-ef81aa629937",
+        "expectedListingVersion": 4,
+        "exchangeItemId": "00000000-0000-4000-8000-000000000088",
+        "message": "Pesan simulasi",
+        "clientRequestId": "5559229e-2644-4d42-ae55-372044259753"
+      }
+    },
+    {
+      "path": "/api/v1/listings/9268a6ec-9024-4b7d-a402-0aff5366057f/offers",
+      "body": {
+        "listingRevisionId": "7b6c5433-b5a4-4b3d-a530-ef81aa629937",
+        "expectedListingVersion": 4,
+        "message": "Pesan simulasi",
+        "clientRequestId": "012ed3af-beb1-4e45-ab82-7feb6fbc0dc1"
+      }
+    },
+    {
+      "path": "/api/v1/listings/9268a6ec-9024-4b7d-a402-0aff5366057f/offers",
+      "body": {
+        "listingRevisionId": "7b6c5433-b5a4-4b3d-a530-ef81aa629937",
+        "expectedListingVersion": 4,
+        "priceIdr": 170000,
+        "clientRequestId": "f8ae72dd-076e-4db0-8b3a-34b1f3ba3a5c"
+      }
+    },
+    {
+      "path": "/api/v1/listings/9268a6ec-9024-4b7d-a402-0aff5366057f/offers",
+      "body": {
+        "listingRevisionId": "7b6c5433-b5a4-4b3d-a530-ef81aa629937",
+        "expectedListingVersion": 4,
+        "priceIdr": 170000,
+        "clientRequestId": "f8ae72dd-076e-4db0-8b3a-34b1f3ba3a5c"
+      }
+    },
+    {
+      "path": "/api/v1/listings/9268a6ec-9024-4b7d-a402-0aff5366057f/offers",
+      "body": {
+        "listingRevisionId": "7b6c5433-b5a4-4b3d-a530-ef81aa629937",
+        "expectedListingVersion": 4,
+        "priceIdr": 170000,
+        "clientRequestId": "d3bdabd3-d3a1-4567-832f-2dd174f73f99"
+      }
+    },
+    {
+      "path": "/api/v1/listings/9268a6ec-9024-4b7d-a402-0aff5366057f/offers",
+      "body": {
+        "listingRevisionId": "7b6c5433-b5a4-4b3d-a530-ef81aa629937",
+        "expectedListingVersion": 4,
+        "priceIdr": 99999,
+        "clientRequestId": "3835f65f-ca94-4135-a574-231317adfc70"
+      }
+    },
+    {
+      "path": "/api/v1/listings/9268a6ec-9024-4b7d-a402-0aff5366057f/conversations",
+      "body": null
+    },
+    {
+      "path": "/api/v1/listings/9268a6ec-9024-4b7d-a402-0aff5366057f/conversations",
+      "body": null
+    },
+    {
+      "path": "/api/v1/listings/9268a6ec-9024-4b7d-a402-0aff5366057f/offers",
+      "body": {
+        "listingRevisionId": "7b6c5433-b5a4-4b3d-a530-ef81aa629937",
+        "expectedListingVersion": 4,
+        "priceIdr": 170000,
+        "clientRequestId": "51fccf29-751c-4f1f-9605-e59c4336edc3"
+      }
+    }
+  ],
+  "note": "Every login/offer/chat write intercepted; real requests limited to public GET. State screenshots use API fixtures."
+}

@@ -1,0 +1,202 @@
+[
+  {
+    "route": "/",
+    "viewport": 1440,
+    "documentWidth": 1440,
+    "height": 281.578125,
+    "width": 1392,
+    "contentInsetLeft": 40,
+    "contentInsetRight": 40,
+    "closingCardPadding": "40px",
+    "logoFontSize": "46px",
+    "navigation": [
+      "Market",
+      "Cara kerja",
+      "Impact",
+      "Daftar",
+      "Masuk"
+    ],
+    "socialLabels": [
+      "Instagram",
+      "TikTok",
+      "Gmail",
+      "YouTube"
+    ],
+    "descriptionVisible": false
+  },
+  {
+    "route": "/market",
+    "viewport": 1440,
+    "documentWidth": 1440,
+    "height": 332.3125,
+    "width": 1392,
+    "contentInsetLeft": 40,
+    "contentInsetRight": 40,
+    "closingCardPadding": null,
+    "logoFontSize": "54.4px",
+    "navigation": [
+      "Market",
+      "Cara kerja",
+      "Impact",
+      "Daftar",
+      "Masuk"
+    ],
+    "socialLabels": [
+      "Instagram",
+      "TikTok",
+      "Gmail",
+      "YouTube"
+    ],
+    "descriptionVisible": false
+  },
+  {
+    "route": "/",
+    "viewport": 768,
+    "documentWidth": 768,
+    "height": 281.578125,
+    "width": 720,
+    "contentInsetLeft": 32,
+    "contentInsetRight": 32,
+    "closingCardPadding": "32px",
+    "logoFontSize": "46px",
+    "navigation": [
+      "Market",
+      "Cara kerja",
+      "Impact",
+      "Daftar",
+      "Masuk"
+    ],
+    "socialLabels": [
+      "Instagram",
+      "TikTok",
+      "Gmail",
+      "YouTube"
+    ],
+    "descriptionVisible": false
+  },
+  {
+    "route": "/market",
+    "viewport": 768,
+    "documentWidth": 768,
+    "height": 332.3125,
+    "width": 720,
+    "contentInsetLeft": 32,
+    "contentInsetRight": 32,
+    "closingCardPadding": null,
+    "logoFontSize": "41.6px",
+    "navigation": [
+      "Market",
+      "Cara kerja",
+      "Impact",
+      "Daftar",
+      "Masuk"
+    ],
+    "socialLabels": [
+      "Instagram",
+      "TikTok",
+      "Gmail",
+      "YouTube"
+    ],
+    "descriptionVisible": false
+  },
+  {
+    "route": "/",
+    "viewport": 390,
+    "documentWidth": 390,
+    "height": 406.765625,
+    "width": 358,
+    "contentInsetLeft": 28,
+    "contentInsetRight": 28,
+    "closingCardPadding": "28px",
+    "logoFontSize": "38px",
+    "navigation": [
+      "Market",
+      "Cara kerja",
+      "Impact",
+      "Daftar",
+      "Masuk"
+    ],
+    "socialLabels": [
+      "Instagram",
+      "TikTok",
+      "Gmail",
+      "YouTube"
+    ],
+    "descriptionVisible": false
+  },
+  {
+    "route": "/market",
+    "viewport": 390,
+    "documentWidth": 390,
+    "height": 460.90625,
+    "width": 358,
+    "contentInsetLeft": 28,
+    "contentInsetRight": 28,
+    "closingCardPadding": null,
+    "logoFontSize": "41.6px",
+    "navigation": [
+      "Market",
+      "Cara kerja",
+      "Impact",
+      "Daftar",
+      "Masuk"
+    ],
+    "socialLabels": [
+      "Instagram",
+      "TikTok",
+      "Gmail",
+      "YouTube"
+    ],
+    "descriptionVisible": false
+  },
+  {
+    "route": "/",
+    "viewport": 320,
+    "documentWidth": 320,
+    "height": 406.765625,
+    "width": 288,
+    "contentInsetLeft": 28,
+    "contentInsetRight": 28,
+    "closingCardPadding": "28px",
+    "logoFontSize": "38px",
+    "navigation": [
+      "Market",
+      "Cara kerja",
+      "Impact",
+      "Daftar",
+      "Masuk"
+    ],
+    "socialLabels": [
+      "Instagram",
+      "TikTok",
+      "Gmail",
+      "YouTube"
+    ],
+    "descriptionVisible": false
+  },
+  {
+    "route": "/market",
+    "viewport": 320,
+    "documentWidth": 320,
+    "height": 460.90625,
+    "width": 288,
+    "contentInsetLeft": 28,
+    "contentInsetRight": 28,
+    "closingCardPadding": null,
+    "logoFontSize": "41.6px",
+    "navigation": [
+      "Market",
+      "Cara kerja",
+      "Impact",
+      "Daftar",
+      "Masuk"
+    ],
+    "socialLabels": [
+      "Instagram",
+      "TikTok",
+      "Gmail",
+      "YouTube"
+    ],
+    "descriptionVisible": false
+  }
+]

@@ -1,0 +1,1161 @@
+[
+  {
+    "name": "dashboard",
+    "url": "/app",
+    "width": 1440,
+    "file": ".impeccable/review/app/dashboard-1440.png",
+    "runtime": [],
+    "viewport": 1440,
+    "document": 1440,
+    "toolbarTop": 0,
+    "heading": "Halo, Nadia Pratama.",
+    "gridColumns": "276px 276px 276px 276px",
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [],
+    "overflowElements": []
+  },
+  {
+    "name": "items",
+    "url": "/app/barang",
+    "width": 1440,
+    "file": ".impeccable/review/app/items-1440.png",
+    "runtime": [],
+    "viewport": 1440,
+    "document": 1440,
+    "toolbarTop": 0,
+    "heading": "Barang saya",
+    "gridColumns": "276px 276px 276px 276px",
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [],
+    "overflowElements": []
+  },
+  {
+    "name": "item-new",
+    "url": "/app/barang/baru",
+    "width": 1440,
+    "file": ".impeccable/review/app/item-new-1440.png",
+    "runtime": [],
+    "viewport": 1440,
+    "document": 1440,
+    "toolbarTop": 0,
+    "heading": "Tambah barang",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 50
+      },
+      {
+        "font": "16px",
+        "height": 50
+      },
+      {
+        "font": "16px",
+        "height": 120
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "item-detail",
+    "url": "/app/barang/00000000-0000-4000-8000-000000000100",
+    "width": 1440,
+    "file": ".impeccable/review/app/item-detail-1440.png",
+    "runtime": [],
+    "viewport": 1440,
+    "document": 1440,
+    "toolbarTop": 0,
+    "heading": "Keyboard mekanis",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [],
+    "overflowElements": []
+  },
+  {
+    "name": "item-edit",
+    "url": "/app/barang/00000000-0000-4000-8000-000000000100/edit",
+    "width": 1440,
+    "file": ".impeccable/review/app/item-edit-1440.png",
+    "runtime": [],
+    "viewport": 1440,
+    "document": 1440,
+    "toolbarTop": 0,
+    "heading": "Edit Keyboard mekanis",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 50
+      },
+      {
+        "font": "16px",
+        "height": 50
+      },
+      {
+        "font": "16px",
+        "height": 120
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "passport",
+    "url": "/app/barang/00000000-0000-4000-8000-000000000100/passport",
+    "width": 1440,
+    "file": ".impeccable/review/app/passport-1440.png",
+    "runtime": [],
+    "viewport": 1440,
+    "document": 1440,
+    "toolbarTop": 0,
+    "heading": "Keyboard mekanis",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [],
+    "overflowElements": []
+  },
+  {
+    "name": "assessments",
+    "url": "/app/barang/00000000-0000-4000-8000-000000000100/penilaian",
+    "width": 1440,
+    "file": ".impeccable/review/app/assessments-1440.png",
+    "runtime": [],
+    "viewport": 1440,
+    "document": 1440,
+    "toolbarTop": 0,
+    "heading": "Valora Score",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [],
+    "overflowElements": []
+  },
+  {
+    "name": "assessment-new",
+    "url": "/app/barang/00000000-0000-4000-8000-000000000100/penilaian/baru",
+    "width": 1440,
+    "file": ".impeccable/review/app/assessment-new-1440.png",
+    "runtime": [],
+    "viewport": 1440,
+    "document": 1440,
+    "toolbarTop": 0,
+    "heading": "Nilai Keyboard mekanis",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 50
+      },
+      {
+        "font": "16px",
+        "height": 50
+      },
+      {
+        "font": "16px",
+        "height": 50
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "assessment-detail",
+    "url": "/app/barang/00000000-0000-4000-8000-000000000100/penilaian/00000000-0000-4000-8000-000000000310",
+    "width": 1440,
+    "file": ".impeccable/review/app/assessment-detail-1440.png",
+    "runtime": [],
+    "viewport": 1440,
+    "document": 1440,
+    "toolbarTop": 0,
+    "heading": "Hasil penilaian",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [],
+    "overflowElements": []
+  },
+  {
+    "name": "care",
+    "url": "/app/barang/00000000-0000-4000-8000-000000000100/perbaikan",
+    "width": 1440,
+    "file": ".impeccable/review/app/care-1440.png",
+    "runtime": [],
+    "viewport": 1440,
+    "document": 1440,
+    "toolbarTop": 0,
+    "heading": "Riwayat Repair",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 50
+      },
+      {
+        "font": "16px",
+        "height": 120
+      },
+      {
+        "font": "16px",
+        "height": 50
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "listings",
+    "url": "/app/listings",
+    "width": 1440,
+    "file": ".impeccable/review/app/listings-1440.png",
+    "runtime": [],
+    "viewport": 1440,
+    "document": 1440,
+    "toolbarTop": 0,
+    "heading": "Listing saya",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 50
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "listing-new",
+    "url": "/app/listings/new",
+    "width": 1440,
+    "file": ".impeccable/review/app/listing-new-1440.png",
+    "runtime": [],
+    "viewport": 1440,
+    "document": 1440,
+    "toolbarTop": 0,
+    "heading": "Ajukan barangmu.",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 50
+      },
+      {
+        "font": "16px",
+        "height": 50
+      },
+      {
+        "font": "16px",
+        "height": 50
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "listing-detail",
+    "url": "/app/listings/00000000-0000-4000-8000-000000000400",
+    "width": 1440,
+    "file": ".impeccable/review/app/listing-detail-1440.png",
+    "runtime": [],
+    "viewport": 1440,
+    "document": 1440,
+    "toolbarTop": 0,
+    "heading": "Keyboard mekanis",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 50
+      },
+      {
+        "font": "16px",
+        "height": 120
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "offers",
+    "url": "/app/penawaran",
+    "width": 1440,
+    "file": ".impeccable/review/app/offers-1440.png",
+    "runtime": [],
+    "viewport": 1440,
+    "document": 1440,
+    "toolbarTop": 0,
+    "heading": "Penawaran",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [],
+    "overflowElements": []
+  },
+  {
+    "name": "transactions",
+    "url": "/app/transaksi",
+    "width": 1440,
+    "file": ".impeccable/review/app/transactions-1440.png",
+    "runtime": [],
+    "viewport": 1440,
+    "document": 1440,
+    "toolbarTop": 0,
+    "heading": "Transaksi",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 50
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "transaction-detail",
+    "url": "/app/transaksi/00000000-0000-4000-8000-000000000600",
+    "width": 1440,
+    "file": ".impeccable/review/app/transaction-detail-1440.png",
+    "runtime": [],
+    "viewport": 1440,
+    "document": 1440,
+    "toolbarTop": 0,
+    "heading": "Keyboard mekanis",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 120
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "messages",
+    "url": "/app/pesan",
+    "width": 1440,
+    "file": ".impeccable/review/app/messages-1440.png",
+    "runtime": [],
+    "viewport": 1440,
+    "document": 1440,
+    "toolbarTop": 0,
+    "heading": "Pesan",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [],
+    "overflowElements": []
+  },
+  {
+    "name": "thread",
+    "url": "/app/pesan/00000000-0000-4000-8000-000000000700",
+    "width": 1440,
+    "file": ".impeccable/review/app/thread-1440.png",
+    "runtime": [],
+    "viewport": 1440,
+    "document": 1440,
+    "toolbarTop": 0,
+    "heading": "Keyboard mekanis",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 74
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "impact",
+    "url": "/app/impact",
+    "width": 1440,
+    "file": ".impeccable/review/app/impact-1440.png",
+    "runtime": [],
+    "viewport": 1440,
+    "document": 1440,
+    "toolbarTop": 0,
+    "heading": "Kontribusi yang kamu catat.",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 50
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "profile",
+    "url": "/app/profil",
+    "width": 1440,
+    "file": ".impeccable/review/app/profile-1440.png",
+    "runtime": [],
+    "viewport": 1440,
+    "document": 1440,
+    "toolbarTop": 0,
+    "heading": "Profil saya",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 1
+      },
+      {
+        "font": "16px",
+        "height": 50
+      },
+      {
+        "font": "16px",
+        "height": 50
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "correction",
+    "url": "/app/koreksi/00000000-0000-4000-8000-000000000950",
+    "width": 1440,
+    "file": ".impeccable/review/app/correction-1440.png",
+    "runtime": [],
+    "viewport": 1440,
+    "document": 1440,
+    "toolbarTop": 0,
+    "heading": "Kasus 00000000",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 120
+      },
+      {
+        "font": "16px",
+        "height": 50
+      },
+      {
+        "font": "16px",
+        "height": 24
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "dashboard",
+    "url": "/app",
+    "width": 390,
+    "file": ".impeccable/review/app/dashboard-390.png",
+    "runtime": [],
+    "viewport": 390,
+    "document": 390,
+    "toolbarTop": 0,
+    "heading": "Halo, Nadia Pratama.",
+    "gridColumns": "358px",
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [],
+    "overflowElements": []
+  },
+  {
+    "name": "items",
+    "url": "/app/barang",
+    "width": 390,
+    "file": ".impeccable/review/app/items-390.png",
+    "runtime": [],
+    "viewport": 390,
+    "document": 390,
+    "toolbarTop": 0,
+    "heading": "Barang saya",
+    "gridColumns": "358px",
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [],
+    "overflowElements": []
+  },
+  {
+    "name": "item-new",
+    "url": "/app/barang/baru",
+    "width": 390,
+    "file": ".impeccable/review/app/item-new-390.png",
+    "runtime": [],
+    "viewport": 390,
+    "document": 390,
+    "toolbarTop": 0,
+    "heading": "Tambah barang",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 50
+      },
+      {
+        "font": "16px",
+        "height": 50
+      },
+      {
+        "font": "16px",
+        "height": 120
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "item-detail",
+    "url": "/app/barang/00000000-0000-4000-8000-000000000100",
+    "width": 390,
+    "file": ".impeccable/review/app/item-detail-390.png",
+    "runtime": [],
+    "viewport": 390,
+    "document": 390,
+    "toolbarTop": 0,
+    "heading": "Keyboard mekanis",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [],
+    "overflowElements": []
+  },
+  {
+    "name": "item-edit",
+    "url": "/app/barang/00000000-0000-4000-8000-000000000100/edit",
+    "width": 390,
+    "file": ".impeccable/review/app/item-edit-390.png",
+    "runtime": [],
+    "viewport": 390,
+    "document": 390,
+    "toolbarTop": 0,
+    "heading": "Edit Keyboard mekanis",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 50
+      },
+      {
+        "font": "16px",
+        "height": 50
+      },
+      {
+        "font": "16px",
+        "height": 120
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "passport",
+    "url": "/app/barang/00000000-0000-4000-8000-000000000100/passport",
+    "width": 390,
+    "file": ".impeccable/review/app/passport-390.png",
+    "runtime": [],
+    "viewport": 390,
+    "document": 390,
+    "toolbarTop": 0,
+    "heading": "Keyboard mekanis",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [],
+    "overflowElements": []
+  },
+  {
+    "name": "assessments",
+    "url": "/app/barang/00000000-0000-4000-8000-000000000100/penilaian",
+    "width": 390,
+    "file": ".impeccable/review/app/assessments-390.png",
+    "runtime": [],
+    "viewport": 390,
+    "document": 390,
+    "toolbarTop": 0,
+    "heading": "Valora Score",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [],
+    "overflowElements": []
+  },
+  {
+    "name": "assessment-new",
+    "url": "/app/barang/00000000-0000-4000-8000-000000000100/penilaian/baru",
+    "width": 390,
+    "file": ".impeccable/review/app/assessment-new-390.png",
+    "runtime": [],
+    "viewport": 390,
+    "document": 390,
+    "toolbarTop": 0,
+    "heading": "Nilai Keyboard mekanis",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 50
+      },
+      {
+        "font": "16px",
+        "height": 50
+      },
+      {
+        "font": "16px",
+        "height": 50
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "assessment-detail",
+    "url": "/app/barang/00000000-0000-4000-8000-000000000100/penilaian/00000000-0000-4000-8000-000000000310",
+    "width": 390,
+    "file": ".impeccable/review/app/assessment-detail-390.png",
+    "runtime": [],
+    "viewport": 390,
+    "document": 390,
+    "toolbarTop": 0,
+    "heading": "Hasil penilaian",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [],
+    "overflowElements": []
+  },
+  {
+    "name": "care",
+    "url": "/app/barang/00000000-0000-4000-8000-000000000100/perbaikan",
+    "width": 390,
+    "file": ".impeccable/review/app/care-390.png",
+    "runtime": [],
+    "viewport": 390,
+    "document": 390,
+    "toolbarTop": 0,
+    "heading": "Riwayat Repair",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 50
+      },
+      {
+        "font": "16px",
+        "height": 120
+      },
+      {
+        "font": "16px",
+        "height": 50
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "listings",
+    "url": "/app/listings",
+    "width": 390,
+    "file": ".impeccable/review/app/listings-390.png",
+    "runtime": [],
+    "viewport": 390,
+    "document": 390,
+    "toolbarTop": 0,
+    "heading": "Listing saya",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 50
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "listing-new",
+    "url": "/app/listings/new",
+    "width": 390,
+    "file": ".impeccable/review/app/listing-new-390.png",
+    "runtime": [],
+    "viewport": 390,
+    "document": 390,
+    "toolbarTop": 0,
+    "heading": "Ajukan barangmu.",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 50
+      },
+      {
+        "font": "16px",
+        "height": 50
+      },
+      {
+        "font": "16px",
+        "height": 50
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "listing-detail",
+    "url": "/app/listings/00000000-0000-4000-8000-000000000400",
+    "width": 390,
+    "file": ".impeccable/review/app/listing-detail-390.png",
+    "runtime": [],
+    "viewport": 390,
+    "document": 390,
+    "toolbarTop": 0,
+    "heading": "Keyboard mekanis",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 50
+      },
+      {
+        "font": "16px",
+        "height": 120
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "offers",
+    "url": "/app/penawaran",
+    "width": 390,
+    "file": ".impeccable/review/app/offers-390.png",
+    "runtime": [],
+    "viewport": 390,
+    "document": 390,
+    "toolbarTop": 0,
+    "heading": "Penawaran",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [],
+    "overflowElements": []
+  },
+  {
+    "name": "transactions",
+    "url": "/app/transaksi",
+    "width": 390,
+    "file": ".impeccable/review/app/transactions-390.png",
+    "runtime": [],
+    "viewport": 390,
+    "document": 390,
+    "toolbarTop": 0,
+    "heading": "Transaksi",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 50
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "transaction-detail",
+    "url": "/app/transaksi/00000000-0000-4000-8000-000000000600",
+    "width": 390,
+    "file": ".impeccable/review/app/transaction-detail-390.png",
+    "runtime": [],
+    "viewport": 390,
+    "document": 390,
+    "toolbarTop": 0,
+    "heading": "Keyboard mekanis",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 120
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "messages",
+    "url": "/app/pesan",
+    "width": 390,
+    "file": ".impeccable/review/app/messages-390.png",
+    "runtime": [],
+    "viewport": 390,
+    "document": 390,
+    "toolbarTop": 0,
+    "heading": "Pesan",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [],
+    "overflowElements": []
+  },
+  {
+    "name": "thread",
+    "url": "/app/pesan/00000000-0000-4000-8000-000000000700",
+    "width": 390,
+    "file": ".impeccable/review/app/thread-390.png",
+    "runtime": [],
+    "viewport": 390,
+    "document": 390,
+    "toolbarTop": 0,
+    "heading": "Keyboard mekanis",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 74
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "impact",
+    "url": "/app/impact",
+    "width": 390,
+    "file": ".impeccable/review/app/impact-390.png",
+    "runtime": [],
+    "viewport": 390,
+    "document": 390,
+    "toolbarTop": 0,
+    "heading": "Kontribusi yang kamu catat.",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 50
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "profile",
+    "url": "/app/profil",
+    "width": 390,
+    "file": ".impeccable/review/app/profile-390.png",
+    "runtime": [],
+    "viewport": 390,
+    "document": 390,
+    "toolbarTop": 0,
+    "heading": "Profil saya",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 1
+      },
+      {
+        "font": "16px",
+        "height": 50
+      },
+      {
+        "font": "16px",
+        "height": 50
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "correction",
+    "url": "/app/koreksi/00000000-0000-4000-8000-000000000950",
+    "width": 390,
+    "file": ".impeccable/review/app/correction-390.png",
+    "runtime": [],
+    "viewport": 390,
+    "document": 390,
+    "toolbarTop": 0,
+    "heading": "Kasus 00000000",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 120
+      },
+      {
+        "font": "16px",
+        "height": 50
+      },
+      {
+        "font": "16px",
+        "height": 24
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "dashboard",
+    "url": "/app",
+    "width": 320,
+    "file": ".impeccable/review/app/dashboard-320.png",
+    "runtime": [],
+    "viewport": 320,
+    "document": 320,
+    "toolbarTop": 0,
+    "heading": "Halo, Nadia Pratama.",
+    "gridColumns": "288px",
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [],
+    "overflowElements": []
+  },
+  {
+    "name": "dashboard",
+    "url": "/app",
+    "width": 768,
+    "file": ".impeccable/review/app/dashboard-768.png",
+    "runtime": [],
+    "viewport": 768,
+    "document": 768,
+    "toolbarTop": 0,
+    "heading": "Halo, Nadia Pratama.",
+    "gridColumns": "352px 352px",
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [],
+    "overflowElements": []
+  },
+  {
+    "name": "dashboard",
+    "url": "/app",
+    "width": 1024,
+    "file": ".impeccable/review/app/dashboard-1024.png",
+    "runtime": [],
+    "viewport": 1024,
+    "document": 1024,
+    "toolbarTop": 0,
+    "heading": "Halo, Nadia Pratama.",
+    "gridColumns": "360px 360px",
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [],
+    "overflowElements": []
+  },
+  {
+    "name": "dashboard-long-name",
+    "url": "/app",
+    "width": 320,
+    "file": ".impeccable/review/app/dashboard-long-name-320.png",
+    "runtime": [],
+    "viewport": 320,
+    "document": 320,
+    "toolbarTop": 0,
+    "heading": "Halo, Nadia Pratama dengan nama tampilan yang lebih panjang untuk pemeriksaan layout.",
+    "gridColumns": "288px",
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [],
+    "overflowElements": []
+  },
+  {
+    "name": "item-detail",
+    "url": "/app/barang/00000000-0000-4000-8000-000000000100",
+    "width": 320,
+    "file": ".impeccable/review/app/item-detail-320.png",
+    "runtime": [],
+    "viewport": 320,
+    "document": 320,
+    "toolbarTop": 0,
+    "heading": "Keyboard mekanis",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [],
+    "overflowElements": []
+  },
+  {
+    "name": "item-new",
+    "url": "/app/barang/baru",
+    "width": 320,
+    "file": ".impeccable/review/app/item-new-320.png",
+    "runtime": [],
+    "viewport": 320,
+    "document": 320,
+    "toolbarTop": 0,
+    "heading": "Tambah barang",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 50
+      },
+      {
+        "font": "16px",
+        "height": 50
+      },
+      {
+        "font": "16px",
+        "height": 120
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "listing-new",
+    "url": "/app/listings/new",
+    "width": 320,
+    "file": ".impeccable/review/app/listing-new-320.png",
+    "runtime": [],
+    "viewport": 320,
+    "document": 320,
+    "toolbarTop": 0,
+    "heading": "Ajukan barangmu.",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 50
+      },
+      {
+        "font": "16px",
+        "height": 50
+      },
+      {
+        "font": "16px",
+        "height": 50
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "transaction-detail",
+    "url": "/app/transaksi/00000000-0000-4000-8000-000000000600",
+    "width": 320,
+    "file": ".impeccable/review/app/transaction-detail-320.png",
+    "runtime": [],
+    "viewport": 320,
+    "document": 320,
+    "toolbarTop": 0,
+    "heading": "Keyboard mekanis",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 120
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "thread",
+    "url": "/app/pesan/00000000-0000-4000-8000-000000000700",
+    "width": 320,
+    "file": ".impeccable/review/app/thread-320.png",
+    "runtime": [],
+    "viewport": 320,
+    "document": 320,
+    "toolbarTop": 0,
+    "heading": "Keyboard mekanis",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 74
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "profile",
+    "url": "/app/profil",
+    "width": 320,
+    "file": ".impeccable/review/app/profile-320.png",
+    "runtime": [],
+    "viewport": 320,
+    "document": 320,
+    "toolbarTop": 0,
+    "heading": "Profil saya",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 1
+      },
+      {
+        "font": "16px",
+        "height": 50
+      },
+      {
+        "font": "16px",
+        "height": 50
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "impact",
+    "url": "/app/impact",
+    "width": 320,
+    "file": ".impeccable/review/app/impact-320.png",
+    "runtime": [],
+    "viewport": 320,
+    "document": 320,
+    "toolbarTop": 0,
+    "heading": "Kontribusi yang kamu catat.",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [
+      {
+        "font": "16px",
+        "height": 50
+      }
+    ],
+    "overflowElements": []
+  },
+  {
+    "name": "dashboard-empty",
+    "url": "/app",
+    "width": 390,
+    "file": ".impeccable/review/app/dashboard-empty-390.png",
+    "runtime": [],
+    "viewport": 390,
+    "document": 390,
+    "toolbarTop": 0,
+    "heading": "Halo, Nadia Pratama.",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [],
+    "overflowElements": []
+  },
+  {
+    "name": "dashboard-unverified",
+    "url": "/app",
+    "width": 390,
+    "file": ".impeccable/review/app/dashboard-unverified-390.png",
+    "runtime": [],
+    "viewport": 390,
+    "document": 390,
+    "toolbarTop": 0,
+    "heading": "Halo, Nadia Pratama.",
+    "gridColumns": "358px",
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [],
+    "overflowElements": []
+  },
+  {
+    "name": "item-reserved",
+    "url": "/app/barang/00000000-0000-4000-8000-000000000100",
+    "width": 390,
+    "file": ".impeccable/review/app/item-reserved-390.png",
+    "runtime": [],
+    "viewport": 390,
+    "document": 390,
+    "toolbarTop": 0,
+    "heading": "Keyboard mekanis",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [],
+    "overflowElements": []
+  },
+  {
+    "name": "dashboard-errors",
+    "url": "/app",
+    "width": 390,
+    "file": ".impeccable/review/app/dashboard-errors-390.png",
+    "runtime": [],
+    "viewport": 390,
+    "document": 390,
+    "toolbarTop": 0,
+    "heading": "Halo, Nadia Pratama.",
+    "gridColumns": null,
+    "bodyBackground": "rgb(255, 255, 255)",
+    "inputs": [],
+    "overflowElements": []
+  }
+]

@@ -1,0 +1,69 @@
+{
+  "apiMode": "intercepted responses; no accounts or emails created",
+  "observations": [
+    {
+      "scenario": "login error, password toggle, duplicate submit",
+      "revealed": true,
+      "preserved": true,
+      "busy": true,
+      "requestCount": 1,
+      "errorVisible": true,
+      "guestActivityIcons": 0
+    },
+    {
+      "scenario": "register validation and keyboard city selection",
+      "requiredErrors": 5,
+      "optionFocused": true,
+      "cityPicked": true,
+      "mismatchLinked": true,
+      "destination": "/verifikasi-email",
+      "emailPrefilled": true,
+      "requestCount": 1,
+      "fieldsSent": [
+        "displayName",
+        "email",
+        "password",
+        "cityId"
+      ]
+    },
+    {
+      "scenario": "forgot success",
+      "successVisible": true,
+      "loginLinkAvailable": true
+    },
+    {
+      "scenario": "reset mismatch and success",
+      "mismatchLinked": true,
+      "confirmFocused": true,
+      "mismatchNoRequest": true,
+      "destination": "/masuk?reset=success",
+      "successVisible": true
+    },
+    {
+      "scenario": "missing reset token",
+      "errorVisible": true,
+      "recoveryLinkAvailable": true
+    },
+    {
+      "scenario": "verification success",
+      "successVisible": true,
+      "loginLinkAvailable": true
+    },
+    {
+      "scenario": "verification resend",
+      "successVisible": true
+    },
+    {
+      "scenario": "authenticated next destination",
+      "next": "/app/profil",
+      "destination": "/app/profil",
+      "authenticatedActivityIcons": 2
+    },
+    {
+      "scenario": "authenticated next destination",
+      "next": "//outside.test",
+      "destination": "/app",
+      "authenticatedActivityIcons": 2
+    }
+  ]
+}

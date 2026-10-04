@@ -1,0 +1,38 @@
+[
+  {
+    "url": "/app/admin",
+    "title": "Operasi Valora",
+    "accountRoot": false,
+    "publicHeader": false,
+    "publicMarketGrid": null,
+    "adminSidebar": "235px",
+    "passportRadius": null
+  },
+  {
+    "url": "/market",
+    "title": "Barang baik,untuk cerita berikutnya.",
+    "accountRoot": false,
+    "publicHeader": true,
+    "publicMarketGrid": "330px 330px 330px 330px",
+    "adminSidebar": null,
+    "passportRadius": null
+  },
+  {
+    "url": "/passport/00000000-0000-4000-8000-000000000100",
+    "title": "Keyboard mekanis",
+    "accountRoot": false,
+    "publicHeader": true,
+    "publicMarketGrid": null,
+    "adminSidebar": null,
+    "passportRadius": "0px"
+  },
+  {
+    "url": "/masuk",
+    "title": "Selamat datang lagi",
+    "accountRoot": false,
+    "publicHeader": true,
+    "publicMarketGrid": null,
+    "adminSidebar": null,
+    "passportRadius": null
+  }
+]

@@ -1,0 +1,28 @@
+{
+  "name": "valora",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@11.28.0",
+  "engines": {
+    "node": ">=24.15.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @valora/contracts run build && concurrently -k -n contracts,api,web \"pnpm --filter @valora/contracts run dev\" \"pnpm --filter @valora/api run dev\" \"pnpm --filter @valora/web run dev\"",
+    "build": "pnpm --filter @valora/contracts run build && pnpm --filter @valora/api run build && pnpm --filter @valora/web run build",
+    "typecheck": "pnpm --filter @valora/contracts run build && pnpm --filter @valora/api run typecheck && pnpm --filter @valora/web run typecheck",
+    "lint": "pnpm --filter @valora/api run lint && pnpm --filter @valora/web run lint",
+    "test": "pnpm --filter @valora/contracts run build && pnpm --filter @valora/api run test",
+    "test:e2e": "pnpm --filter @valora/web run test:e2e",
+    "demo:stage4": "pnpm --filter @valora/api run demo:stage4",
+    "db:generate": "pnpm --filter @valora/api run db:generate",
+    "db:migrate": "pnpm --filter @valora/api run db:migrate",
+    "db:deploy": "pnpm --filter @valora/api run db:deploy",
+    "db:seed": "pnpm --filter @valora/api run db:seed",
+    "demo:stage5": "pnpm --filter @valora/api run demo:stage5",
+    "demo:stage6": "pnpm --filter @valora/api run demo:stage6",
+    "demo:items": "pnpm --filter @valora/api run demo:items"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

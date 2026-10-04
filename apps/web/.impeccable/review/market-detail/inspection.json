@@ -1,0 +1,92 @@
+[
+  {
+    "width": 1440,
+    "status": 200,
+    "errors": [],
+    "documentWidth": 1440,
+    "title": "Demo Market · arts-crafts · 05 · Perlengkapan Menggambar Dasar",
+    "topColumns": "699.797px 636.203px",
+    "relatedColumns": "330px 330px 330px 330px",
+    "related": 4,
+    "relatedHrefs": [
+      "/market/6c0321e8-2b7e-46d5-a075-5422204eacc0",
+      "/market/f92c5a22-5800-4186-ae7e-1bc7485b0834",
+      "/market/52f7cdd0-5ca2-4eb3-8aaa-9475238fa7ec",
+      "/market/f1e127c8-bb53-4e5f-b252-8558036484a2"
+    ],
+    "guestHref": "/masuk?next=%2Fmarket%2F9268a6ec-9024-4b7d-a402-0aff5366057f",
+    "header": "sticky"
+  },
+  {
+    "width": 1024,
+    "status": 200,
+    "errors": [],
+    "documentWidth": 1024,
+    "title": "Demo Market · arts-crafts · 05 · Perlengkapan Menggambar Dasar",
+    "topColumns": "494.469px 449.531px",
+    "relatedColumns": "226px 226px 226px 226px",
+    "related": 4,
+    "relatedHrefs": [
+      "/market/6c0321e8-2b7e-46d5-a075-5422204eacc0",
+      "/market/f92c5a22-5800-4186-ae7e-1bc7485b0834",
+      "/market/52f7cdd0-5ca2-4eb3-8aaa-9475238fa7ec",
+      "/market/f1e127c8-bb53-4e5f-b252-8558036484a2"
+    ],
+    "guestHref": "/masuk?next=%2Fmarket%2F9268a6ec-9024-4b7d-a402-0aff5366057f",
+    "header": "sticky"
+  },
+  {
+    "width": 768,
+    "status": 200,
+    "errors": [],
+    "documentWidth": 768,
+    "title": "Demo Market · arts-crafts · 05 · Perlengkapan Menggambar Dasar",
+    "topColumns": "720px",
+    "relatedColumns": "348px 348px",
+    "related": 4,
+    "relatedHrefs": [
+      "/market/6c0321e8-2b7e-46d5-a075-5422204eacc0",
+      "/market/f92c5a22-5800-4186-ae7e-1bc7485b0834",
+      "/market/52f7cdd0-5ca2-4eb3-8aaa-9475238fa7ec",
+      "/market/f1e127c8-bb53-4e5f-b252-8558036484a2"
+    ],
+    "guestHref": "/masuk?next=%2Fmarket%2F9268a6ec-9024-4b7d-a402-0aff5366057f",
+    "header": "sticky"
+  },
+  {
+    "width": 390,
+    "status": 200,
+    "errors": [],
+    "documentWidth": 390,
+    "title": "Demo Market · arts-crafts · 05 · Perlengkapan Menggambar Dasar",
+    "topColumns": "358px",
+    "relatedColumns": "358px",
+    "related": 4,
+    "relatedHrefs": [
+      "/market/6c0321e8-2b7e-46d5-a075-5422204eacc0",
+      "/market/f92c5a22-5800-4186-ae7e-1bc7485b0834",
+      "/market/52f7cdd0-5ca2-4eb3-8aaa-9475238fa7ec",
+      "/market/f1e127c8-bb53-4e5f-b252-8558036484a2"
+    ],
+    "guestHref": "/masuk?next=%2Fmarket%2F9268a6ec-9024-4b7d-a402-0aff5366057f",
+    "header": "sticky"
+  },
+  {
+    "width": 320,
+    "status": 200,
+    "errors": [],
+    "documentWidth": 320,
+    "title": "Demo Market · arts-crafts · 05 · Perlengkapan Menggambar Dasar",
+    "topColumns": "288px",
+    "relatedColumns": "288px",
+    "related": 4,
+    "relatedHrefs": [
+      "/market/6c0321e8-2b7e-46d5-a075-5422204eacc0",
+      "/market/f92c5a22-5800-4186-ae7e-1bc7485b0834",
+      "/market/52f7cdd0-5ca2-4eb3-8aaa-9475238fa7ec",
+      "/market/f1e127c8-bb53-4e5f-b252-8558036484a2"
+    ],
+    "guestHref": "/masuk?next=%2Fmarket%2F9268a6ec-9024-4b7d-a402-0aff5366057f",
+    "header": "sticky"
+  }
+]

@@ -1,0 +1,17 @@
+# Market detail redesign — 2026-10-04
+
+Mode Operate. Code-led extension of the approved PublicShell world: white/forest/green/cream, Plus Jakarta Sans, flat rounded photos and panels, unframed white canvas, sticky shadowless header and shared footer. User approved gallery left / summary right, offer form inline after primary action, and up to4 related active items in same category excluding current. No concept/image generation necessary: reference and parent catalogue pin the world and composition.
+
+Scope /market/[listingId] and supporting gallery/actions/states. Desktop split; below900 single-column,24/16gutters. Main photo4:3, ordered thumbnails, native keyboard buttons, failed/missing photo fallback. Complete title, price/type, condition/Score/city, full description/disclosure/exchange/donation facts, owner/handover/Passport. Related4desktop/2tablet/1phone reuses catalogue cards. Catalogue4-column refinement retained.
+
+Guest actions go to login with valid /market/UUID return target. safeNext expansion only public market root/detail UUID; preserve invalid destination protection and admin policy. Check session; block actions until verified; verification link prefilledemail. Authenticated primary opens form and focuses first enabled field. Offer body/endpoint unchanged, synchronous pending guard plus disabled fields/actions, stable clientRequestId retry for identical payload. Chat same endpoint; source-defined pending/error recovery. Success links to /app/penawaran. STATE_CONFLICT gives reload; backend handles eligibility and owner/block restrictions without exposing owner IDs. Public detail404/unavailable vs transport retry; RESERVED reveals no owner/media/actions.
+
+Checks: typecheck/lint; gallery/main/related and long copy at1440/1024/768/390/320; mocked state/offer/chat/session cases, no real mutations; login return/safeNext protections; keyboard thumbnails/disclosurefocus, three offer payloads, retries/duplicate guard, related exclusion and missing photos. Detail destination pages /passport and /app remain nextphase; documentation targeted merge only.
+
+## Shipped design handoff — 2026-10-04
+
+Independent review disposition: **Ship** for implementation; the planned targeted documentation merge is complete in DESIGN.md and .impeccable/design.json. Current migration coverage includes /market/[listingId] in PublicShell. /passport/[id] and /app user/admin layouts remain later phases. Earlier stage logs remain historical evidence for their original scope.
+
+Documented gallery ordering/contain behavior, keyboard thumbnails and image recovery, split from 900px and single column below 900px, owner/handover/Passport facts, verified-session actions, inline form focus/close, native 16px fields, pending guard, stable-ID retry, conflict reload, success/chat destinations, and shared related MarketCard grid: four columns from 1024px, two from 640px, one on phones. The intentional 17px owner name is a local role; baseline typography is preserved. Sidecar adds one standalone open-offer example and two detail breakpoints; existing card previews and unrelated metadata remain intact.
+
+Evidence retained: review.md, verification.md, inspection.json, interactions.json (21 passed scenarios; 22 captures). Existing typecheck/lint, detector, captures, and intercepted mutation checks are evidence from implementation/review; this handoff performs documentation parsing only.

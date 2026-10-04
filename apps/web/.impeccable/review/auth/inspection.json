@@ -1,0 +1,422 @@
+[
+  {
+    "route": "/masuk",
+    "width": 1440,
+    "documentWidth": 1440,
+    "viewportWidth": 1440,
+    "heading": "Selamat datang lagi",
+    "panel": {
+      "left": 834,
+      "right": 1314,
+      "width": 480
+    },
+    "storyVisible": true,
+    "header": {
+      "position": "sticky",
+      "border": "0px",
+      "shadow": "none"
+    },
+    "activityIcons": 0,
+    "invalidDescriptionReferences": [],
+    "errors": []
+  },
+  {
+    "route": "/daftar",
+    "width": 1440,
+    "documentWidth": 1440,
+    "viewportWidth": 1440,
+    "heading": "Buat akun",
+    "panel": {
+      "left": 834,
+      "right": 1314,
+      "width": 480
+    },
+    "storyVisible": true,
+    "header": {
+      "position": "sticky",
+      "border": "0px",
+      "shadow": "none"
+    },
+    "activityIcons": 0,
+    "invalidDescriptionReferences": [],
+    "errors": []
+  },
+  {
+    "route": "/lupa-kata-sandi",
+    "width": 1440,
+    "documentWidth": 1440,
+    "viewportWidth": 1440,
+    "heading": "Pulihkan akun",
+    "panel": {
+      "left": 834,
+      "right": 1314,
+      "width": 480
+    },
+    "storyVisible": true,
+    "header": {
+      "position": "sticky",
+      "border": "0px",
+      "shadow": "none"
+    },
+    "activityIcons": 0,
+    "invalidDescriptionReferences": [],
+    "errors": []
+  },
+  {
+    "route": "/reset-password?token=preview-only",
+    "width": 1440,
+    "documentWidth": 1440,
+    "viewportWidth": 1440,
+    "heading": "Kata sandi baru",
+    "panel": {
+      "left": 834,
+      "right": 1314,
+      "width": 480
+    },
+    "storyVisible": true,
+    "header": {
+      "position": "sticky",
+      "border": "0px",
+      "shadow": "none"
+    },
+    "activityIcons": 0,
+    "invalidDescriptionReferences": [],
+    "errors": []
+  },
+  {
+    "route": "/verifikasi-email?email=contoh%40valora.test",
+    "width": 1440,
+    "documentWidth": 1440,
+    "viewportWidth": 1440,
+    "heading": "Verifikasi email",
+    "panel": {
+      "left": 834,
+      "right": 1314,
+      "width": 480
+    },
+    "storyVisible": true,
+    "header": {
+      "position": "sticky",
+      "border": "0px",
+      "shadow": "none"
+    },
+    "activityIcons": 0,
+    "invalidDescriptionReferences": [],
+    "errors": []
+  },
+  {
+    "route": "/masuk",
+    "width": 768,
+    "documentWidth": 768,
+    "viewportWidth": 768,
+    "heading": "Selamat datang lagi",
+    "panel": {
+      "left": 372.09375,
+      "right": 743.984375,
+      "width": 371.890625
+    },
+    "storyVisible": true,
+    "header": {
+      "position": "sticky",
+      "border": "0px",
+      "shadow": "none"
+    },
+    "activityIcons": 0,
+    "invalidDescriptionReferences": [],
+    "errors": []
+  },
+  {
+    "route": "/daftar",
+    "width": 768,
+    "documentWidth": 768,
+    "viewportWidth": 768,
+    "heading": "Buat akun",
+    "panel": {
+      "left": 372.09375,
+      "right": 743.984375,
+      "width": 371.890625
+    },
+    "storyVisible": true,
+    "header": {
+      "position": "sticky",
+      "border": "0px",
+      "shadow": "none"
+    },
+    "activityIcons": 0,
+    "invalidDescriptionReferences": [],
+    "errors": []
+  },
+  {
+    "route": "/lupa-kata-sandi",
+    "width": 768,
+    "documentWidth": 768,
+    "viewportWidth": 768,
+    "heading": "Pulihkan akun",
+    "panel": {
+      "left": 372.09375,
+      "right": 743.984375,
+      "width": 371.890625
+    },
+    "storyVisible": true,
+    "header": {
+      "position": "sticky",
+      "border": "0px",
+      "shadow": "none"
+    },
+    "activityIcons": 0,
+    "invalidDescriptionReferences": [],
+    "errors": []
+  },
+  {
+    "route": "/reset-password?token=preview-only",
+    "width": 768,
+    "documentWidth": 768,
+    "viewportWidth": 768,
+    "heading": "Kata sandi baru",
+    "panel": {
+      "left": 372.09375,
+      "right": 743.984375,
+      "width": 371.890625
+    },
+    "storyVisible": true,
+    "header": {
+      "position": "sticky",
+      "border": "0px",
+      "shadow": "none"
+    },
+    "activityIcons": 0,
+    "invalidDescriptionReferences": [],
+    "errors": []
+  },
+  {
+    "route": "/verifikasi-email?email=contoh%40valora.test",
+    "width": 768,
+    "documentWidth": 768,
+    "viewportWidth": 768,
+    "heading": "Verifikasi email",
+    "panel": {
+      "left": 372.09375,
+      "right": 743.984375,
+      "width": 371.890625
+    },
+    "storyVisible": true,
+    "header": {
+      "position": "sticky",
+      "border": "0px",
+      "shadow": "none"
+    },
+    "activityIcons": 0,
+    "invalidDescriptionReferences": [],
+    "errors": []
+  },
+  {
+    "route": "/masuk",
+    "width": 390,
+    "documentWidth": 390,
+    "viewportWidth": 390,
+    "heading": "Selamat datang lagi",
+    "panel": {
+      "left": 24,
+      "right": 366,
+      "width": 342
+    },
+    "storyVisible": false,
+    "header": {
+      "position": "sticky",
+      "border": "0px",
+      "shadow": "none"
+    },
+    "activityIcons": 0,
+    "invalidDescriptionReferences": [],
+    "errors": []
+  },
+  {
+    "route": "/daftar",
+    "width": 390,
+    "documentWidth": 390,
+    "viewportWidth": 390,
+    "heading": "Buat akun",
+    "panel": {
+      "left": 24,
+      "right": 366,
+      "width": 342
+    },
+    "storyVisible": false,
+    "header": {
+      "position": "sticky",
+      "border": "0px",
+      "shadow": "none"
+    },
+    "activityIcons": 0,
+    "invalidDescriptionReferences": [],
+    "errors": []
+  },
+  {
+    "route": "/lupa-kata-sandi",
+    "width": 390,
+    "documentWidth": 390,
+    "viewportWidth": 390,
+    "heading": "Pulihkan akun",
+    "panel": {
+      "left": 24,
+      "right": 366,
+      "width": 342
+    },
+    "storyVisible": false,
+    "header": {
+      "position": "sticky",
+      "border": "0px",
+      "shadow": "none"
+    },
+    "activityIcons": 0,
+    "invalidDescriptionReferences": [],
+    "errors": []
+  },
+  {
+    "route": "/reset-password?token=preview-only",
+    "width": 390,
+    "documentWidth": 390,
+    "viewportWidth": 390,
+    "heading": "Kata sandi baru",
+    "panel": {
+      "left": 24,
+      "right": 366,
+      "width": 342
+    },
+    "storyVisible": false,
+    "header": {
+      "position": "sticky",
+      "border": "0px",
+      "shadow": "none"
+    },
+    "activityIcons": 0,
+    "invalidDescriptionReferences": [],
+    "errors": []
+  },
+  {
+    "route": "/verifikasi-email?email=contoh%40valora.test",
+    "width": 390,
+    "documentWidth": 390,
+    "viewportWidth": 390,
+    "heading": "Verifikasi email",
+    "panel": {
+      "left": 24,
+      "right": 366,
+      "width": 342
+    },
+    "storyVisible": false,
+    "header": {
+      "position": "sticky",
+      "border": "0px",
+      "shadow": "none"
+    },
+    "activityIcons": 0,
+    "invalidDescriptionReferences": [],
+    "errors": []
+  },
+  {
+    "route": "/masuk",
+    "width": 320,
+    "documentWidth": 320,
+    "viewportWidth": 320,
+    "heading": "Selamat datang lagi",
+    "panel": {
+      "left": 24,
+      "right": 296,
+      "width": 272
+    },
+    "storyVisible": false,
+    "header": {
+      "position": "sticky",
+      "border": "0px",
+      "shadow": "none"
+    },
+    "activityIcons": 0,
+    "invalidDescriptionReferences": [],
+    "errors": []
+  },
+  {
+    "route": "/daftar",
+    "width": 320,
+    "documentWidth": 320,
+    "viewportWidth": 320,
+    "heading": "Buat akun",
+    "panel": {
+      "left": 24,
+      "right": 296,
+      "width": 272
+    },
+    "storyVisible": false,
+    "header": {
+      "position": "sticky",
+      "border": "0px",
+      "shadow": "none"
+    },
+    "activityIcons": 0,
+    "invalidDescriptionReferences": [],
+    "errors": []
+  },
+  {
+    "route": "/lupa-kata-sandi",
+    "width": 320,
+    "documentWidth": 320,
+    "viewportWidth": 320,
+    "heading": "Pulihkan akun",
+    "panel": {
+      "left": 24,
+      "right": 296,
+      "width": 272
+    },
+    "storyVisible": false,
+    "header": {
+      "position": "sticky",
+      "border": "0px",
+      "shadow": "none"
+    },
+    "activityIcons": 0,
+    "invalidDescriptionReferences": [],
+    "errors": []
+  },
+  {
+    "route": "/reset-password?token=preview-only",
+    "width": 320,
+    "documentWidth": 320,
+    "viewportWidth": 320,
+    "heading": "Kata sandi baru",
+    "panel": {
+      "left": 24,
+      "right": 296,
+      "width": 272
+    },
+    "storyVisible": false,
+    "header": {
+      "position": "sticky",
+      "border": "0px",
+      "shadow": "none"
+    },
+    "activityIcons": 0,
+    "invalidDescriptionReferences": [],
+    "errors": []
+  },
+  {
+    "route": "/verifikasi-email?email=contoh%40valora.test",
+    "width": 320,
+    "documentWidth": 320,
+    "viewportWidth": 320,
+    "heading": "Verifikasi email",
+    "panel": {
+      "left": 24,
+      "right": 296,
+      "width": 272
+    },
+    "storyVisible": false,
+    "header": {
+      "position": "sticky",
+      "border": "0px",
+      "shadow": "none"
+    },
+    "activityIcons": 0,
+    "invalidDescriptionReferences": [],
+    "errors": []
+  }
+]

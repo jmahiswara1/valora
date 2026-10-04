@@ -1,0 +1,124 @@
+{
+  "checks": [
+    "Initial category query and category pill",
+    "Search Enter submits",
+    "Invalid price range prevents request and focuses minimum",
+    "City keyboard selection and combined filters",
+    "Individual chip removal preserves other filters",
+    "Tukar clears price and resets price sorting",
+    "Donasi immediate filtering",
+    "Reset clears applied and draft controls",
+    "Unselected city prevents request",
+    "Pagination error retains cards; retry appends and removes button at end",
+    "Empty state reset restores catalogue",
+    "Initial load error retries successfully",
+    "Cards link to existing listing detail",
+    "Six skeletons during initial load"
+  ],
+  "requests": [
+    {
+      "category": "electronics",
+      "limit": "20"
+    },
+    {
+      "category": "electronics",
+      "limit": "20"
+    },
+    {
+      "category": "electronics",
+      "q": "kursi",
+      "limit": "20"
+    },
+    {
+      "category": "electronics",
+      "q": "kursi",
+      "type": "RESELL",
+      "limit": "20"
+    },
+    {
+      "category": "electronics",
+      "q": "kursi",
+      "type": "RESELL",
+      "sort": "price_asc",
+      "limit": "20"
+    },
+    {
+      "category": "electronics",
+      "q": "kursi",
+      "type": "RESELL",
+      "sort": "price_asc",
+      "condition": "GOOD",
+      "cityId": "ff9352f7-9633-4bdb-8655-6b5d1eb08ac0",
+      "minPriceIdr": "500000",
+      "maxPriceIdr": "900000",
+      "limit": "20"
+    },
+    {
+      "category": "electronics",
+      "q": "kursi",
+      "type": "RESELL",
+      "sort": "price_asc",
+      "condition": "GOOD",
+      "cityId": "ff9352f7-9633-4bdb-8655-6b5d1eb08ac0",
+      "maxPriceIdr": "900000",
+      "limit": "20"
+    },
+    {
+      "category": "electronics",
+      "q": "kursi",
+      "type": "EXCHANGE",
+      "sort": "newest",
+      "condition": "GOOD",
+      "cityId": "ff9352f7-9633-4bdb-8655-6b5d1eb08ac0",
+      "limit": "20"
+    },
+    {
+      "category": "electronics",
+      "q": "kursi",
+      "type": "DONATE",
+      "sort": "newest",
+      "condition": "GOOD",
+      "cityId": "ff9352f7-9633-4bdb-8655-6b5d1eb08ac0",
+      "limit": "20"
+    },
+    {
+      "limit": "20"
+    },
+    {
+      "limit": "20",
+      "cursor": "demo-next"
+    },
+    {
+      "limit": "20",
+      "cursor": "demo-next"
+    },
+    {
+      "limit": "20",
+      "cursor": "demo-next"
+    },
+    {
+      "q": "empty-fixture",
+      "limit": "20"
+    },
+    {
+      "limit": "20"
+    },
+    {
+      "limit": "20",
+      "cursor": "demo-next"
+    },
+    {
+      "q": "failure-fixture",
+      "limit": "20"
+    },
+    {
+      "q": "failure-fixture",
+      "limit": "20"
+    },
+    {
+      "q": "failure-fixture",
+      "limit": "20"
+    }
+  ],
+  "note": "Public GET fixtures exercise failures and pagination; no account, offer or transaction mutations."
+}

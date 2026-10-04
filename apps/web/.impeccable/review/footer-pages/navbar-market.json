@@ -1,0 +1,44 @@
+[
+  {
+    "route": "/",
+    "width": 1440,
+    "desktopCount": 1,
+    "desktopVisible": true,
+    "active": null,
+    "mobile": null,
+    "documentWidth": 1440
+  },
+  {
+    "route": "/market",
+    "width": 1440,
+    "desktopCount": 1,
+    "desktopVisible": true,
+    "active": "page",
+    "mobile": null,
+    "documentWidth": 1440
+  },
+  {
+    "route": "/",
+    "width": 390,
+    "desktopCount": 1,
+    "desktopVisible": false,
+    "active": null,
+    "mobile": {
+      "count": 1,
+      "visible": true
+    },
+    "documentWidth": 390
+  },
+  {
+    "route": "/market",
+    "width": 390,
+    "desktopCount": 1,
+    "desktopVisible": false,
+    "active": "page",
+    "mobile": {
+      "count": 1,
+      "visible": true
+    },
+    "documentWidth": 390
+  }
+]

@@ -1,0 +1,662 @@
+[
+  {
+    "route": "/",
+    "device": "desktop",
+    "path": "E:\\Project\\insyfest\\apps\\web\\.impeccable\\review\\flat-layout\\home-desktop.png",
+    "status": 200,
+    "viewport": 1440,
+    "width": 1440,
+    "h1": "Setiap barang punya kesempatan kedua.",
+    "cards": 6,
+    "gridColumns": "410.656px 410.672px 410.656px",
+    "brokenImages": [],
+    "surface": {
+      "left": 0,
+      "top": 0,
+      "width": 1440,
+      "minHeight": "1000px",
+      "margin": "0px",
+      "border": "0px",
+      "radius": "0px",
+      "background": "rgb(255, 255, 255)"
+    },
+    "bodyBackground": "rgb(255, 255, 255)",
+    "alignment": {
+      "header": {
+        "left": 80,
+        "rightGutter": 80,
+        "width": 1280
+      },
+      "main": {
+        "left": 80,
+        "rightGutter": 80,
+        "width": 1280
+      },
+      "footer": {
+        "left": 80,
+        "rightGutter": 80,
+        "width": 1280
+      },
+      "hero": {
+        "left": 80,
+        "rightGutter": 80,
+        "width": 1280
+      }
+    },
+    "images": [
+      {
+        "alt": "Kursi kayu, buku, keyboard, dan headphone di ruang bernuansa hijau",
+        "width": 1280,
+        "sizes": "(max-width: 639px) calc(100vw - 32px), calc(100vw - 48px)"
+      },
+      {
+        "alt": "Ilustrasi kursi kayu yang masih memiliki nilai guna",
+        "width": 588,
+        "sizes": "(max-width: 639px) calc(100vw - 64px), (max-width: 1023px) calc(50vw - 65px), calc(50vw - 76px)"
+      },
+      {
+        "alt": "Ilustrasi buku sebagai barang yang bisa terus digunakan",
+        "width": 291.265625,
+        "sizes": "(max-width: 639px) calc(54.55vw - 60px), (max-width: 1023px) calc(27.28vw - 56.2px), calc(27.28vw - 70.91px)"
+      }
+    ],
+    "heroActionInFirstViewport": true,
+    "recordHref": "/daftar",
+    "validCanvas": false,
+    "errors": []
+  },
+  {
+    "route": "/cara-kerja",
+    "device": "desktop",
+    "path": "E:\\Project\\insyfest\\apps\\web\\.impeccable\\review\\flat-layout\\how-desktop.png",
+    "status": 200,
+    "viewport": 1440,
+    "width": 1440,
+    "h1": "Mulai dari barangyang kamu punya.",
+    "cards": 0,
+    "gridColumns": null,
+    "brokenImages": [],
+    "surface": {
+      "left": 0,
+      "top": 0,
+      "width": 1440,
+      "minHeight": "1000px",
+      "margin": "0px",
+      "border": "0px",
+      "radius": "0px",
+      "background": "rgb(255, 255, 255)"
+    },
+    "bodyBackground": "rgb(255, 255, 255)",
+    "alignment": {
+      "header": {
+        "left": 80,
+        "rightGutter": 80,
+        "width": 1280
+      },
+      "main": {
+        "left": 80,
+        "rightGutter": 80,
+        "width": 1280
+      },
+      "footer": {
+        "left": 80,
+        "rightGutter": 80,
+        "width": 1280
+      },
+      "hero": null
+    },
+    "images": [
+      {
+        "alt": "Ilustrasi kursi kayu yang dapat dirawat dan digunakan kembali",
+        "width": 520.859375,
+        "sizes": "(max-width: 639px) calc(100vw - 32px), (max-width: 1023px) calc(42.554vw - 34.04px), calc(42.554vw - 44.26px)"
+      },
+      {
+        "alt": "Ilustrasi buku yang dapat melanjutkan cerita bersama pemilik berikutnya",
+        "width": 504,
+        "sizes": "(max-width: 639px) calc(100vw - 76px), (max-width: 1023px) calc(42.858vw - 53.15px), calc(42.858vw - 65.15px)"
+      }
+    ],
+    "validCanvas": false,
+    "errors": []
+  },
+  {
+    "route": "/impact",
+    "device": "desktop",
+    "path": "E:\\Project\\insyfest\\apps\\web\\.impeccable\\review\\flat-layout\\impact-desktop.png",
+    "status": 200,
+    "viewport": 1440,
+    "width": 1440,
+    "h1": "Langkah kecil.Cerita yang terus berlanjut.",
+    "cards": 0,
+    "gridColumns": null,
+    "brokenImages": [],
+    "surface": {
+      "left": 0,
+      "top": 0,
+      "width": 1440,
+      "minHeight": "1000px",
+      "margin": "0px",
+      "border": "0px",
+      "radius": "0px",
+      "background": "rgb(255, 255, 255)"
+    },
+    "bodyBackground": "rgb(255, 255, 255)",
+    "alignment": {
+      "header": {
+        "left": 80,
+        "rightGutter": 80,
+        "width": 1280
+      },
+      "main": {
+        "left": 80,
+        "rightGutter": 80,
+        "width": 1280
+      },
+      "footer": {
+        "left": 80,
+        "rightGutter": 80,
+        "width": 1280
+      },
+      "hero": null
+    },
+    "images": [],
+    "validCanvas": false,
+    "errors": []
+  },
+  {
+    "route": "/",
+    "device": "tablet",
+    "path": "E:\\Project\\insyfest\\apps\\web\\.impeccable\\review\\flat-layout\\home-tablet.png",
+    "status": 200,
+    "viewport": 768,
+    "width": 768,
+    "h1": "Setiap barang punya kesempatan kedua.",
+    "cards": 6,
+    "gridColumns": "350px 350px",
+    "brokenImages": [],
+    "surface": {
+      "left": 0,
+      "top": 0,
+      "width": 768,
+      "minHeight": "1024px",
+      "margin": "0px",
+      "border": "0px",
+      "radius": "0px",
+      "background": "rgb(255, 255, 255)"
+    },
+    "bodyBackground": "rgb(255, 255, 255)",
+    "alignment": {
+      "header": {
+        "left": 24,
+        "rightGutter": 24,
+        "width": 720
+      },
+      "main": {
+        "left": 24,
+        "rightGutter": 24,
+        "width": 720
+      },
+      "footer": {
+        "left": 24,
+        "rightGutter": 24,
+        "width": 720
+      },
+      "hero": {
+        "left": 24,
+        "rightGutter": 24,
+        "width": 720
+      }
+    },
+    "images": [
+      {
+        "alt": "Kursi kayu, buku, keyboard, dan headphone di ruang bernuansa hijau",
+        "width": 720,
+        "sizes": "(max-width: 639px) calc(100vw - 32px), calc(100vw - 48px)"
+      },
+      {
+        "alt": "Ilustrasi kursi kayu yang masih memiliki nilai guna",
+        "width": 319,
+        "sizes": "(max-width: 639px) calc(100vw - 64px), (max-width: 1023px) calc(50vw - 65px), calc(50vw - 76px)"
+      },
+      {
+        "alt": "Ilustrasi buku sebagai barang yang bisa terus digunakan",
+        "width": 153.265625,
+        "sizes": "(max-width: 639px) calc(54.55vw - 60px), (max-width: 1023px) calc(27.28vw - 56.2px), calc(27.28vw - 70.91px)"
+      }
+    ],
+    "heroActionInFirstViewport": true,
+    "recordHref": "/daftar",
+    "validCanvas": true,
+    "errors": []
+  },
+  {
+    "route": "/cara-kerja",
+    "device": "tablet",
+    "path": "E:\\Project\\insyfest\\apps\\web\\.impeccable\\review\\flat-layout\\how-tablet.png",
+    "status": 200,
+    "viewport": 768,
+    "width": 768,
+    "h1": "Mulai dari barangyang kamu punya.",
+    "cards": 0,
+    "gridColumns": null,
+    "brokenImages": [],
+    "surface": {
+      "left": 0,
+      "top": 0,
+      "width": 768,
+      "minHeight": "1024px",
+      "margin": "0px",
+      "border": "0px",
+      "radius": "0px",
+      "background": "rgb(255, 255, 255)"
+    },
+    "bodyBackground": "rgb(255, 255, 255)",
+    "alignment": {
+      "header": {
+        "left": 24,
+        "rightGutter": 24,
+        "width": 720
+      },
+      "main": {
+        "left": 24,
+        "rightGutter": 24,
+        "width": 720
+      },
+      "footer": {
+        "left": 24,
+        "rightGutter": 24,
+        "width": 720
+      },
+      "hero": null
+    },
+    "images": [
+      {
+        "alt": "Ilustrasi kursi kayu yang dapat dirawat dan digunakan kembali",
+        "width": 292.78125,
+        "sizes": "(max-width: 639px) calc(100vw - 32px), (max-width: 1023px) calc(42.554vw - 34.04px), calc(42.554vw - 44.26px)"
+      },
+      {
+        "alt": "Ilustrasi buku yang dapat melanjutkan cerita bersama pemilik berikutnya",
+        "width": 276,
+        "sizes": "(max-width: 639px) calc(100vw - 76px), (max-width: 1023px) calc(42.858vw - 53.15px), calc(42.858vw - 65.15px)"
+      }
+    ],
+    "validCanvas": true,
+    "errors": []
+  },
+  {
+    "route": "/impact",
+    "device": "tablet",
+    "path": "E:\\Project\\insyfest\\apps\\web\\.impeccable\\review\\flat-layout\\impact-tablet.png",
+    "status": 200,
+    "viewport": 768,
+    "width": 768,
+    "h1": "Langkah kecil.Cerita yang terus berlanjut.",
+    "cards": 0,
+    "gridColumns": null,
+    "brokenImages": [],
+    "surface": {
+      "left": 0,
+      "top": 0,
+      "width": 768,
+      "minHeight": "1024px",
+      "margin": "0px",
+      "border": "0px",
+      "radius": "0px",
+      "background": "rgb(255, 255, 255)"
+    },
+    "bodyBackground": "rgb(255, 255, 255)",
+    "alignment": {
+      "header": {
+        "left": 24,
+        "rightGutter": 24,
+        "width": 720
+      },
+      "main": {
+        "left": 24,
+        "rightGutter": 24,
+        "width": 720
+      },
+      "footer": {
+        "left": 24,
+        "rightGutter": 24,
+        "width": 720
+      },
+      "hero": null
+    },
+    "images": [],
+    "validCanvas": true,
+    "errors": []
+  },
+  {
+    "route": "/",
+    "device": "mobile",
+    "path": "E:\\Project\\insyfest\\apps\\web\\.impeccable\\review\\flat-layout\\home-mobile.png",
+    "status": 200,
+    "viewport": 390,
+    "width": 390,
+    "h1": "Setiap barang punya kesempatan kedua.",
+    "cards": 6,
+    "gridColumns": "358px",
+    "brokenImages": [],
+    "surface": {
+      "left": 0,
+      "top": 0,
+      "width": 390,
+      "minHeight": "844px",
+      "margin": "0px",
+      "border": "0px",
+      "radius": "0px",
+      "background": "rgb(255, 255, 255)"
+    },
+    "bodyBackground": "rgb(255, 255, 255)",
+    "alignment": {
+      "header": {
+        "left": 16,
+        "rightGutter": 16,
+        "width": 358
+      },
+      "main": {
+        "left": 16,
+        "rightGutter": 16,
+        "width": 358
+      },
+      "footer": {
+        "left": 16,
+        "rightGutter": 16,
+        "width": 358
+      },
+      "hero": {
+        "left": 16,
+        "rightGutter": 16,
+        "width": 358
+      }
+    },
+    "images": [
+      {
+        "alt": "Kursi kayu, buku, keyboard, dan headphone di ruang bernuansa hijau",
+        "width": 358,
+        "sizes": "(max-width: 639px) calc(100vw - 32px), calc(100vw - 48px)"
+      },
+      {
+        "alt": "Ilustrasi kursi kayu yang masih memiliki nilai guna",
+        "width": 326,
+        "sizes": "(max-width: 639px) calc(100vw - 64px), (max-width: 1023px) calc(50vw - 65px), calc(50vw - 76px)"
+      },
+      {
+        "alt": "Ilustrasi buku sebagai barang yang bisa terus digunakan",
+        "width": 152.71875,
+        "sizes": "(max-width: 639px) calc(54.55vw - 60px), (max-width: 1023px) calc(27.28vw - 56.2px), calc(27.28vw - 70.91px)"
+      }
+    ],
+    "heroActionInFirstViewport": true,
+    "recordHref": "/daftar",
+    "validCanvas": true,
+    "errors": []
+  },
+  {
+    "route": "/cara-kerja",
+    "device": "mobile",
+    "path": "E:\\Project\\insyfest\\apps\\web\\.impeccable\\review\\flat-layout\\how-mobile.png",
+    "status": 200,
+    "viewport": 390,
+    "width": 390,
+    "h1": "Mulai dari barangyang kamu punya.",
+    "cards": 0,
+    "gridColumns": null,
+    "brokenImages": [],
+    "surface": {
+      "left": 0,
+      "top": 0,
+      "width": 390,
+      "minHeight": "844px",
+      "margin": "0px",
+      "border": "0px",
+      "radius": "0px",
+      "background": "rgb(255, 255, 255)"
+    },
+    "bodyBackground": "rgb(255, 255, 255)",
+    "alignment": {
+      "header": {
+        "left": 16,
+        "rightGutter": 16,
+        "width": 358
+      },
+      "main": {
+        "left": 16,
+        "rightGutter": 16,
+        "width": 358
+      },
+      "footer": {
+        "left": 16,
+        "rightGutter": 16,
+        "width": 358
+      },
+      "hero": null
+    },
+    "images": [
+      {
+        "alt": "Ilustrasi kursi kayu yang dapat dirawat dan digunakan kembali",
+        "width": 358,
+        "sizes": "(max-width: 639px) calc(100vw - 32px), (max-width: 1023px) calc(42.554vw - 34.04px), calc(42.554vw - 44.26px)"
+      },
+      {
+        "alt": "Ilustrasi buku yang dapat melanjutkan cerita bersama pemilik berikutnya",
+        "width": 314,
+        "sizes": "(max-width: 639px) calc(100vw - 76px), (max-width: 1023px) calc(42.858vw - 53.15px), calc(42.858vw - 65.15px)"
+      }
+    ],
+    "validCanvas": true,
+    "errors": []
+  },
+  {
+    "route": "/impact",
+    "device": "mobile",
+    "path": "E:\\Project\\insyfest\\apps\\web\\.impeccable\\review\\flat-layout\\impact-mobile.png",
+    "status": 200,
+    "viewport": 390,
+    "width": 390,
+    "h1": "Langkah kecil.Cerita yang terus berlanjut.",
+    "cards": 0,
+    "gridColumns": null,
+    "brokenImages": [],
+    "surface": {
+      "left": 0,
+      "top": 0,
+      "width": 390,
+      "minHeight": "844px",
+      "margin": "0px",
+      "border": "0px",
+      "radius": "0px",
+      "background": "rgb(255, 255, 255)"
+    },
+    "bodyBackground": "rgb(255, 255, 255)",
+    "alignment": {
+      "header": {
+        "left": 16,
+        "rightGutter": 16,
+        "width": 358
+      },
+      "main": {
+        "left": 16,
+        "rightGutter": 16,
+        "width": 358
+      },
+      "footer": {
+        "left": 16,
+        "rightGutter": 16,
+        "width": 358
+      },
+      "hero": null
+    },
+    "images": [],
+    "validCanvas": true,
+    "errors": []
+  },
+  {
+    "route": "/",
+    "device": "wide",
+    "path": "E:\\Project\\insyfest\\apps\\web\\.impeccable\\review\\flat-layout\\home-wide.png",
+    "status": 200,
+    "viewport": 1920,
+    "width": 1920,
+    "h1": "Setiap barang punya kesempatan kedua.",
+    "cards": 6,
+    "gridColumns": "496px 496px 496px",
+    "brokenImages": [],
+    "surface": {
+      "left": 0,
+      "top": 0,
+      "width": 1920,
+      "minHeight": "1080px",
+      "margin": "0px",
+      "border": "0px",
+      "radius": "0px",
+      "background": "rgb(255, 255, 255)"
+    },
+    "bodyBackground": "rgb(255, 255, 255)",
+    "alignment": {
+      "header": {
+        "left": 192,
+        "rightGutter": 192,
+        "width": 1536
+      },
+      "main": {
+        "left": 192,
+        "rightGutter": 192,
+        "width": 1536
+      },
+      "footer": {
+        "left": 192,
+        "rightGutter": 192,
+        "width": 1536
+      },
+      "hero": {
+        "left": 192,
+        "rightGutter": 192,
+        "width": 1536
+      }
+    },
+    "images": [
+      {
+        "alt": "Kursi kayu, buku, keyboard, dan headphone di ruang bernuansa hijau",
+        "width": 1536,
+        "sizes": "(max-width: 639px) calc(100vw - 32px), calc(100vw - 48px)"
+      },
+      {
+        "alt": "Ilustrasi kursi kayu yang masih memiliki nilai guna",
+        "width": 716,
+        "sizes": "(max-width: 639px) calc(100vw - 64px), (max-width: 1023px) calc(50vw - 65px), calc(50vw - 76px)"
+      },
+      {
+        "alt": "Ilustrasi buku sebagai barang yang bisa terus digunakan",
+        "width": 361.078125,
+        "sizes": "(max-width: 639px) calc(54.55vw - 60px), (max-width: 1023px) calc(27.28vw - 56.2px), calc(27.28vw - 70.91px)"
+      }
+    ],
+    "heroActionInFirstViewport": true,
+    "recordHref": "/daftar",
+    "validCanvas": false,
+    "errors": []
+  },
+  {
+    "route": "/cara-kerja",
+    "device": "wide",
+    "path": "E:\\Project\\insyfest\\apps\\web\\.impeccable\\review\\flat-layout\\how-wide.png",
+    "status": 200,
+    "viewport": 1920,
+    "width": 1920,
+    "h1": "Mulai dari barangyang kamu punya.",
+    "cards": 0,
+    "gridColumns": null,
+    "brokenImages": [],
+    "surface": {
+      "left": 0,
+      "top": 0,
+      "width": 1920,
+      "minHeight": "1080px",
+      "margin": "0px",
+      "border": "0px",
+      "radius": "0px",
+      "background": "rgb(255, 255, 255)"
+    },
+    "bodyBackground": "rgb(255, 255, 255)",
+    "alignment": {
+      "header": {
+        "left": 192,
+        "rightGutter": 192,
+        "width": 1536
+      },
+      "main": {
+        "left": 192,
+        "rightGutter": 192,
+        "width": 1536
+      },
+      "footer": {
+        "left": 192,
+        "rightGutter": 192,
+        "width": 1536
+      },
+      "hero": null
+    },
+    "images": [
+      {
+        "alt": "Ilustrasi kursi kayu yang dapat dirawat dan digunakan kembali",
+        "width": 629.796875,
+        "sizes": "(max-width: 639px) calc(100vw - 32px), (max-width: 1023px) calc(42.554vw - 34.04px), calc(42.554vw - 44.26px)"
+      },
+      {
+        "alt": "Ilustrasi buku yang dapat melanjutkan cerita bersama pemilik berikutnya",
+        "width": 613.703125,
+        "sizes": "(max-width: 639px) calc(100vw - 76px), (max-width: 1023px) calc(42.858vw - 53.15px), calc(42.858vw - 65.15px)"
+      }
+    ],
+    "validCanvas": false,
+    "errors": []
+  },
+  {
+    "route": "/impact",
+    "device": "wide",
+    "path": "E:\\Project\\insyfest\\apps\\web\\.impeccable\\review\\flat-layout\\impact-wide.png",
+    "status": 200,
+    "viewport": 1920,
+    "width": 1920,
+    "h1": "Langkah kecil.Cerita yang terus berlanjut.",
+    "cards": 0,
+    "gridColumns": null,
+    "brokenImages": [],
+    "surface": {
+      "left": 0,
+      "top": 0,
+      "width": 1920,
+      "minHeight": "1080px",
+      "margin": "0px",
+      "border": "0px",
+      "radius": "0px",
+      "background": "rgb(255, 255, 255)"
+    },
+    "bodyBackground": "rgb(255, 255, 255)",
+    "alignment": {
+      "header": {
+        "left": 192,
+        "rightGutter": 192,
+        "width": 1536
+      },
+      "main": {
+        "left": 192,
+        "rightGutter": 192,
+        "width": 1536
+      },
+      "footer": {
+        "left": 192,
+        "rightGutter": 192,
+        "width": 1536
+      },
+      "hero": null
+    },
+    "images": [],
+    "validCanvas": false,
+    "errors": []
+  }
+]

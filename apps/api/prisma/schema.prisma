@@ -1,0 +1,1007 @@
+generator client {
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  moduleFormat        = "esm"
+  importFileExtension = "js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  CLOSED
+}
+
+enum ProfilePhotoProvider {
+  LOCAL
+  CLOUDINARY
+}
+
+enum VerificationPurpose {
+  EMAIL_VERIFY
+  EMAIL_CHANGE
+  PASSWORD_RESET
+}
+
+enum UploadStatus {
+  ISSUED
+  UPLOADED
+  CONSUMED
+}
+
+enum MediaVisibility {
+  PRIVATE
+  PUBLIC
+}
+
+enum UploadPurpose {
+  ITEM
+  REPAIR_EVIDENCE
+  CASE_EVIDENCE
+}
+
+enum AssessmentStatus {
+  INCOMPLETE
+  PARTIAL_ECONOMIC
+  COMPLETE
+}
+
+enum RepairStatus {
+  VALID
+  VOID
+}
+
+enum RepairOutcome {
+  SUCCEEDED
+  UNSUCCESSFUL
+}
+
+enum RepairCostKind {
+  ACTUAL
+  ESTIMATE
+}
+
+enum ListingType {
+  RESELL
+  EXCHANGE
+  DONATE
+}
+
+enum ListingStatus {
+  DRAFT
+  PENDING_REVIEW
+  ACTIVE
+  PAUSED
+  RESERVED
+  CLOSED
+  REJECTED
+  WITHDRAWN
+  SUSPENDED
+}
+
+enum ModerationDecision {
+  APPROVE
+  REQUEST_CHANGES
+  REJECT
+}
+
+enum OfferStatus {
+  PENDING
+  COUNTERED
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+  EXPIRED
+}
+
+enum ReportTargetType {
+  LISTING
+  MESSAGE
+  USER
+  TRANSACTION
+}
+
+enum ReportStatus {
+  OPEN
+  IN_REVIEW
+  RESOLVED
+  DISMISSED
+}
+
+model City {
+  id               String            @id @default(uuid()) @db.Uuid
+  code             String            @unique @db.VarChar(16)
+  name             String            @db.VarChar(120)
+  provinceName     String            @db.VarChar(120)
+  active           Boolean           @default(true)
+  users            User[]
+  listingRevisions ListingRevision[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  @@index([name])
+  @@index([provinceName, name])
+}
+
+model Category {
+  code             String            @id @db.VarChar(50)
+  name             String            @db.VarChar(120)
+  parentCode       String?           @db.VarChar(50)
+  parent           Category?         @relation("CategoryTree", fields: [parentCode], references: [code])
+  children         Category[]        @relation("CategoryTree")
+  listingRevisions ListingRevision[]
+  active           Boolean           @default(true)
+  sortOrder        Int               @default(0)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  @@index([parentCode, sortOrder])
+}
+
+model User {
+  id                String              @id @default(uuid()) @db.Uuid
+  email             String              @unique @db.VarChar(254)
+  pendingEmail      String?             @db.VarChar(254)
+  passwordHash      String
+  emailVerifiedAt   DateTime?
+  displayName       String              @db.VarChar(80)
+  cityId            String?             @db.Uuid
+  city              City?               @relation(fields: [cityId], references: [id])
+  role              UserRole            @default(USER)
+  status            UserStatus          @default(ACTIVE)
+  closedAt          DateTime?
+  closureReason     String?             @db.VarChar(500)
+  anonymizedAt      DateTime?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  version           Int                 @default(1)
+  sessions          Session[]
+  tokens            VerificationToken[]
+  items             Item[]
+  uploadTickets     UploadTicket[]
+  media             MediaAsset[]
+  assessments       Assessment[]
+  repairs           RepairRecord[]
+  repairCorrections RepairCorrection[]
+  publishedRubrics  RubricVersion[]
+  listings          Listing[]
+  offers            Offer[]
+  offerRevisions    OfferRevision[]
+  offerResponses    OfferRevision[]     @relation("OfferRespondsBy")
+  conversationsA    Conversation[]      @relation("ConversationParticipantA")
+  conversationsB    Conversation[]      @relation("ConversationParticipantB")
+  messages          Message[]
+  blocksGiven       UserBlock[]         @relation("Blocker")
+  blocksReceived    UserBlock[]         @relation("Blocked")
+  reports           Report[]
+  adminActions      AdminAction[]
+  moderationReviews ModerationReview[]
+  transactionsGiven Transaction[] @relation("TransactionGiver")
+  transactionsReceived Transaction[] @relation("TransactionRecipient")
+  notifications InAppNotification[]
+  profilePhoto ProfilePhoto?
+  openedCorrections CorrectionCase[] @relation("CorrectionOpenedBy")
+  assignedCorrections CorrectionCase[] @relation("CorrectionAssignedTo")
+
+  @@index([status, closedAt])
+}
+
+model ProfilePhoto {
+  userId    String               @id @db.Uuid
+  user      User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider  ProfilePhotoProvider
+  storageKey String              @unique @db.VarChar(180)
+  mime      String               @default("image/webp") @db.VarChar(40)
+  bytes     Int
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+}
+
+model Session {
+  id         String    @id @default(uuid()) @db.Uuid
+  userId     String    @db.Uuid
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash  String    @unique @db.Char(64)
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+  lastSeenAt DateTime  @default(now())
+  reauthenticatedAt DateTime @default(now())
+
+  @@index([userId, revokedAt])
+  @@index([expiresAt])
+}
+
+model VerificationToken {
+  id        String              @id @default(uuid()) @db.Uuid
+  userId    String              @db.Uuid
+  user      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  purpose   VerificationPurpose
+  tokenHash String              @unique @db.Char(64)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime            @default(now())
+
+  @@index([userId, purpose, usedAt])
+  @@index([expiresAt])
+}
+
+model Item {
+  id                      String            @id @default(uuid()) @db.Uuid
+  currentOwnerId          String            @db.Uuid
+  currentOwner            User              @relation(fields: [currentOwnerId], references: [id])
+  categoryCode            String            @db.VarChar(50)
+  subcategoryCode         String?           @db.VarChar(50)
+  title                   String            @db.VarChar(120)
+  description             String            @db.VarChar(3000)
+  functionSummary         String?           @db.VarChar(1500)
+  conditionSummary        String?           @db.VarChar(1500)
+  completenessSummary     String?           @db.VarChar(1500)
+  issueSummary            String?           @db.VarChar(1500)
+  purchaseYear            Int?
+  originalPriceIdr        BigInt?
+  estimatedWeightGrams    Int?
+  itemRevision            Int               @default(1)
+  version                 Int               @default(1)
+  reservedByTransactionId String?           @db.Uuid
+  reservation             Transaction?      @relation("Reservation", fields: [reservedByTransactionId], references: [id], onDelete: Restrict)
+  archivedAt              DateTime?
+  createdAt               DateTime          @default(now())
+  updatedAt               DateTime          @updatedAt
+  media                   MediaAsset[]
+  uploadTickets           UploadTicket[]
+  assessments             Assessment[]
+  repairs                 RepairRecord[]
+  listings                Listing[]
+  listingRevisions        ListingRevision[]
+  exchangeOffers          Offer[]           @relation("ExchangeItem")
+  transactions Transaction[] @relation("TransactionItem")
+  offeredTransactions Transaction[] @relation("TransactionExchangeItem")
+  transfers OwnershipTransfer[]
+  passportEvents PassportEvent[]
+  passportVisibility String @default("PUBLIC") @db.VarChar(20)
+  passportVersion Int @default(1)
+
+  @@index([currentOwnerId, createdAt, id])
+  @@index([categoryCode, subcategoryCode])
+}
+
+model UploadTicket {
+  id            String        @id @default(uuid()) @db.Uuid
+  userId        String        @db.Uuid
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemId        String?       @db.Uuid
+  item          Item?         @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  fileName      String        @db.VarChar(180)
+  declaredMime  String        @db.VarChar(40)
+  declaredBytes Int
+  actualMime    String?       @db.VarChar(40)
+  actualBytes   Int?
+  storageKey    String?       @unique @db.VarChar(180)
+  status        UploadStatus  @default(ISSUED)
+  purpose       UploadPurpose @default(ITEM)
+  caseId        String?       @db.Uuid
+  correctionCaseId String? @db.Uuid
+  correctionCase CorrectionCase? @relation(fields: [correctionCaseId], references: [id], onDelete: Restrict)
+  disputeCase   DisputeCase?   @relation(fields: [caseId], references: [id], onDelete: Restrict)
+  expiresAt     DateTime
+  createdAt     DateTime      @default(now())
+  uploadedAt    DateTime?
+  consumedAt    DateTime?
+
+  @@index([userId, status])
+  @@index([expiresAt, status])
+}
+
+model MediaAsset {
+  id                   String                 @id @default(uuid()) @db.Uuid
+  uploadedById         String                 @db.Uuid
+  uploadedBy           User                   @relation(fields: [uploadedById], references: [id])
+  itemId               String                 @db.Uuid
+  item                 Item                   @relation(fields: [itemId], references: [id])
+  repairRecordId       String?                @db.Uuid
+  caseId               String?                @db.Uuid
+  disputeCase          DisputeCase?            @relation(fields: [caseId], references: [id], onDelete: Restrict)
+  evidenceId           String?                @db.Uuid
+  caseEvidence         CaseEvidence?          @relation(fields: [evidenceId], references: [id], onDelete: Restrict)
+  repairRecord         RepairRecord?          @relation(fields: [repairRecordId], references: [id], onDelete: Restrict)
+  storageKey           String                 @unique @db.VarChar(180)
+  mime                 String                 @db.VarChar(40)
+  bytes                Int
+  visibility           MediaVisibility        @default(PRIVATE)
+  shareWithFutureOwner Boolean                @default(false)
+  orderIndex           Int
+  processedAt          DateTime
+  deletedAt            DateTime?
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  version              Int                    @default(1)
+  listingRefs          ListingRevisionMedia[]
+
+  @@index([itemId, deletedAt, orderIndex])
+  @@index([repairRecordId, deletedAt])
+}
+
+model RubricVersion {
+  id                    String       @id @default(uuid()) @db.Uuid
+  rubricKey             String       @db.VarChar(120)
+  categoryCode          String       @db.VarChar(50)
+  subcategoryCode       String?      @db.VarChar(50)
+  ruleVersion           String       @db.VarChar(30)
+  policyVersion         String       @db.VarChar(30)
+  recommendationVersion String       @db.VarChar(30)
+  questionConfig        Json
+  safetyConfig          Json
+  effectiveAt           DateTime
+  publishedAt           DateTime     @default(now())
+  publicationReason     String       @db.VarChar(500)
+  publishedById         String?      @db.Uuid
+  publishedBy           User?        @relation(fields: [publishedById], references: [id])
+  assessments           Assessment[]
+
+  @@unique([rubricKey, ruleVersion, policyVersion])
+  @@index([rubricKey, effectiveAt])
+}
+
+model Assessment {
+  id                     String            @id @default(uuid()) @db.Uuid
+  itemId                 String            @db.Uuid
+  item                   Item              @relation(fields: [itemId], references: [id])
+  createdById            String            @db.Uuid
+  createdBy              User              @relation(fields: [createdById], references: [id])
+  itemRevision           Int
+  rubricVersionId        String            @db.Uuid
+  rubricVersion          RubricVersion     @relation(fields: [rubricVersionId], references: [id])
+  status                 AssessmentStatus
+  answersSnapshot        Json
+  safetySnapshot         Json
+  sourceSnapshot         Json
+  condition              Int?
+  repairability          Int?
+  repairabilityReason    String?           @db.VarChar(30)
+  economicValue          Int?
+  reusePotential         Int?
+  score                  Int?
+  label                  String?           @db.VarChar(40)
+  missingFields          Json
+  safetyFlags            Json
+  recommendationSnapshot Json
+  createdAt              DateTime          @default(now())
+  listingRevisions       ListingRevision[]
+  valid Boolean @default(true)
+  version Int @default(1)
+
+  @@index([itemId, createdAt, id])
+  @@index([createdById, createdAt])
+}
+
+model RepairRecord {
+  id                          String             @id @default(uuid()) @db.Uuid
+  itemId                      String             @db.Uuid
+  item                        Item               @relation(fields: [itemId], references: [id])
+  createdById                 String             @db.Uuid
+  createdBy                   User               @relation(fields: [createdById], references: [id])
+  performedAt                 DateTime
+  actionSummary               String             @db.VarChar(1500)
+  privateNotes                String?            @db.VarChar(3000)
+  costIdr                     BigInt?
+  costKind                    RepairCostKind?
+  outcome                     RepairOutcome
+  afterCondition              String             @db.VarChar(1500)
+  status                      RepairStatus       @default(VALID)
+  shareSummaryPublic          Boolean            @default(false)
+  shareDetailsWithFutureOwner Boolean            @default(false)
+  voidReason                  String?            @db.VarChar(500)
+  version                     Int                @default(1)
+  createdAt                   DateTime           @default(now())
+  updatedAt                   DateTime           @updatedAt
+  corrections                 RepairCorrection[]
+  evidence                    MediaAsset[]
+
+  @@index([itemId, performedAt, id])
+  @@index([createdById, createdAt])
+}
+
+model RepairCorrection {
+  id               String       @id @default(uuid()) @db.Uuid
+  repairId         String       @db.Uuid
+  repair           RepairRecord @relation(fields: [repairId], references: [id])
+  createdById      String       @db.Uuid
+  createdBy        User         @relation(fields: [createdById], references: [id])
+  version          Int
+  kind             String       @db.VarChar(20)
+  reason           String       @db.VarChar(500)
+  idempotencyKey   String?      @db.Uuid
+  payloadHash      String?      @db.Char(64)
+  responseSnapshot Json?
+  beforeState      Json
+  afterState       Json
+  createdAt        DateTime     @default(now())
+
+  @@unique([repairId, version])
+  @@unique([createdById, idempotencyKey])
+}
+
+model Listing {
+  id                String            @id @default(uuid()) @db.Uuid
+  itemId            String            @db.Uuid
+  item              Item              @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  ownerId           String            @db.Uuid
+  owner             User              @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  type              ListingType
+  status            ListingStatus     @default(DRAFT)
+  currentRevisionId String?           @unique @db.Uuid
+  currentRevision   ListingRevision?  @relation("CurrentListingRevision", fields: [currentRevisionId], references: [id], onDelete: SetNull)
+  revisions         ListingRevision[] @relation("ListingRevisions")
+  offers            Offer[]
+  conversations     Conversation[]
+  transactions Transaction[]
+  version           Int               @default(1)
+  publishedAt       DateTime?
+  closedAt          DateTime?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@index([status, updatedAt, id])
+  @@index([ownerId, status, updatedAt])
+}
+
+model ListingRevision {
+  id                  String                 @id @default(uuid()) @db.Uuid
+  listingId           String                 @db.Uuid
+  listing             Listing                @relation("ListingRevisions", fields: [listingId], references: [id], onDelete: Cascade)
+  currentFor          Listing?               @relation("CurrentListingRevision")
+  revisionNo          Int
+  itemId              String                 @db.Uuid
+  item                Item                   @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  assessmentId        String                 @db.Uuid
+  assessment          Assessment             @relation(fields: [assessmentId], references: [id], onDelete: Restrict)
+  itemRevision        Int
+  rubricVersionId     String                 @db.Uuid
+  title               String                 @db.VarChar(120)
+  description         String                 @db.VarChar(3000)
+  categoryCode        String                 @db.VarChar(50)
+  category            Category               @relation(fields: [categoryCode], references: [code], onDelete: Restrict)
+  subcategoryCode     String?                @db.VarChar(50)
+  cityId              String                 @db.Uuid
+  city                City                   @relation(fields: [cityId], references: [id], onDelete: Restrict)
+  condition           Int
+  score               Int?
+  scoreLabel          String?                @db.VarChar(40)
+  ruleVersion         String                 @db.VarChar(30)
+  policyVersion       String                 @db.VarChar(30)
+  assessmentSnapshot  Json
+  conditionDisclosure String                 @db.VarChar(1500)
+  askingPriceIdr      BigInt?
+  exchangePreference  String?                @db.VarChar(1000)
+  recipientNote       String?                @db.VarChar(500)
+  handoverMethods     String[]
+  copyOnlyCorrection  Boolean                @default(false)
+  riskFlags           String[]
+  media               ListingRevisionMedia[]
+  reviews             ModerationReview[]
+  offers              Offer[]
+  createdById         String                 @db.Uuid
+  createdAt           DateTime               @default(now())
+
+  @@unique([listingId, revisionNo])
+  @@index([itemId, itemRevision])
+  @@index([assessmentId])
+}
+
+model ListingRevisionMedia {
+  revisionId String          @db.Uuid
+  revision   ListingRevision @relation(fields: [revisionId], references: [id], onDelete: Cascade)
+  mediaId    String          @db.Uuid
+  media      MediaAsset      @relation(fields: [mediaId], references: [id], onDelete: Restrict)
+  orderIndex Int
+
+  @@id([revisionId, mediaId])
+  @@unique([revisionId, orderIndex])
+  @@index([mediaId])
+}
+
+model ModerationReview {
+  id                String             @id @default(uuid()) @db.Uuid
+  listingRevisionId String             @db.Uuid
+  listingRevision   ListingRevision    @relation(fields: [listingRevisionId], references: [id], onDelete: Restrict)
+  reviewerId        String             @db.Uuid
+  reviewer          User               @relation(fields: [reviewerId], references: [id], onDelete: Restrict)
+  decision          ModerationDecision
+  reasonCode        String             @db.VarChar(60)
+  reasonText        String             @db.VarChar(1000)
+  riskFlags         String[]
+  rubricVersionId   String             @db.Uuid
+  policyVersion     String             @db.VarChar(30)
+  idempotencyKey    String             @db.Uuid
+  requestHash       String             @db.Char(64)
+  createdAt         DateTime           @default(now())
+
+  @@unique([reviewerId, idempotencyKey])
+  @@index([listingRevisionId, createdAt])
+  @@index([decision, createdAt])
+}
+
+model Offer {
+  id                String          @id @default(uuid()) @db.Uuid
+  listingId         String          @db.Uuid
+  listing           Listing         @relation(fields: [listingId], references: [id], onDelete: Restrict)
+  listingRevisionId String          @db.Uuid
+  listingRevision   ListingRevision @relation(fields: [listingRevisionId], references: [id], onDelete: Restrict)
+  bidderId          String          @db.Uuid
+  bidder            User            @relation(fields: [bidderId], references: [id], onDelete: Restrict)
+  exchangeItemId    String?         @db.Uuid
+  exchangeSnapshot  Json?
+  exchangeItem      Item?           @relation("ExchangeItem", fields: [exchangeItemId], references: [id], onDelete: Restrict)
+  clientRequestId   String          @unique @db.Uuid
+  requestHash       String          @db.Char(64)
+  status            OfferStatus     @default(PENDING)
+  endReason         String?         @db.VarChar(60)
+  expiresAt         DateTime
+  currentRevisionNo Int             @default(1)
+  version           Int             @default(1)
+  revisions         OfferRevision[]
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  transaction Transaction?
+
+  @@index([listingId, status, expiresAt])
+  @@index([bidderId, status, updatedAt])
+}
+
+enum TransactionStatus {
+  AWAITING_HANDOVER
+  ONE_SIDE_CONFIRMED
+  DISPUTED
+  CANCELLED
+  COMPLETED
+}
+
+model Transaction {
+  id String @id @default(uuid()) @db.Uuid
+  listingId String @db.Uuid
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Restrict)
+  offerId String @unique @db.Uuid
+  offer Offer @relation(fields: [offerId], references: [id], onDelete: Restrict)
+  itemId String @db.Uuid
+  item Item @relation("TransactionItem", fields: [itemId], references: [id], onDelete: Restrict)
+  offeredItemId String? @db.Uuid
+  offeredItem Item? @relation("TransactionExchangeItem", fields: [offeredItemId], references: [id], onDelete: Restrict)
+  sellerOrDonorId String @db.Uuid
+  sellerOrDonor User @relation("TransactionGiver", fields: [sellerOrDonorId], references: [id], onDelete: Restrict)
+  buyerOrRecipientId String @db.Uuid
+  buyerOrRecipient User @relation("TransactionRecipient", fields: [buyerOrRecipientId], references: [id], onDelete: Restrict)
+  type ListingType
+  status TransactionStatus @default(AWAITING_HANDOVER)
+  snapshot Json
+  privateSnapshot Json
+  finalPriceIdr BigInt?
+  acceptedAt DateTime @default(now())
+  targetHandoverAt DateTime
+  overdueAt DateTime?
+  completedAt DateTime?
+  cancelledAt DateTime?
+  resolutionOrigin String? @db.VarChar(30)
+  version Int @default(1)
+  correctedAt DateTime?
+  updatedAt DateTime @updatedAt
+  reservedItems Item[] @relation("Reservation")
+  confirmations HandoverConfirmation[]
+  cancellations CancellationRequest[]
+  disputes DisputeCase[]
+  transfers OwnershipTransfer[]
+  corrections CorrectionCase[]
+  @@index([sellerOrDonorId, acceptedAt, id])
+  @@index([buyerOrRecipientId, acceptedAt, id])
+  @@index([status, targetHandoverAt])
+}
+
+model HandoverConfirmation {
+  id String @id @default(uuid()) @db.Uuid
+  transactionId String @db.Uuid
+  transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Restrict)
+  actorId String @db.Uuid
+  itemId String @db.Uuid
+  kind String @db.VarChar(20)
+  confirmedAt DateTime @default(now())
+  source String @default("USER_CONFIRMED") @db.VarChar(30)
+  idempotencyKey String @db.Uuid
+  @@unique([transactionId, actorId, itemId, kind])
+}
+
+model CancellationRequest {
+  id String @id @default(uuid()) @db.Uuid
+  transactionId String @db.Uuid
+  transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Restrict)
+  requestedById String @db.Uuid
+  reason String @db.VarChar(1000)
+  status String @default("PENDING") @db.VarChar(20)
+  respondedById String? @db.Uuid
+  respondedAt DateTime?
+  endReason String? @db.VarChar(60)
+  createdAt DateTime @default(now())
+}
+
+model DisputeCase {
+  id String @id @default(uuid()) @db.Uuid
+  transactionId String @db.Uuid
+  transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Restrict)
+  openedById String @db.Uuid
+  reason String @db.VarChar(1000)
+  status String @default("OPEN") @db.VarChar(20)
+  assignedAdminId String? @db.Uuid
+  resolution String? @db.VarChar(30)
+  resolutionReason String? @db.VarChar(1000)
+  resolvedAt DateTime?
+  retentionHoldUntil DateTime?
+  version Int @default(1)
+  createdAt DateTime @default(now())
+  evidence CaseEvidence[]
+  tickets UploadTicket[]
+  media MediaAsset[]
+  access CaseAccessGrant[]
+  @@index([status, createdAt, id])
+}
+
+model CaseEvidence {
+  id String @id @default(uuid()) @db.Uuid
+  caseId String @db.Uuid
+  disputeCase DisputeCase @relation(fields: [caseId], references: [id], onDelete: Restrict)
+  submittedById String @db.Uuid
+  note String? @db.VarChar(3000)
+  messageId String? @db.Uuid
+  messageSnapshot Json?
+  createdAt DateTime @default(now())
+  media MediaAsset[]
+}
+
+model CaseAccessGrant {
+  id String @id @default(uuid()) @db.Uuid
+  caseId String @db.Uuid
+  disputeCase DisputeCase @relation(fields: [caseId], references: [id], onDelete: Restrict)
+  adminId String @db.Uuid
+  kind String @db.VarChar(20)
+  reason String @db.VarChar(1000)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  @@index([caseId, adminId, kind, expiresAt])
+}
+
+model OwnershipTransfer {
+  id String @id @default(uuid()) @db.Uuid
+  transactionId String @db.Uuid
+  transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Restrict)
+  itemId String @db.Uuid
+  item Item @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  fromUserId String @db.Uuid
+  toUserId String @db.Uuid
+  effectiveAt DateTime @default(now())
+  origin String @db.VarChar(30)
+  @@unique([transactionId, itemId])
+}
+
+model PassportEvent {
+  id String @id @default(uuid()) @db.Uuid
+  itemId String @db.Uuid
+  item Item @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  eventKey String @unique @db.VarChar(250)
+  eventType String @db.VarChar(40)
+  sourceType String @db.VarChar(40)
+  sourceId String @db.Uuid
+  origin String @db.VarChar(30)
+  publicPayload Json
+  occurredAt DateTime
+  recordedAt DateTime @default(now())
+  correctionOfId String? @db.Uuid
+  correctionOf PassportEvent? @relation("PassportCorrections", fields: [correctionOfId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  corrections PassportEvent[] @relation("PassportCorrections")
+  @@index([itemId, occurredAt, id])
+}
+
+model ImpactEvent {
+  id String @id @default(uuid()) @db.Uuid
+  eventKey String @unique @db.VarChar(250)
+  metric String @db.VarChar(40)
+  sourceType String @db.VarChar(40)
+  sourceId String @db.Uuid
+  itemId String? @db.Uuid
+  attributedUserId String? @db.Uuid
+  delta BigInt
+  unit String @db.VarChar(20)
+  occurredAt DateTime
+  recordedAt DateTime @default(now())
+  correctionOfId String? @db.Uuid
+  correctionOf ImpactEvent? @relation("ImpactCorrections", fields: [correctionOfId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  corrections ImpactEvent[] @relation("ImpactCorrections")
+  reason String? @db.VarChar(1000)
+  @@index([metric, attributedUserId, occurredAt])
+}
+
+model IdempotencyRequest {
+  id String @id @default(uuid()) @db.Uuid
+  actorId String @db.Uuid
+  key String @db.Uuid
+  operation String @db.VarChar(180)
+  requestHash String @db.Char(64)
+  responseBody Json
+  responseCode Int @default(201)
+  completedAt DateTime @default(now())
+  purgedAt DateTime?
+  @@unique([actorId, key, operation])
+}
+
+model InAppNotification {
+  id String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  eventKey String @unique @db.VarChar(200)
+  type String @db.VarChar(40)
+  payload Json
+  createdAt DateTime @default(now())
+  readAt DateTime?
+  @@index([userId, createdAt, id])
+}
+
+model OfferRevision {
+  id           String   @id @default(uuid()) @db.Uuid
+  offerId      String   @db.Uuid
+  offer        Offer    @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  revisionNo   Int
+  priceIdr     BigInt?
+  message      String?  @db.VarChar(500)
+  proposedById String   @db.Uuid
+  proposedBy   User     @relation(fields: [proposedById], references: [id], onDelete: Restrict)
+  respondsById String   @db.Uuid
+  respondsBy   User     @relation("OfferRespondsBy", fields: [respondsById], references: [id], onDelete: Restrict)
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  @@unique([offerId, revisionNo])
+  @@index([respondsById, expiresAt])
+}
+
+model Conversation {
+  id              String    @id @default(uuid()) @db.Uuid
+  listingId       String    @db.Uuid
+  listing         Listing   @relation(fields: [listingId], references: [id], onDelete: Restrict)
+  participantAId  String    @db.Uuid
+  participantA    User      @relation("ConversationParticipantA", fields: [participantAId], references: [id], onDelete: Restrict)
+  participantBId  String    @db.Uuid
+  participantB    User      @relation("ConversationParticipantB", fields: [participantBId], references: [id], onDelete: Restrict)
+  messageSequence Int       @default(0)
+  readSequenceA   Int       @default(0)
+  readSequenceB   Int       @default(0)
+  archivedAt      DateTime?
+  messages        Message[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@unique([listingId, participantAId, participantBId])
+  @@index([participantAId, updatedAt])
+  @@index([participantBId, updatedAt])
+}
+
+model Message {
+  id              String       @id @default(uuid()) @db.Uuid
+  conversationId  String       @db.Uuid
+  conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Restrict)
+  senderId        String       @db.Uuid
+  sender          User         @relation(fields: [senderId], references: [id], onDelete: Restrict)
+  body            String       @db.VarChar(2000)
+  clientMessageId String       @db.Uuid
+  sequence        Int
+  sentAt          DateTime     @default(now())
+  deletedAt       DateTime?
+  reports         Report[]
+
+  @@unique([conversationId, senderId, clientMessageId])
+  @@unique([conversationId, sequence])
+  @@index([conversationId, sentAt, id])
+}
+
+model UserBlock {
+  id        String    @id @default(uuid()) @db.Uuid
+  blockerId String    @db.Uuid
+  blocker   User      @relation("Blocker", fields: [blockerId], references: [id], onDelete: Cascade)
+  blockedId String    @db.Uuid
+  blocked   User      @relation("Blocked", fields: [blockedId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  revokedAt DateTime?
+
+  @@unique([blockerId, blockedId])
+  @@index([blockedId, revokedAt])
+}
+
+model Report {
+  id              String           @id @default(uuid()) @db.Uuid
+  reporterId      String           @db.Uuid
+  reporter        User             @relation(fields: [reporterId], references: [id], onDelete: Restrict)
+  targetType      ReportTargetType
+  targetId        String           @db.Uuid
+  messageId       String?          @db.Uuid
+  message         Message?         @relation(fields: [messageId], references: [id], onDelete: Restrict)
+  reasonCode      String           @db.VarChar(60)
+  details         String           @db.VarChar(1000)
+  status          ReportStatus     @default(OPEN)
+  assignedAdminId String?          @db.Uuid
+  resolvedAt      DateTime?
+  createdAt       DateTime         @default(now())
+  actions         AdminAction[]
+  version Int @default(1)
+  retentionHoldUntil DateTime?
+
+  @@index([status, createdAt])
+  @@index([targetType, targetId])
+}
+
+model CorrectionCase {
+  id String @id @default(uuid()) @db.Uuid
+  transactionId String @db.Uuid
+  transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  openedById String @db.Uuid
+  openedBy User @relation("CorrectionOpenedBy", fields: [openedById], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  assignedAdminId String? @db.Uuid
+  assignedAdmin User? @relation("CorrectionAssignedTo", fields: [assignedAdminId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  reason String @db.VarChar(1000)
+  status String @default("OPEN") @db.VarChar(20)
+  resolution String? @db.VarChar(40)
+  resolutionReason String? @db.VarChar(1000)
+  version Int @default(1)
+  createdAt DateTime @default(now())
+  resolvedAt DateTime?
+  evidence CorrectionEvidence[]
+  tickets UploadTicket[]
+  @@index([transactionId, status])
+}
+
+model CorrectionEvidence {
+  id String @id @default(uuid()) @db.Uuid
+  caseId String @db.Uuid
+  correctionCase CorrectionCase @relation(fields: [caseId], references: [id], onDelete: Restrict)
+  submittedById String @db.Uuid
+  note String @db.VarChar(3000)
+  messageId String? @db.Uuid
+  messageSnapshot Json?
+  createdAt DateTime @default(now())
+  purgedAt DateTime?
+  attachments CorrectionAttachment[]
+}
+
+model CorrectionAttachment {
+  id String @id @default(uuid()) @db.Uuid
+  evidenceId String @db.Uuid
+  evidence CorrectionEvidence @relation(fields: [evidenceId], references: [id], onDelete: Restrict)
+  storageKey String @unique @db.VarChar(180)
+  mime String @db.VarChar(40)
+  bytes Int
+  orderIndex Int
+  deletedAt DateTime?
+  createdAt DateTime @default(now())
+}
+
+model OperationsAccessGrant {
+  id String @id @default(uuid()) @db.Uuid
+  scopeType String @db.VarChar(20)
+  scopeId String @db.Uuid
+  adminId String @db.Uuid
+  reason String @db.VarChar(1000)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  @@index([scopeType, scopeId, adminId, expiresAt])
+}
+
+model RetentionHold {
+  id String @id @default(uuid()) @db.Uuid
+  scopeType String @db.VarChar(20)
+  scopeId String @db.Uuid
+  adminId String @db.Uuid
+  reason String @db.VarChar(1000)
+  reviewAt DateTime
+  revokedAt DateTime?
+  version Int @default(1)
+  createdAt DateTime @default(now())
+  @@index([scopeType, scopeId, reviewAt])
+}
+
+model StorageDeletion {
+  kind String @default("MEDIA") @db.VarChar(16)
+  id String @id @default(uuid()) @db.Uuid
+  storageKey String @unique @db.VarChar(180)
+  attempts Int @default(0)
+  nextAttemptAt DateTime @default(now())
+  completedAt DateTime?
+  lastError String? @db.VarChar(200)
+  createdAt DateTime @default(now())
+}
+
+model MaintenanceRun {
+  id String @id @default(uuid()) @db.Uuid
+  job String @db.VarChar(60)
+  startedAt DateTime @default(now())
+  completedAt DateTime?
+  status String @default("RUNNING") @db.VarChar(20)
+  counts Json?
+  error String? @db.VarChar(200)
+}
+
+model RubricDraft {
+  id String @id @default(uuid()) @db.Uuid
+  rubricKey String @db.VarChar(120)
+  baseVersionId String @db.Uuid
+  questionConfig Json
+  safetyConfig Json
+  version Int @default(1)
+  createdById String @db.Uuid
+  publishedVersionId String? @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model EconomicReference {
+  id String @id @default(uuid()) @db.Uuid
+  categoryCode String @db.VarChar(50)
+  field String @db.VarChar(40)
+  amountIdr BigInt
+  sourceNote String @db.VarChar(500)
+  referenceDate DateTime @db.Date
+  region String @db.VarChar(120)
+  createdById String @db.Uuid
+  active Boolean @default(true)
+  version Int @default(1)
+  createdAt DateTime @default(now())
+}
+
+model ExplanationCache {
+  key String @id @db.VarChar(250)
+  assessmentId String @db.Uuid
+  templateVersion String @db.VarChar(30)
+  output Json
+  createdAt DateTime @default(now())
+}
+
+model AdminAction {
+  id          String   @id @default(uuid()) @db.Uuid
+  adminId     String   @db.Uuid
+  admin       User     @relation(fields: [adminId], references: [id], onDelete: Restrict)
+  reportId    String?  @db.Uuid
+  report      Report?  @relation(fields: [reportId], references: [id], onDelete: Restrict)
+  targetType  String   @db.VarChar(40)
+  targetId    String   @db.Uuid
+  action      String   @db.VarChar(60)
+  reason      String   @db.VarChar(1000)
+  beforeState Json?
+  afterState  Json?
+  createdAt   DateTime @default(now())
+
+  @@index([targetType, targetId, createdAt])
+  @@index([reportId, createdAt])
+}
+
+model MailOutbox {
+  id            String    @id @default(uuid()) @db.Uuid
+  recipient     String    @db.VarChar(254)
+  subject       String    @db.VarChar(180)
+  encryptedBody String
+  attempts      Int       @default(0)
+  nextAttemptAt DateTime  @default(now())
+  sentAt        DateTime?
+  expiresAt     DateTime
+  createdAt     DateTime  @default(now())
+
+  @@index([sentAt, nextAttemptAt])
+}
+
+model AuthRateBucket {
+  key String @id @db.Char(64)
+  count Int @default(1)
+  resetAt DateTime
+  @@index([resetAt])
+}

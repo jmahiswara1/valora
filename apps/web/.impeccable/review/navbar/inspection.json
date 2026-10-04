@@ -1,0 +1,872 @@
+[
+  {
+    "route": "/",
+    "device": "desktop",
+    "state": "top",
+    "viewport": 1440,
+    "documentWidth": 1440,
+    "scrollY": 0,
+    "header": {
+      "top": 0,
+      "height": 88,
+      "width": 1440,
+      "position": "sticky"
+    },
+    "inner": {
+      "left": 24,
+      "right": 1416
+    },
+    "icons": [
+      {
+        "label": "Pengingat transaksi",
+        "href": "/masuk?next=%2Fapp",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Penawaran saya",
+        "href": "/masuk?next=%2Fapp%2Fpenawaran",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Masuk",
+        "href": "/masuk",
+        "width": 44,
+        "height": 44
+      }
+    ],
+    "menuOpen": false
+  },
+  {
+    "route": "/",
+    "device": "desktop",
+    "state": "scrolled",
+    "viewport": 1440,
+    "documentWidth": 1440,
+    "scrollY": 1200,
+    "header": {
+      "top": 0,
+      "height": 88,
+      "width": 1440,
+      "position": "sticky"
+    },
+    "inner": {
+      "left": 24,
+      "right": 1416
+    },
+    "icons": [
+      {
+        "label": "Pengingat transaksi",
+        "href": "/masuk?next=%2Fapp",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Penawaran saya",
+        "href": "/masuk?next=%2Fapp%2Fpenawaran",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Masuk",
+        "href": "/masuk",
+        "width": 44,
+        "height": 44
+      }
+    ],
+    "menuOpen": false
+  },
+  {
+    "route": "/",
+    "device": "tablet",
+    "state": "top",
+    "viewport": 768,
+    "documentWidth": 768,
+    "scrollY": 0,
+    "header": {
+      "top": 0,
+      "height": 88,
+      "width": 768,
+      "position": "sticky"
+    },
+    "inner": {
+      "left": 24,
+      "right": 744
+    },
+    "icons": [
+      {
+        "label": "Pengingat transaksi",
+        "href": "/masuk?next=%2Fapp",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Penawaran saya",
+        "href": "/masuk?next=%2Fapp%2Fpenawaran",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Masuk",
+        "href": "/masuk",
+        "width": 44,
+        "height": 44
+      }
+    ],
+    "menuOpen": false
+  },
+  {
+    "route": "/",
+    "device": "tablet",
+    "state": "scrolled",
+    "viewport": 768,
+    "documentWidth": 768,
+    "scrollY": 1200,
+    "header": {
+      "top": 0,
+      "height": 88,
+      "width": 768,
+      "position": "sticky"
+    },
+    "inner": {
+      "left": 24,
+      "right": 744
+    },
+    "icons": [
+      {
+        "label": "Pengingat transaksi",
+        "href": "/masuk?next=%2Fapp",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Penawaran saya",
+        "href": "/masuk?next=%2Fapp%2Fpenawaran",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Masuk",
+        "href": "/masuk",
+        "width": 44,
+        "height": 44
+      }
+    ],
+    "menuOpen": false
+  },
+  {
+    "route": "/",
+    "device": "mobile",
+    "state": "top",
+    "viewport": 390,
+    "documentWidth": 390,
+    "scrollY": 0,
+    "header": {
+      "top": 0,
+      "height": 72,
+      "width": 390,
+      "position": "sticky"
+    },
+    "inner": {
+      "left": 16,
+      "right": 374
+    },
+    "icons": [
+      {
+        "label": "Pengingat transaksi",
+        "href": "/masuk?next=%2Fapp",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Penawaran saya",
+        "href": "/masuk?next=%2Fapp%2Fpenawaran",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Masuk",
+        "href": "/masuk",
+        "width": 44,
+        "height": 44
+      }
+    ],
+    "menuOpen": false
+  },
+  {
+    "route": "/",
+    "device": "mobile",
+    "state": "scrolled",
+    "viewport": 390,
+    "documentWidth": 390,
+    "scrollY": 1200,
+    "header": {
+      "top": 0,
+      "height": 72,
+      "width": 390,
+      "position": "sticky"
+    },
+    "inner": {
+      "left": 16,
+      "right": 374
+    },
+    "icons": [
+      {
+        "label": "Pengingat transaksi",
+        "href": "/masuk?next=%2Fapp",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Penawaran saya",
+        "href": "/masuk?next=%2Fapp%2Fpenawaran",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Masuk",
+        "href": "/masuk",
+        "width": 44,
+        "height": 44
+      }
+    ],
+    "menuOpen": false
+  },
+  {
+    "route": "/",
+    "device": "mobile",
+    "state": "menu",
+    "viewport": 390,
+    "documentWidth": 390,
+    "scrollY": 770,
+    "header": {
+      "top": 0,
+      "height": 72,
+      "width": 390,
+      "position": "sticky"
+    },
+    "inner": {
+      "left": 16,
+      "right": 374
+    },
+    "icons": [
+      {
+        "label": "Pengingat transaksi",
+        "href": "/masuk?next=%2Fapp",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Penawaran saya",
+        "href": "/masuk?next=%2Fapp%2Fpenawaran",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Masuk",
+        "href": "/masuk",
+        "width": 44,
+        "height": 44
+      }
+    ],
+    "menuOpen": true
+  },
+  {
+    "device": "mobile",
+    "state": "escape",
+    "menuClosed": true,
+    "focusReturned": true
+  },
+  {
+    "route": "/",
+    "device": "wide",
+    "state": "top",
+    "viewport": 1920,
+    "documentWidth": 1920,
+    "scrollY": 0,
+    "header": {
+      "top": 0,
+      "height": 88,
+      "width": 1920,
+      "position": "sticky"
+    },
+    "inner": {
+      "left": 24,
+      "right": 1896
+    },
+    "icons": [
+      {
+        "label": "Pengingat transaksi",
+        "href": "/masuk?next=%2Fapp",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Penawaran saya",
+        "href": "/masuk?next=%2Fapp%2Fpenawaran",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Masuk",
+        "href": "/masuk",
+        "width": 44,
+        "height": 44
+      }
+    ],
+    "menuOpen": false
+  },
+  {
+    "route": "/",
+    "device": "wide",
+    "state": "scrolled",
+    "viewport": 1920,
+    "documentWidth": 1920,
+    "scrollY": 1200,
+    "header": {
+      "top": 0,
+      "height": 88,
+      "width": 1920,
+      "position": "sticky"
+    },
+    "inner": {
+      "left": 24,
+      "right": 1896
+    },
+    "icons": [
+      {
+        "label": "Pengingat transaksi",
+        "href": "/masuk?next=%2Fapp",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Penawaran saya",
+        "href": "/masuk?next=%2Fapp%2Fpenawaran",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Masuk",
+        "href": "/masuk",
+        "width": 44,
+        "height": 44
+      }
+    ],
+    "menuOpen": false
+  },
+  {
+    "route": "/",
+    "device": "narrow",
+    "state": "top",
+    "viewport": 320,
+    "documentWidth": 320,
+    "scrollY": 0,
+    "header": {
+      "top": 0,
+      "height": 72,
+      "width": 320,
+      "position": "sticky"
+    },
+    "inner": {
+      "left": 16,
+      "right": 304
+    },
+    "icons": [
+      {
+        "label": "Pengingat transaksi",
+        "href": "/masuk?next=%2Fapp",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Penawaran saya",
+        "href": "/masuk?next=%2Fapp%2Fpenawaran",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Masuk",
+        "href": "/masuk",
+        "width": 44,
+        "height": 44
+      }
+    ],
+    "menuOpen": false
+  },
+  {
+    "route": "/",
+    "device": "narrow",
+    "state": "scrolled",
+    "viewport": 320,
+    "documentWidth": 320,
+    "scrollY": 1200,
+    "header": {
+      "top": 0,
+      "height": 72,
+      "width": 320,
+      "position": "sticky"
+    },
+    "inner": {
+      "left": 16,
+      "right": 304
+    },
+    "icons": [
+      {
+        "label": "Pengingat transaksi",
+        "href": "/masuk?next=%2Fapp",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Penawaran saya",
+        "href": "/masuk?next=%2Fapp%2Fpenawaran",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Masuk",
+        "href": "/masuk",
+        "width": 44,
+        "height": 44
+      }
+    ],
+    "menuOpen": false
+  },
+  {
+    "route": "/",
+    "device": "narrow",
+    "state": "menu",
+    "viewport": 320,
+    "documentWidth": 320,
+    "scrollY": 822,
+    "header": {
+      "top": 0,
+      "height": 72,
+      "width": 320,
+      "position": "sticky"
+    },
+    "inner": {
+      "left": 16,
+      "right": 304
+    },
+    "icons": [
+      {
+        "label": "Pengingat transaksi",
+        "href": "/masuk?next=%2Fapp",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Penawaran saya",
+        "href": "/masuk?next=%2Fapp%2Fpenawaran",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Masuk",
+        "href": "/masuk",
+        "width": 44,
+        "height": 44
+      }
+    ],
+    "menuOpen": true
+  },
+  {
+    "device": "narrow",
+    "state": "escape",
+    "menuClosed": true,
+    "focusReturned": true
+  },
+  {
+    "route": "/cara-kerja",
+    "device": "desktop",
+    "state": "header",
+    "viewport": 1440,
+    "documentWidth": 1440,
+    "scrollY": 0,
+    "header": {
+      "top": 0,
+      "height": 88,
+      "width": 1440,
+      "position": "sticky"
+    },
+    "inner": {
+      "left": 24,
+      "right": 1416
+    },
+    "icons": [
+      {
+        "label": "Pengingat transaksi",
+        "href": "/masuk?next=%2Fapp",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Penawaran saya",
+        "href": "/masuk?next=%2Fapp%2Fpenawaran",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Masuk",
+        "href": "/masuk",
+        "width": 44,
+        "height": 44
+      }
+    ],
+    "menuOpen": false
+  },
+  {
+    "route": "/impact",
+    "device": "desktop",
+    "state": "header",
+    "viewport": 1440,
+    "documentWidth": 1440,
+    "scrollY": 0,
+    "header": {
+      "top": 0,
+      "height": 88,
+      "width": 1440,
+      "position": "sticky"
+    },
+    "inner": {
+      "left": 24,
+      "right": 1416
+    },
+    "icons": [
+      {
+        "label": "Pengingat transaksi",
+        "href": "/masuk?next=%2Fapp",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Penawaran saya",
+        "href": "/masuk?next=%2Fapp%2Fpenawaran",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Masuk",
+        "href": "/masuk",
+        "width": 44,
+        "height": 44
+      }
+    ],
+    "menuOpen": false
+  },
+  {
+    "route": "/market",
+    "device": "desktop",
+    "state": "header",
+    "viewport": 1440,
+    "documentWidth": 1440,
+    "scrollY": 0,
+    "header": {
+      "top": 0,
+      "height": 72,
+      "width": 1440,
+      "position": "sticky"
+    },
+    "inner": {
+      "left": 120,
+      "right": 1320
+    },
+    "icons": [
+      {
+        "label": "Pengingat transaksi",
+        "href": "/masuk?next=%2Fapp",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Penawaran saya",
+        "href": "/masuk?next=%2Fapp%2Fpenawaran",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Masuk",
+        "href": "/masuk",
+        "width": 44,
+        "height": 44
+      }
+    ],
+    "menuOpen": false
+  },
+  {
+    "route": "/masuk",
+    "device": "desktop",
+    "state": "header",
+    "viewport": 1440,
+    "documentWidth": 1440,
+    "scrollY": 0,
+    "header": {
+      "top": 0,
+      "height": 72,
+      "width": 1440,
+      "position": "sticky"
+    },
+    "inner": {
+      "left": 120,
+      "right": 1320
+    },
+    "icons": [
+      {
+        "label": "Pengingat transaksi",
+        "href": "/masuk?next=%2Fapp",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Penawaran saya",
+        "href": "/masuk?next=%2Fapp%2Fpenawaran",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Masuk",
+        "href": "/masuk",
+        "width": 44,
+        "height": 44
+      }
+    ],
+    "menuOpen": false
+  },
+  {
+    "route": "/daftar",
+    "device": "desktop",
+    "state": "header",
+    "viewport": 1440,
+    "documentWidth": 1440,
+    "scrollY": 0,
+    "header": {
+      "top": 0,
+      "height": 72,
+      "width": 1440,
+      "position": "sticky"
+    },
+    "inner": {
+      "left": 120,
+      "right": 1320
+    },
+    "icons": [
+      {
+        "label": "Pengingat transaksi",
+        "href": "/masuk?next=%2Fapp",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Penawaran saya",
+        "href": "/masuk?next=%2Fapp%2Fpenawaran",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Masuk",
+        "href": "/masuk",
+        "width": 44,
+        "height": 44
+      }
+    ],
+    "menuOpen": false
+  },
+  {
+    "route": "/cara-kerja",
+    "device": "mobile",
+    "state": "header",
+    "viewport": 390,
+    "documentWidth": 390,
+    "scrollY": 0,
+    "header": {
+      "top": 0,
+      "height": 72,
+      "width": 390,
+      "position": "sticky"
+    },
+    "inner": {
+      "left": 16,
+      "right": 374
+    },
+    "icons": [
+      {
+        "label": "Pengingat transaksi",
+        "href": "/masuk?next=%2Fapp",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Penawaran saya",
+        "href": "/masuk?next=%2Fapp%2Fpenawaran",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Masuk",
+        "href": "/masuk",
+        "width": 44,
+        "height": 44
+      }
+    ],
+    "menuOpen": false
+  },
+  {
+    "route": "/impact",
+    "device": "mobile",
+    "state": "header",
+    "viewport": 390,
+    "documentWidth": 390,
+    "scrollY": 0,
+    "header": {
+      "top": 0,
+      "height": 72,
+      "width": 390,
+      "position": "sticky"
+    },
+    "inner": {
+      "left": 16,
+      "right": 374
+    },
+    "icons": [
+      {
+        "label": "Pengingat transaksi",
+        "href": "/masuk?next=%2Fapp",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Penawaran saya",
+        "href": "/masuk?next=%2Fapp%2Fpenawaran",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Masuk",
+        "href": "/masuk",
+        "width": 44,
+        "height": 44
+      }
+    ],
+    "menuOpen": false
+  },
+  {
+    "route": "/market",
+    "device": "mobile",
+    "state": "header",
+    "viewport": 390,
+    "documentWidth": 390,
+    "scrollY": 0,
+    "header": {
+      "top": 0,
+      "height": 62,
+      "width": 390,
+      "position": "sticky"
+    },
+    "inner": {
+      "left": 18,
+      "right": 372
+    },
+    "icons": [
+      {
+        "label": "Pengingat transaksi",
+        "href": "/masuk?next=%2Fapp",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Penawaran saya",
+        "href": "/masuk?next=%2Fapp%2Fpenawaran",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Masuk",
+        "href": "/masuk",
+        "width": 44,
+        "height": 44
+      }
+    ],
+    "menuOpen": false
+  },
+  {
+    "route": "/masuk",
+    "device": "mobile",
+    "state": "header",
+    "viewport": 390,
+    "documentWidth": 390,
+    "scrollY": 0,
+    "header": {
+      "top": 0,
+      "height": 62,
+      "width": 390,
+      "position": "sticky"
+    },
+    "inner": {
+      "left": 18,
+      "right": 372
+    },
+    "icons": [
+      {
+        "label": "Pengingat transaksi",
+        "href": "/masuk?next=%2Fapp",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Penawaran saya",
+        "href": "/masuk?next=%2Fapp%2Fpenawaran",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Masuk",
+        "href": "/masuk",
+        "width": 44,
+        "height": 44
+      }
+    ],
+    "menuOpen": false
+  },
+  {
+    "route": "/daftar",
+    "device": "mobile",
+    "state": "header",
+    "viewport": 390,
+    "documentWidth": 390,
+    "scrollY": 0,
+    "header": {
+      "top": 0,
+      "height": 62,
+      "width": 390,
+      "position": "sticky"
+    },
+    "inner": {
+      "left": 18,
+      "right": 372
+    },
+    "icons": [
+      {
+        "label": "Pengingat transaksi",
+        "href": "/masuk?next=%2Fapp",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Penawaran saya",
+        "href": "/masuk?next=%2Fapp%2Fpenawaran",
+        "width": 44,
+        "height": 44
+      },
+      {
+        "label": "Masuk",
+        "href": "/masuk",
+        "width": 44,
+        "height": 44
+      }
+    ],
+    "menuOpen": false
+  }
+]

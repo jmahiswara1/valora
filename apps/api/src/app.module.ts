@@ -1,0 +1,70 @@
+import { LedgerService } from './modules/history/ledger.service.js';
+import { PassportImpactService } from './modules/history/projection.service.js';
+import { PublicPassportController } from './modules/history/passport.controller.js';
+import { ImpactController } from './modules/history/impact.controller.js';
+import { OperationsService } from "./modules/operations/service.js";
+import { OperationsController } from "./modules/operations/controller.js";
+import { CorrectionController } from './modules/operations/correction.controller.js';
+import { AdminStage5Service } from "./modules/admin/service.js";
+import { AdminStage5Controller } from "./modules/admin/controller.js";
+import { EconomicReferenceController } from "./modules/admin/references.controller.js";
+import { RetentionService } from "./modules/retention/service.js";
+import { RetentionController } from "./modules/retention/controller.js";
+import { ExplainerService } from './modules/assessments/explainer.service.js';
+import { ExplainerController } from './modules/assessments/explainer.controller.js';
+import { TransactionsService } from "./modules/transactions/service.js";
+import { TransactionsController } from "./modules/transactions/controller.js";
+import { MyTransactionsController } from "./modules/transactions/me.controller.js";
+import { OfferAcceptanceController } from "./modules/transactions/acceptance.controller.js";
+import { NotificationsController } from './modules/transactions/notifications.controller.js';
+import { DisputesService } from "./modules/disputes/service.js";
+import { CasesController } from './modules/disputes/cases.controller.js';
+import { DisputesAdminController } from "./modules/disputes/admin.controller.js";
+import { Module } from '@nestjs/common';
+import { AdminGuard, SessionGuard } from './modules/auth/guards.js';
+import { AuthController } from "./modules/auth/controller.js";
+import { AuthService } from "./modules/auth/service.js";
+import { MeController } from './modules/auth/me.controller.js';
+import { AdminFoundationController } from "./modules/catalog/admin.controller.js";
+import { CatalogController } from "./modules/catalog/controller.js";
+import { CatalogService } from "./modules/catalog/service.js";
+import { DatabaseService } from './infrastructure/database.service.js';
+import { ItemsController } from "./modules/items/controller.js";
+import { ItemsService } from "./modules/items/service.js";
+import { MailService } from './infrastructure/mail.service.js';
+import { MaintenanceService } from './infrastructure/jobs/maintenance.service.js';
+import { MediaController } from "./modules/media/controller.js";
+import { MediaService } from "./modules/media/service.js";
+import { StorageService } from './infrastructure/storage.service.js';
+import { AssessmentsController } from "./modules/assessments/controller.js";
+import { AssessmentsService } from "./modules/assessments/service.js";
+import { ItemAssessmentsController } from "./modules/assessments/items.controller.js";
+import { RubricController } from './modules/assessments/rubric.controller.js';
+import { ItemRepairsController } from "./modules/repairs/items.controller.js";
+import { RepairsController } from "./modules/repairs/controller.js";
+import { RepairsService } from "./modules/repairs/service.js";
+import { ItemListingsController } from "./modules/listings/items.controller.js";
+import { ListingAdminController } from "./modules/listings/admin.controller.js";
+import { ListingModerationController } from "./modules/listings/moderation.controller.js";
+import { ListingsController } from './modules/listings/controller.js';
+import { MarketController } from './modules/listings/market.controller.js';
+import { ListingService } from "./modules/listings/service.js";
+import { MarketService } from './modules/listings/market.service.js';
+import { ListingOffersController } from "./modules/offers/listings.controller.js";
+import { OffersController } from "./modules/offers/controller.js";
+import { OffersService } from "./modules/offers/service.js";
+import { AdminReportsController } from './modules/conversations/admin-reports.controller.js';
+import { BlocksController } from './modules/conversations/blocks.controller.js';
+import { ConversationEvents } from "./modules/conversations/events.js";
+import { ConversationsController } from "./modules/conversations/controller.js";
+import { ConversationsService } from "./modules/conversations/service.js";
+import { ListingConversationsController } from "./modules/conversations/listings.controller.js";
+import { ReportsController } from './modules/conversations/reports.controller.js';
+import { ProfilePhotoService } from './modules/profile/photo.service.js';
+import { ProfilePhotosController } from './modules/profile/photo.controller.js';
+
+@Module({
+  controllers: [PublicPassportController, ImpactController, OperationsController, CorrectionController, AdminStage5Controller, EconomicReferenceController, RetentionController, ExplainerController, TransactionsController, MyTransactionsController, OfferAcceptanceController, NotificationsController, CasesController, DisputesAdminController, AuthController, MeController, ProfilePhotosController, CatalogController, AdminFoundationController, ItemsController, MediaController, RubricController, ItemAssessmentsController, AssessmentsController, ItemRepairsController, RepairsController, MarketController, ItemListingsController, ListingsController, ListingModerationController, ListingAdminController, ListingOffersController, OffersController, ListingConversationsController, ConversationsController, BlocksController, ReportsController, AdminReportsController],
+  providers: [LedgerService, PassportImpactService, OperationsService, AdminStage5Service, RetentionService, ExplainerService, TransactionsService, DisputesService, DatabaseService, MailService, StorageService, SessionGuard, AdminGuard, AuthService, CatalogService, MediaService, ItemsService, AssessmentsService, RepairsService, ListingService, MarketService, OffersService, ConversationEvents, ConversationsService, MaintenanceService, ProfilePhotoService],
+})
+export class AppModule {}

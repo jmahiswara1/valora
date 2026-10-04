@@ -1,0 +1,5 @@
+# Normalize text across Windows and Unix; Git detects binary assets automatically.
+* text=auto eol=lf
+
+# Trailing spaces in Markdown can represent intentional hard line breaks.
+*.md whitespace=-blank-at-eol

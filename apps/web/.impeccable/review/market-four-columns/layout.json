@@ -1,0 +1,26 @@
+[
+  {
+    "width": 1440,
+    "columns": "330px 330px 330px 330px",
+    "cardWidth": 330,
+    "documentWidth": 1440
+  },
+  {
+    "width": 1024,
+    "columns": "226px 226px 226px 226px",
+    "cardWidth": 226,
+    "documentWidth": 1024
+  },
+  {
+    "width": 768,
+    "columns": "348px 348px",
+    "cardWidth": 348,
+    "documentWidth": 768
+  },
+  {
+    "width": 390,
+    "columns": "358px",
+    "cardWidth": 358,
+    "documentWidth": 390
+  }
+]

@@ -1,0 +1,41 @@
+.service-sections { margin-top: 16px; }
+.service-section { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 64px; padding: 40px 0; border-top: 1px solid var(--surface-line); }
+.service-section h2 { max-width: 22ch; font-size: clamp(25px, 2.8vw, 32px); line-height: 1.2; }
+.service-section p { max-width: 70ch; color: var(--surface-muted); font-size: 15px; line-height: 1.8; }
+.service-section .service-detail { margin-top: 20px; padding: 16px 20px; border-radius: var(--radius-control); background: var(--surface-subtle); font-size: 13px; line-height: 1.7; }
+.service-section .editorial-link { margin-top: 16px; }
+.about-mission { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 64px; padding: 40px; border-radius: var(--radius-card); background: var(--surface-subtle); }
+.about-principles { margin: 0; padding: 0; list-style: none; }
+.about-principles li { padding: 22px 0; border-top: 1px solid var(--surface-line); }
+.about-principles li:first-child { padding-top: 0; border-top: 0; }
+.about-principles li:last-child { padding-bottom: 0; }
+.about-principles h3 { font-size: 20px; line-height: 1.35; }
+.about-principles p { max-width: 70ch; margin-top: 12px; color: var(--surface-muted); font-size: 14px; line-height: 1.75; }
+.about-faq { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 64px; margin-top: 80px; }
+.faq-list { min-width: 0; }
+.faq-item { border-top: 1px solid var(--surface-line); }
+.faq-item:last-child { border-bottom: 1px solid var(--surface-line); }
+.faq-item summary { display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 64px; padding: 20px 0; list-style: none; cursor: pointer; font-size: 16px; font-weight: 600; line-height: 1.5; }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary:hover { color: var(--green); }
+.faq-item summary > svg { flex-shrink: 0; }
+.faq-item .faq-collapse, .faq-item[open] .faq-expand { display: none; }
+.faq-item[open] .faq-collapse { display: block; }
+.faq-item > p { max-width: 70ch; padding-bottom: 24px; color: var(--surface-muted); font-size: 14px; line-height: 1.8; }
+@media (max-width: 1023px) {
+  .service-section, .about-faq { gap: 32px; }
+  .about-mission { gap: 32px; padding: 32px; }
+}
+@media (max-width: 639px) {
+  .service-sections { margin-top: 0; }
+  .service-section { grid-template-columns: minmax(0, 1fr); gap: 20px; padding: 28px 0; }
+  .service-section h2 { font-size: 27px; }
+  .service-section p { font-size: 14px; }
+  .service-section .service-detail { padding: 16px; font-size: 13px; }
+  .about-mission { grid-template-columns: minmax(0, 1fr); gap: 28px; padding: 28px; }
+  .about-mission h2 { font-size: 27px; }
+  .about-principles h3 { font-size: 18px; }
+  .about-faq { grid-template-columns: minmax(0, 1fr); gap: 28px; margin-top: 56px; }
+  .about-faq h2 { font-size: 29px; }
+  .faq-item summary { gap: 16px; font-size: 15px; }
+}

@@ -1,0 +1,896 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-04T09:07:45.177Z",
+  "title": "Design System: Valora",
+  "extensions": {
+    "colorMeta": {
+      "forest": {
+        "role": "primary",
+        "displayName": "Forest"
+      },
+      "green": {
+        "role": "primary",
+        "displayName": "Green"
+      },
+      "sage": {
+        "role": "secondary",
+        "displayName": "Sage"
+      },
+      "soft-sage": {
+        "role": "secondary",
+        "displayName": "Soft Sage"
+      },
+      "white": {
+        "role": "neutral",
+        "displayName": "White"
+      },
+      "cream": {
+        "role": "neutral",
+        "displayName": "Cream"
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted"
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Line — shared baseline"
+      },
+      "surface-line": {
+        "role": "neutral",
+        "displayName": "Surface Line — renewed public"
+      },
+      "danger": {
+        "role": "tertiary",
+        "displayName": "Danger — account field error"
+      },
+      "account-nav-hover": {
+        "role": "neutral",
+        "displayName": "User navigation hover",
+        "purpose": "Sidebar/drawer links and sidebar profile hover.",
+        "scope": "AccountShell and account-drawer",
+        "source": "src/styles/account.css"
+      },
+      "account-item-hover": {
+        "role": "neutral",
+        "displayName": "Private item hover",
+        "purpose": "Private ItemCard hover background.",
+        "scope": "AccountShell and account-drawer",
+        "source": "src/styles/account.css"
+      },
+      "account-warning-surface": {
+        "role": "tertiary",
+        "displayName": "Account warning surface",
+        "purpose": "Warning badge for historical, incomplete, or unavailable task states.",
+        "scope": "AccountShell and account-drawer",
+        "source": "src/styles/account.css"
+      },
+      "account-warning-text": {
+        "role": "tertiary",
+        "displayName": "Account warning text",
+        "purpose": "Readable text paired with account warning badges.",
+        "scope": "AccountShell and account-drawer",
+        "source": "src/styles/account.css"
+      },
+      "account-photo-control": {
+        "role": "secondary",
+        "displayName": "Private photo control",
+        "purpose": "Signed-photo fallback icon and dashed upload border.",
+        "scope": "AccountShell and account-drawer",
+        "source": "src/styles/account.css"
+      },
+      "account-secondary-text": {
+        "role": "secondary",
+        "displayName": "Account secondary text",
+        "purpose": "Assessment provenance and chat metadata.",
+        "scope": "AccountShell and account-drawer",
+        "source": "src/styles/account.css"
+      },
+      "account-dialog-backdrop": {
+        "role": "neutral",
+        "displayName": "Account modal backdrop",
+        "purpose": "Native navigation and critical-action dialogs.",
+        "scope": "AccountShell and account-drawer",
+        "source": "src/styles/account.css"
+      },
+      "account-danger-hover": {
+        "role": "tertiary",
+        "displayName": "Account danger hover",
+        "purpose": "Inherited danger button hover in the account scope.",
+        "scope": "AccountShell and account-drawer",
+        "source": "src/styles/globals.css"
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Home display",
+        "purpose": "Headline Beranda; varian tablet dan ponsel mengikuti breakpoint publik."
+      },
+      "page-title": {
+        "displayName": "Information and Impact title",
+        "purpose": "Judul Cara Kerja, Impact, Layanan, dan Tentang kami; information-hero memakai override tablet information-title-tablet, sementara Impact tetap page-title."
+      },
+      "story-title": {
+        "displayName": "Story title",
+        "purpose": "Judul panel cerita memakai italic 500 yang dimuat sebagai font asli."
+      },
+      "metric": {
+        "displayName": "Impact metric",
+        "purpose": "Nilai API atau Belum tersedia, dengan pemformatan Indonesia dan angka tabular."
+      },
+      "auth-title": {
+        "displayName": "Account task heading",
+        "purpose": "h1 pada kelima route akun; ukuran desktop/tablet sengaja membentuk hierarki form."
+      },
+      "auth-title-phone": {
+        "displayName": "Account phone heading",
+        "purpose": "Override hingga 700px; skala 30–36px yang disengaja menjelaskan advisori detector ukuran mobile."
+      },
+      "auth-story-title": {
+        "displayName": "Account story heading",
+        "purpose": "h2 foto editorial AuthShell, tersembunyi hingga 700px; skala 32–48px disengaja dan menjelaskan advisori detector cerita."
+      },
+      "service-title": {
+        "displayName": "Service and closing heading",
+        "purpose": "h2 Layanan dan penutup publik; skala 25–32px melanjutkan komponen publik yang sudah ada."
+      },
+      "service-title-phone": {
+        "displayName": "Service and mission phone heading",
+        "purpose": "Override hingga 639px untuk h2 Layanan, misi, dan penutup publik; ukuran 27px disengaja."
+      },
+      "service-body": {
+        "displayName": "Service body",
+        "purpose": "Paragraf Layanan dengan lebar maksimum 70ch; ukuran 15px mengikuti isi informasi publik."
+      },
+      "service-body-phone": {
+        "displayName": "Service phone body",
+        "purpose": "Override hingga 639px pada paragraf Layanan."
+      },
+      "service-note": {
+        "displayName": "Service limitation note",
+        "purpose": "Catatan batas fitur pada bidang Cream; tetap 13px di ponsel."
+      },
+      "principle-title": {
+        "displayName": "About principle heading",
+        "purpose": "h3 daftar prinsip Tentang kami."
+      },
+      "principle-title-phone": {
+        "displayName": "About phone principle heading",
+        "purpose": "Override hingga 639px; ukuran 18px disengaja untuk daftar prinsip, sesuai advisori detector."
+      },
+      "faq-summary": {
+        "displayName": "FAQ summary",
+        "purpose": "Pemicu native details/summary dengan min-height 64px."
+      },
+      "faq-summary-phone": {
+        "displayName": "FAQ phone summary",
+        "purpose": "Override hingga 639px pada pemicu FAQ."
+      },
+      "catalog-hero-title": {
+        "displayName": "Catalogue hero title",
+        "purpose": "h1 hero katalog desktop; ukuran spesifik disengaja, sesuai advisori detector."
+      },
+      "catalog-hero-title-tablet": {
+        "displayName": "Catalogue hero title tablet",
+        "purpose": "h1 katalog hingga 1023px; mempertahankan hierarki hero kompak."
+      },
+      "catalog-hero-title-phone": {
+        "displayName": "Catalogue hero title phone",
+        "purpose": "h1 katalog hingga 639px; hero tumbuh bersama copy."
+      },
+      "catalog-section-title": {
+        "displayName": "Catalogue section title",
+        "purpose": "h2 hasil katalog desktop/tablet."
+      },
+      "catalog-section-title-phone": {
+        "displayName": "Catalogue section title phone",
+        "purpose": "h2 hasil katalog hingga 639px; ukuran spesifik disengaja, sesuai advisori detector."
+      },
+      "catalog-filter-count": {
+        "displayName": "Catalogue filter count",
+        "purpose": "Badge parameter tambahan yang sudah diterapkan; ukuran ringkas disengaja, sesuai advisori detector."
+      },
+      "catalog-empty-title": {
+        "displayName": "Catalogue empty title",
+        "purpose": "h3 pemulihan hasil kosong; ukuran disengaja, sesuai advisori detector."
+      },
+      "catalog-empty-title-phone": {
+        "displayName": "Catalogue empty title phone",
+        "purpose": "h3 hasil kosong hingga 639px; ukuran disengaja, sesuai advisori detector."
+      },
+      "detail-owner-name": {
+        "displayName": "Detail owner name",
+        "purpose": "Nama pemilik pada panel Cream detail Listing: 17px/600, line-height 1.6 diwarisi. Peran lokal disengaja; satu-satunya advisori detector detail, tanpa perubahan skala dasar."
+      },
+      "account-page-title": {
+        "displayName": "User page title",
+        "purpose": "h1 user tasks; fixed task scale from account.css, with inherited 700 weight.",
+        "scope": "AccountShell",
+        "source": "src/styles/account.css; inherited font roles in src/styles/globals.css"
+      },
+      "account-page-title-phone": {
+        "displayName": "User page title phone",
+        "purpose": "app-heading h1 override through viewport 600px.",
+        "scope": "AccountShell",
+        "source": "src/styles/account.css; inherited font roles in src/styles/globals.css"
+      },
+      "account-section-title": {
+        "displayName": "User section title",
+        "purpose": "Base h2 task panels and form sections.",
+        "scope": "AccountShell",
+        "source": "src/styles/account.css; inherited font roles in src/styles/globals.css"
+      },
+      "account-subsection-title": {
+        "displayName": "User subsection title",
+        "purpose": "Base h3 task subsections.",
+        "scope": "AccountShell",
+        "source": "src/styles/account.css; inherited font roles in src/styles/globals.css"
+      },
+      "account-secondary-title": {
+        "displayName": "User secondary title",
+        "purpose": "app-heading h2 and recent-goods section heading.",
+        "scope": "AccountShell",
+        "source": "src/styles/account.css; inherited font roles in src/styles/globals.css"
+      },
+      "account-chat-title": {
+        "displayName": "User chat title",
+        "purpose": "Thread h1; preserves the h1 line-height and tracking.",
+        "scope": "AccountShell",
+        "source": "src/styles/account.css; inherited font roles in src/styles/globals.css"
+      },
+      "account-body": {
+        "displayName": "User body",
+        "purpose": "Account workspace and native fields; body line-height inherited from globals.css.",
+        "scope": "AccountShell",
+        "source": "src/styles/account.css; inherited font roles in src/styles/globals.css"
+      },
+      "account-lead": {
+        "displayName": "User lead",
+        "purpose": "Task introductions and message body; local phone introduction override is scoped to app-heading.",
+        "scope": "AccountShell",
+        "source": "src/styles/account.css; inherited font roles in src/styles/globals.css"
+      },
+      "account-navigation": {
+        "displayName": "User navigation",
+        "purpose": "Sidebar/drawer and account navigation.",
+        "scope": "AccountShell",
+        "source": "src/styles/account.css; inherited font roles in src/styles/globals.css"
+      },
+      "account-button": {
+        "displayName": "User button",
+        "purpose": "Normal user task actions with 44px minimum target.",
+        "scope": "AccountShell",
+        "source": "src/styles/account.css; inherited font roles in src/styles/globals.css"
+      },
+      "account-button-small": {
+        "displayName": "User button small",
+        "purpose": "Small user actions with 40px minimum target.",
+        "scope": "AccountShell",
+        "source": "src/styles/account.css; inherited font roles in src/styles/globals.css"
+      },
+      "account-field-label": {
+        "displayName": "User field label",
+        "purpose": "Account Field labels with inherited body line-height.",
+        "scope": "AccountShell",
+        "source": "src/styles/account.css; inherited font roles in src/styles/globals.css"
+      },
+      "account-metadata": {
+        "displayName": "User metadata",
+        "purpose": "Account .meta and small; preserves inherited tracking and tabular numbers.",
+        "scope": "AccountShell",
+        "source": "src/styles/account.css; inherited font roles in src/styles/globals.css"
+      },
+      "account-notice": {
+        "displayName": "User notice",
+        "purpose": "User information, success, and error notices.",
+        "scope": "AccountShell",
+        "source": "src/styles/account.css; inherited font roles in src/styles/globals.css"
+      },
+      "account-badge": {
+        "displayName": "User badge",
+        "purpose": "Labelled status badges; keeps inherited .02em tracking.",
+        "scope": "AccountShell",
+        "source": "src/styles/account.css; inherited font roles in src/styles/globals.css"
+      },
+      "account-score": {
+        "displayName": "User score",
+        "purpose": "Assessment Score or incomplete-result text.",
+        "scope": "AccountShell",
+        "source": "src/styles/account.css; inherited font roles in src/styles/globals.css"
+      },
+      "account-assessment-value": {
+        "displayName": "User assessment value",
+        "purpose": "Assessment component values; inherited 1.15 line-height and tabular numbers.",
+        "scope": "AccountShell",
+        "source": "src/styles/account.css; inherited font roles in src/styles/globals.css"
+      },
+      "account-impact-value": {
+        "displayName": "User impact value",
+        "purpose": "User Impact values or unavailable state; inherited 1.1 line-height.",
+        "scope": "AccountShell",
+        "source": "src/styles/account.css; inherited font roles in src/styles/globals.css"
+      },
+      "account-impact-value-phone": {
+        "displayName": "User impact value phone",
+        "purpose": "User Impact values through viewport 600px.",
+        "scope": "AccountShell",
+        "source": "src/styles/account.css; inherited font roles in src/styles/globals.css"
+      }
+    },
+    "shadows": [
+      {
+        "name": "field-focus",
+        "value": "0 0 0 2px var(--sage)",
+        "purpose": "Ring fokus yang diwarisi input/select/textarea; bukan shadow dekoratif atau elevasi."
+      },
+      {
+        "name": "account-flat-focus",
+        "value": "box-shadow: none; outline: 2px solid #2D5E3A; outline-offset: 3px",
+        "purpose": "Account inputs remove the inherited Sage ring; keyboard outline and Green focus border remain.",
+        "source": "src/styles/account.css"
+      }
+    ],
+    "motion": [
+      {
+        "name": "duration-fast",
+        "value": "150ms",
+        "purpose": "Perubahan latar dan border tombol serta pill kategori."
+      },
+      {
+        "name": "duration-normal",
+        "value": "200ms",
+        "purpose": "Perubahan border kartu dan transform media."
+      },
+      {
+        "name": "ease-ui",
+        "value": "cubic-bezier(.2, .8, .2, 1)",
+        "purpose": "Easing interaksi publik."
+      },
+      {
+        "name": "loading-pulse",
+        "value": "pulse 1.2s ease-in-out infinite alternate",
+        "purpose": "Skeleton atau loading line yang sudah ada; keyframe akhir opacity 0.45."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animation: none; transition: none; scroll-behavior: auto",
+        "purpose": "Diterapkan pada seluruh isi shell dan smooth scrolling dokumen publik saat prefers-reduced-motion: reduce."
+      },
+      {
+        "name": "passport-card-change",
+        "value": "transform 350ms cubic-bezier(.16, 1, .3, 1)",
+        "purpose": "Pemilihan kartu Passport membawa lapisan ke depan; tanpa autoplay dan dihentikan pada reduced motion."
+      },
+      {
+        "name": "account-loading-pulse",
+        "value": "account-pulse 1.2s ease-in-out infinite alternate; to { opacity: .55; }",
+        "purpose": "Account skeleton blocks and loading line.",
+        "source": "src/styles/account.css"
+      },
+      {
+        "name": "account-reduced-motion",
+        "value": "animation: none !important; transition: none !important; scroll-behavior: auto !important",
+        "purpose": "Every descendant of AccountShell and native account drawer under prefers-reduced-motion: reduce.",
+        "source": "src/styles/account.css"
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "public-tablet-max",
+        "value": "1023px"
+      },
+      {
+        "name": "public-phone-max",
+        "value": "639px"
+      },
+      {
+        "name": "shared-header-footer-max",
+        "value": "700px"
+      },
+      {
+        "name": "auth-form-only-max",
+        "value": "700px"
+      },
+      {
+        "name": "footer-two-columns-max",
+        "value": "1023px"
+      },
+      {
+        "name": "detail-compact-max",
+        "value": "1199px"
+      },
+      {
+        "name": "detail-single-column-max",
+        "value": "899px"
+      },
+      {
+        "name": "account-sidebar-min",
+        "value": "1024px",
+        "purpose": "Viewport: fixed 240px sidebar; native modal drawer below.",
+        "source": "src/styles/account.css"
+      },
+      {
+        "name": "account-drawer-max",
+        "value": "1023px",
+        "purpose": "Viewport: hide sidebar, 68px toolbar and mobile navigation.",
+        "source": "src/styles/account.css"
+      },
+      {
+        "name": "account-phone-max",
+        "value": "600px",
+        "purpose": "Viewport: 16px content gutters, 26px app-heading, one-column fields, phone chat and Impact.",
+        "source": "src/styles/account.css"
+      },
+      {
+        "name": "account-goods-two-min",
+        "value": "480px",
+        "purpose": "Container: two-column item grid; gap remains 16px.",
+        "source": "src/styles/account.css"
+      },
+      {
+        "name": "account-goods-three-min",
+        "value": "760px",
+        "purpose": "Container: three-column item grid.",
+        "source": "src/styles/account.css"
+      },
+      {
+        "name": "account-goods-four-min",
+        "value": "1000px",
+        "purpose": "Container: four-column item grid.",
+        "source": "src/styles/account.css"
+      },
+      {
+        "name": "account-activity-and-process-max",
+        "value": "950px",
+        "purpose": "Container: one activity/process column; message list pane becomes 240px.",
+        "source": "src/styles/account.css"
+      },
+      {
+        "name": "account-task-single-max",
+        "value": "760px",
+        "purpose": "Container: detail/Repair/profile/offers reflow; message list or thread; two assessment/Impact columns.",
+        "source": "src/styles/account.css"
+      },
+      {
+        "name": "account-recommendations-single-max",
+        "value": "700px",
+        "purpose": "Viewport: inherited recommendation single-column reflow; account keeps 24px desktop column gutter.",
+        "source": "src/styles/globals.css:572; src/styles/account.css:169"
+      }
+    ],
+    "roundedMeta": {
+      "catalog-skeleton-line": {
+        "displayName": "Catalogue skeleton line",
+        "purpose": "Garis placeholder statis saja; radius kecil disengaja, sesuai advisori detector."
+      },
+      "account-action": {
+        "displayName": "User action",
+        "purpose": "Buttons, status badges, unread count, and user trigger in the user workspace; source uses 100px explicitly.",
+        "scope": "AccountShell",
+        "source": "src/styles/account.css"
+      },
+      "account-control": {
+        "displayName": "User control",
+        "purpose": "Native account input/select/textarea, city options, ItemCard media, photo previews/evidence, transaction item photo, offer message, Repair private note, and conversation rows; not a blanket card radius.",
+        "scope": "AccountShell",
+        "source": "src/styles/account.css"
+      },
+      "account-compact-surface": {
+        "displayName": "User compact surface",
+        "purpose": "ItemCard, Listing/transaction rows, user Impact metric, user popover, skeleton, chat history and chat bubble large corners.",
+        "scope": "AccountShell",
+        "source": "src/styles/account.css"
+      },
+      "account-thumbnail-button": {
+        "displayName": "User thumbnail button",
+        "purpose": "Gallery thumbnail selection button; 1px border, 2px Green when selected.",
+        "scope": "AccountShell",
+        "source": "src/styles/account.css"
+      },
+      "account-thumbnail-image": {
+        "displayName": "User thumbnail image",
+        "purpose": "Photo or fallback inside the gallery thumbnail button.",
+        "scope": "AccountShell",
+        "source": "src/styles/account.css"
+      },
+      "account-chat-tail": {
+        "displayName": "User chat tail",
+        "purpose": "One small corner per incoming/outgoing chat bubble; direction reverses for own messages.",
+        "scope": "AccountShell",
+        "source": "src/styles/account.css"
+      }
+    },
+    "accountWorkspace": {
+      "scope": "21 USER /app page entrypoints in AccountShell, including owner Passport and participant correction",
+      "excluded": [
+        "Admin /app/admin in legacy AdminAppShell",
+        "PUBLIC /passport/[id]"
+      ],
+      "authority": "Approved code-led extension of the inherited white/forest/cream Plus Jakarta Sans world; .impeccable/briefs/app.md",
+      "sourceReferences": [
+        "src/styles/account.css",
+        "src/styles/globals.css",
+        "src/app/layout.tsx",
+        "src/components/layout/account-shell.tsx",
+        "src/features/account/heading.tsx",
+        "src/features/account/skeleton.tsx",
+        "src/features/account/error.tsx",
+        "src/features/auth/password-input.tsx",
+        "src/components/layout/app-shell.tsx",
+        "src/components/layout/admin-shell.tsx",
+        "src/app/app/layout.tsx",
+        "src/features/items/photo.tsx",
+        "src/features/items/card.tsx",
+        "src/features/items/gallery.tsx",
+        "src/features/items/form.tsx",
+        "src/features/assessments/result.tsx",
+        "src/features/listings/shared.tsx",
+        "src/features/listings/list.tsx",
+        "src/features/listings/form.tsx",
+        "src/features/listings/detail.tsx",
+        "src/features/market/process-shared.tsx",
+        "src/features/offers/list.tsx",
+        "src/features/conversations/rows.tsx",
+        "src/features/conversations/list.tsx",
+        "src/features/conversations/thread.tsx",
+        "src/features/admin/moderation/list.tsx",
+        "src/features/admin/moderation/detail.tsx",
+        "src/features/transactions/labels.ts",
+        "src/features/transactions/shared.tsx",
+        "src/features/transactions/list.tsx",
+        "src/features/transactions/evidence.tsx",
+        "src/features/transactions/detail.tsx",
+        "src/features/transactions/notifications.tsx",
+        "src/lib/date.ts",
+        "src/components/ui/heading.tsx",
+        "src/components/ui/query-state.tsx",
+        "src/components/ui/critical-button.tsx",
+        "src/components/ui/reason-field.tsx",
+        "src/features/passport/page.tsx",
+        "src/features/impact/period.ts",
+        "src/features/impact/period-picker.tsx",
+        "src/features/impact/summary.tsx",
+        "src/features/impact/page.tsx",
+        "src/features/assessments/explanation.tsx",
+        "src/features/admin/users/list.tsx",
+        "src/features/corrections/types.ts",
+        "src/features/admin/transactions/list.tsx",
+        "src/features/corrections/shared.tsx",
+        "src/features/admin/reports/detail.tsx",
+        "src/features/corrections/detail.tsx",
+        "src/features/admin/reports/list.tsx",
+        "src/features/corrections/hold-form.tsx",
+        "src/features/passport/visibility-form.tsx",
+        "src/features/transactions/history-actions.tsx",
+        "src/features/transactions/report-form.tsx",
+        "src/hooks/use-critical-action.ts",
+        "src/components/ui/action-feedback.tsx",
+        "src/components/ui/confirm-dialog.tsx",
+        "src/components/ui/primitives.tsx",
+        "src/features/profile/avatar.tsx",
+        "src/features/profile/photo-editor.tsx",
+        "src/features/profile/sessions.tsx"
+      ],
+      "entrypoints": [
+        "src/app/app/page.tsx",
+        "src/app/app/barang/page.tsx",
+        "src/app/app/barang/baru/page.tsx",
+        "src/app/app/barang/[id]/page.tsx",
+        "src/app/app/barang/[id]/edit/page.tsx",
+        "src/app/app/barang/[id]/passport/page.tsx",
+        "src/app/app/barang/[id]/penilaian/page.tsx",
+        "src/app/app/barang/[id]/penilaian/baru/page.tsx",
+        "src/app/app/barang/[id]/penilaian/[assessmentId]/page.tsx",
+        "src/app/app/barang/[id]/perbaikan/page.tsx",
+        "src/app/app/listings/page.tsx",
+        "src/app/app/listings/new/page.tsx",
+        "src/app/app/listings/[id]/page.tsx",
+        "src/app/app/penawaran/page.tsx",
+        "src/app/app/transaksi/page.tsx",
+        "src/app/app/transaksi/[id]/page.tsx",
+        "src/app/app/pesan/page.tsx",
+        "src/app/app/pesan/[id]/page.tsx",
+        "src/app/app/koreksi/[id]/page.tsx",
+        "src/app/app/impact/page.tsx",
+        "src/app/app/profil/page.tsx"
+      ],
+      "layout": {
+        "sidebar": "240px fixed; 100dvh; padding 26px 16px 18px; viewport >=1024px",
+        "toolbar": "sticky top 0; z-index 30; height 76px, then 68px through 1023px; padding-inline 24px, then 12px through 600px; box-shadow none",
+        "content": "max-width 1500px; margin-inline auto; padding 26px 24px 64px, top 22px through 1023px, then 20px 16px 40px through 600px; container-type inline-size",
+        "drawer": "native dialog; width min(300px, calc(100vw - 32px)); 100dvh; padding 20px 16px; native inherited 2px radius; no added motion",
+        "itemGrid": "1/2/3/4 columns at content widths below 480/480/760/1000px; gap 16px",
+        "activityGrid": "3 columns/gap 16px; 1 column/gap 12px through content width 950px; padding 22px then 20px",
+        "taskGrids": "Item detail 1.1fr/1fr, gap 28px; Repair 1fr/1fr and profile 1.15fr/1fr, gap 24px; single column through content width 760px",
+        "processGrids": "Owner Listing .85fr/1.15fr and transaction 1.6fr/1fr, gap 20px; single column through content width 950px",
+        "messageWorkspace": "285px list pane + flexible thread, gap 20px; list 240px through content width 950px; list or thread only through content width 760px",
+        "forms": "Item/Listing max-width 900px, section gap 28px; form-grid gap 20px and single column through viewport 600px; preserve existing sections/steps",
+        "recommendationGrid": "2 columns with gap 0 24px; inherited single column through viewport 700px",
+        "impactGrid": "3 columns/gap 14px; 2 columns through content width 760px; 1 column through viewport 600px",
+        "ownerPassport": "Timeline date column 170px/gap 28px; single column through viewport 600px",
+        "criticalDialog": "width min(560px, calc(100vw - 32px)); max-height calc(100dvh - 32px); padding 26px then 22px through 600px"
+      },
+      "components": {
+        "buttons": "Account override: min-height 44px; small 40px; disabled opacity .55; inherited primary Green/secondary Sage/danger hover",
+        "fields": "Account input/select/textarea: min-height 48px; textarea 120px; Line border; focus border Green and no box-shadow; Field links labels/helper/error",
+        "navigation": "46px minimum links, 19px SVG stroke 1.7; same active route metadata for sidebar/drawer/breadcrumbs; correction under Transaksi; assessment creation Penilaian baru",
+        "photos": "Item card 4:3 cover; main gallery 4:3 contain; thumbnails 82px wide, button height 64px; signed session access and accessible missing-photo fallback",
+        "chat": "Textarea flex 1, min-height 52px/max-height 140px; send width auto/flex 0 0 auto; history scroll anchor and stable retry ID retained",
+        "notices": "Info/success Soft Sage, error Error Surface; no border; role status/alert; labelled warning badge uses scoped warning pair",
+        "profile": "36px toolbar/sidebar avatar; password toggle 42px; photo crop radius control; session revocation consent and typed TUTUP closure"
+      },
+      "shapeRoles": {
+        "card": "16px: task panels, form sections, primary gallery, owner Passport summary, empty/activity/offer panels, critical dialogs",
+        "control": "12px: account navigation/notices, assessment subpanels, owner Passport photos, upload/crop surfaces, economic entries and chat composer",
+        "price": "8px: account password toggle and popover menu rows",
+        "circle": "50%: avatars and icon controls",
+        "nativeDrawer": "2px inherited globals.css dialog baseline; scoped drawer does not override radius",
+        "account-action": "Buttons, status badges, unread count, and user trigger in the user workspace; source uses 100px explicitly.",
+        "account-control": "Native account input/select/textarea, city options, ItemCard media, photo previews/evidence, transaction item photo, offer message, Repair private note, and conversation rows; not a blanket card radius.",
+        "account-compact-surface": "ItemCard, Listing/transaction rows, user Impact metric, user popover, skeleton, chat history and chat bubble large corners.",
+        "account-thumbnail-button": "Gallery thumbnail selection button; 1px border, 2px Green when selected.",
+        "account-thumbnail-image": "Photo or fallback inside the gallery thumbnail button.",
+        "account-chat-tail": "One small corner per incoming/outgoing chat bubble; direction reverses for own messages."
+      },
+      "evidence": {
+        "fullReview": ".impeccable/review/app/review.md",
+        "correctionVerdict": ".impeccable/review/app/verdict.md",
+        "disposition": "ship, scoped to four scored material fixes; original review remains the full account review",
+        "resolved": [
+          "Readable 320/390px chat composer",
+          "Correction Transaksi group and Peninjauan koreksi breadcrumb",
+          "Penilaian baru breadcrumb distinct from Tambah barang",
+          "24px desktop recommendation gutter with phone reflow"
+        ],
+        "verification": ".impeccable/review/app/verification.md",
+        "inspection": ".impeccable/review/app/inspection.json",
+        "interactions": ".impeccable/review/app/interactions.json",
+        "regressions": ".impeccable/review/app/regressions.json",
+        "captures": "58 final captures: 57 manifest paths plus drawer-390.png; reviewer reopened 10 affected captures",
+        "results": "39 intercepted frontend scenarios passed; typecheck/lint passed; 0 runtime errors and 0 horizontal document overflow",
+        "detector": "One run: 0 anti-patterns and 25 advisory notes; intentional source-backed control/photo shapes and local state colors; no rerun",
+        "assets": "No new or replaced raster assets; existing local photos only in intercepted review fixtures",
+        "limits": "Frontend fixture evidence and style/scope regressions; real backend upload/payment/ownership integration and real mutations not asserted"
+      }
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Aksi primer publik; teks dan ikon mengikuti CTA pencatatan. Pratinjau statis tanpa sesi.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\">Catat barangmu<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M7 7h10v10\"></path><path d=\"M7 17 17 7\"></path></svg></button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:13px 22px;border:1px solid transparent;border-radius:var(--radius-pill,999px);background:var(--forest,#1B3A28);color:var(--white,#FFFFFF);font-family:var(--font-ui,\"Plus Jakarta Sans\",Arial,sans-serif);font-size:14px;font-weight:600;line-height:1.2;white-space:nowrap;text-decoration:none;cursor:pointer;box-shadow:none;transition:background-color var(--duration-fast,150ms) var(--ease-ui,cubic-bezier(.2,.8,.2,1)),border-color var(--duration-fast,150ms) var(--ease-ui,cubic-bezier(.2,.8,.2,1));}.ds-btn-primary:hover{background:var(--green,#2D5E3A);}.ds-btn-primary:focus-visible{outline:3px solid var(--green,#2D5E3A);outline-offset:4px;}.ds-btn-primary:disabled{opacity:.52;cursor:not-allowed;}@media(prefers-reduced-motion:reduce){.ds-btn-primary{transition:none;}}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Aksi sekunder bergaris untuk menjelajahi Market atau memilih ulang kategori.",
+      "html": "<button class=\"ds-btn-secondary\" type=\"button\">Jelajahi Market<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M7 7h10v10\"></path><path d=\"M7 17 17 7\"></path></svg></button>",
+      "css": ".ds-btn-secondary{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:13px 22px;border:1px solid transparent;border-radius:var(--radius-pill,999px);background:var(--surface,var(--white,#FFFFFF));color:var(--forest,#1B3A28);font-family:var(--font-ui,\"Plus Jakarta Sans\",Arial,sans-serif);font-size:14px;font-weight:600;line-height:1.2;white-space:nowrap;text-decoration:none;cursor:pointer;box-shadow:none;transition:background-color var(--duration-fast,150ms) var(--ease-ui,cubic-bezier(.2,.8,.2,1)),border-color var(--duration-fast,150ms) var(--ease-ui,cubic-bezier(.2,.8,.2,1));}.ds-btn-secondary:hover{background:var(--cream,#F5F3EE);border-color:var(--green,#2D5E3A);}.ds-btn-secondary:focus-visible{outline:3px solid var(--green,#2D5E3A);outline-offset:4px;}.ds-btn-secondary:disabled{opacity:.52;cursor:not-allowed;}.ds-btn-secondary{border-color:var(--surface-line,#E2E8DF);}@media(prefers-reduced-motion:reduce){.ds-btn-secondary{transition:none;}}"
+    },
+    {
+      "name": "Quiet Button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "Tindakan pemulihan ringan; aplikasi menghubungkan Coba lagi ke refetch.",
+      "html": "<button class=\"ds-btn-quiet\" type=\"button\">Coba lagi</button>",
+      "css": ".ds-btn-quiet{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:13px 22px;border:1px solid transparent;border-radius:var(--radius-pill,999px);background:transparent;color:var(--forest,#1B3A28);font-family:var(--font-ui,\"Plus Jakarta Sans\",Arial,sans-serif);font-size:14px;font-weight:600;line-height:1.2;white-space:nowrap;text-decoration:none;cursor:pointer;box-shadow:none;transition:background-color var(--duration-fast,150ms) var(--ease-ui,cubic-bezier(.2,.8,.2,1)),border-color var(--duration-fast,150ms) var(--ease-ui,cubic-bezier(.2,.8,.2,1));}.ds-btn-quiet:hover{text-decoration:underline;text-underline-offset:5px;}.ds-btn-quiet:focus-visible{outline:3px solid var(--green,#2D5E3A);outline-offset:4px;}.ds-btn-quiet:disabled{opacity:.52;cursor:not-allowed;}.ds-btn-quiet{padding-inline:6px;}@media(prefers-reduced-motion:reduce){.ds-btn-quiet{transition:none;}}"
+    },
+    {
+      "name": "Hero Primary Button",
+      "kind": "button",
+      "refersTo": "button-hero-primary",
+      "description": "Aksi Market White/Forest dalam konteks hero gelap; bidang pembungkus hanya memberi konteks pratinjau.",
+      "html": "<div class=\"ds-hero-context\"><button class=\"ds-btn-hero-primary\" type=\"button\">Jelajahi Market<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M7 7h10v10\"></path><path d=\"M7 17 17 7\"></path></svg></button></div>",
+      "css": ".ds-hero-context{display:inline-flex;flex-wrap:wrap;gap:12px;padding:24px;border-radius:var(--radius-hero,24px);background:var(--forest,#1B3A28);}.ds-btn-hero-primary{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:13px 22px;border:1px solid transparent;border-radius:var(--radius-pill,999px);background:var(--white,#FFFFFF);color:var(--forest,#1B3A28);font-family:var(--font-ui,\"Plus Jakarta Sans\",Arial,sans-serif);font-size:14px;font-weight:600;line-height:1.2;white-space:nowrap;text-decoration:none;cursor:pointer;box-shadow:none;transition:background-color var(--duration-fast,150ms) var(--ease-ui,cubic-bezier(.2,.8,.2,1)),border-color var(--duration-fast,150ms) var(--ease-ui,cubic-bezier(.2,.8,.2,1));}.ds-btn-hero-primary:hover{background:var(--sage,#DDE6D8);}.ds-btn-hero-primary:focus-visible{outline:3px solid var(--green,#2D5E3A);outline-offset:4px;}.ds-btn-hero-primary:disabled{opacity:.52;cursor:not-allowed;}@media(max-width:639px){.ds-btn-hero-primary{min-height:46px;padding:12px 18px;font-size:13px;}}@media(prefers-reduced-motion:reduce){.ds-btn-hero-primary{transition:none;}}"
+    },
+    {
+      "name": "Hero Secondary Button",
+      "kind": "button",
+      "refersTo": "button-hero-secondary",
+      "description": "Aksi pencatatan di hero dengan latar dan garis khusus; bidang pembungkus hanya memberi konteks pratinjau.",
+      "html": "<div class=\"ds-hero-context\"><button class=\"ds-btn-hero-secondary\" type=\"button\">Catat barangmu<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M7 7h10v10\"></path><path d=\"M7 17 17 7\"></path></svg></button></div>",
+      "css": ".ds-hero-context{display:inline-flex;flex-wrap:wrap;gap:12px;padding:24px;border-radius:var(--radius-hero,24px);background:var(--forest,#1B3A28);}.ds-btn-hero-secondary{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:13px 22px;border:1px solid transparent;border-radius:var(--radius-pill,999px);background:#183624;color:var(--white,#FFFFFF);font-family:var(--font-ui,\"Plus Jakarta Sans\",Arial,sans-serif);font-size:14px;font-weight:600;line-height:1.2;white-space:nowrap;text-decoration:none;cursor:pointer;box-shadow:none;transition:background-color var(--duration-fast,150ms) var(--ease-ui,cubic-bezier(.2,.8,.2,1)),border-color var(--duration-fast,150ms) var(--ease-ui,cubic-bezier(.2,.8,.2,1));}.ds-btn-hero-secondary:hover{background:var(--green,#2D5E3A);border-color:var(--white,#FFFFFF);}.ds-btn-hero-secondary:focus-visible{outline:3px solid var(--green,#2D5E3A);outline-offset:4px;}.ds-btn-hero-secondary:disabled{opacity:.52;cursor:not-allowed;}.ds-btn-hero-secondary{border-color:#A5B9A5;}@media(max-width:639px){.ds-btn-hero-secondary{min-height:46px;padding:12px 18px;font-size:13px;}}@media(prefers-reduced-motion:reduce){.ds-btn-hero-secondary{transition:none;}}"
+    },
+    {
+      "name": "Public Field and Period Select",
+      "kind": "input",
+      "refersTo": "input-control",
+      "description": "Style input yang tersedia dalam shell dan select periode yang sudah tampil pada Impact; preview ini tetap milik lingkup publik; field ruang pengguna /app kini memakai override AccountShell tersendiri.",
+      "html": "<div class=\"ds-fields\"><div class=\"ds-field\"><label for=\"ds-item-name\">Nama barang</label><input id=\"ds-item-name\" class=\"ds-input\" type=\"text\" placeholder=\"Tulis nama barang\"></div><div class=\"ds-field ds-period\"><label for=\"ds-impact-period\">Periode laporan (Asia/Jakarta)</label><select id=\"ds-impact-period\" class=\"ds-select\"><option>30 hari</option><option>90 hari</option><option selected>Seluruh waktu</option></select></div></div>",
+      "css": ".ds-fields{display:grid;gap:20px;max-width:340px;color:var(--forest,#1B3A28);font-family:var(--font-ui,\"Plus Jakarta Sans\",Arial,sans-serif);font-size:16px;line-height:1.6;font-weight:500;}.ds-field{display:grid;gap:7px;}.ds-field label{font-size:.9rem;font-weight:600;}.ds-period label{font-size:13px;}.ds-input,.ds-select{width:100%;min-height:46px;padding:11px 13px;border:1px solid var(--surface-line,#E2E8DF);border-radius:var(--radius-control,12px);background:var(--white,#FFFFFF);color:var(--forest,#1B3A28);font-family:var(--font-ui,\"Plus Jakarta Sans\",Arial,sans-serif);font-size:16px;line-height:1.6;font-weight:500;outline:none;}.ds-input::placeholder{color:var(--muted,#5B6D60);}.ds-select{appearance:none;padding-right:40px;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='m5 7.5 5 5 5-5' stroke='%235B6D60' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 12px center;background-size:20px 20px;}.ds-input:focus,.ds-select:focus{border-color:var(--green,#2D5E3A);box-shadow:0 0 0 2px var(--sage,#DDE6D8);}.ds-input:focus-visible{outline:3px solid var(--green,#2D5E3A);outline-offset:4px;}.ds-select:focus-visible{outline:3px solid var(--green,#2D5E3A);outline-offset:4px;}@media(forced-colors:active){.ds-select{appearance:auto;padding-right:13px;background-image:none;}}"
+    },
+    {
+      "name": "Public Navigation",
+      "kind": "nav",
+      "description": "Navbar sticky bersama; pratinjau tamu memuat tiga tautan teks: Market, Cara kerja, dan Impact dan disclosure akun. Lonceng /app dan penawaran /app/penawaran hanya dirender oleh SiteHeader saat sesi AUTHENTICATED; menu mobile muncul hingga 700px.",
+      "html": "<header class=\"ds-site-header\"><div class=\"ds-site-header-inner\"><a class=\"ds-wordmark\" href=\"/\">valora</a><div class=\"ds-header-actions\"><nav class=\"ds-header-nav\" aria-label=\"Navigasi utama\"><a href=\"/market\">Market</a><a href=\"/cara-kerja\" aria-current=\"page\">Cara kerja</a><a href=\"/impact\">Impact</a></nav><nav class=\"ds-header-icon-nav\" aria-label=\"Akun dan aktivitas\"><button class=\"ds-header-icon-link\" type=\"button\" aria-label=\"Menu akun\" title=\"Menu akun\" aria-expanded=\"false\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"19\" height=\"19\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M18 20a6 6 0 0 0-12 0\"></path><circle cx=\"12\" cy=\"10\" r=\"4\"></circle><circle cx=\"12\" cy=\"12\" r=\"10\"></circle></svg></button></nav><button class=\"ds-menu-button\" type=\"button\" aria-label=\"Buka menu\" aria-controls=\"ds-mobile-navigation\" aria-expanded=\"false\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 12h16\"></path><path d=\"M4 18h16\"></path><path d=\"M4 6h16\"></path></svg></button></div></div><nav id=\"ds-mobile-navigation\" class=\"ds-header-mobile-nav\" aria-label=\"Navigasi seluler\" hidden><a href=\"/market\">Market</a><a href=\"/cara-kerja\" aria-current=\"page\">Cara kerja</a><a href=\"/impact\">Impact</a><a href=\"/masuk\">Masuk</a><a href=\"/daftar\">Mulai sekarang</a></nav></header>",
+      "css": ".ds-site-header{position:sticky;top:0;z-index:30;border:0;box-shadow:none;border-radius:0;background:var(--white,#FFFFFF);color:var(--forest,#1B3A28);font-family:var(--font-ui,\"Plus Jakarta Sans\",Arial,sans-serif);font-size:16px;line-height:1.6;font-weight:500;}.ds-site-header-inner{display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:88px;width:calc(100% - 48px);max-width:none;margin:0 auto;}.ds-wordmark{display:inline-flex;align-items:center;flex-wrap:wrap;gap:9px;font-size:30px;font-weight:700;line-height:1;letter-spacing:-.04em;text-decoration:none;color:inherit;}.ds-header-actions{display:flex;align-items:center;gap:24px;flex-shrink:0;}.ds-header-nav{display:flex;align-items:center;gap:28px;font-size:13px;}.ds-header-nav a{color:inherit;text-decoration:none;}.ds-header-nav a:hover{text-decoration:underline;text-underline-offset:4px;}.ds-header-nav a[aria-current=\"page\"]{font-weight:700;text-decoration:underline;text-underline-offset:6px;}.ds-header-icon-nav{display:flex;align-items:center;gap:2px;}.ds-header-icon-link,.ds-menu-button{position:relative;align-items:center;justify-content:center;width:44px;height:44px;padding:0;flex-shrink:0;border:0;border-radius:var(--radius-pill,999px);background:transparent;color:var(--forest,#1B3A28);cursor:pointer;}.ds-header-icon-link{display:inline-flex;text-decoration:none;}.ds-menu-button{display:none;}.ds-header-icon-link::before,.ds-menu-button::before{content:\"\";position:absolute;inset:5px;border:1px solid var(--surface-line,#E2E8DF);border-radius:inherit;background:var(--white,#FFFFFF);transition:background-color 150ms ease,border-color 150ms ease;}.ds-header-icon-link>svg,.ds-menu-button>svg{position:relative;}.ds-header-icon-link:hover{text-decoration:none;}.ds-header-icon-link:hover::before,.ds-menu-button:hover::before{border-color:var(--green,#2D5E3A);background:var(--cream,#F5F3EE);}.ds-header-icon-link:active::before,.ds-menu-button:active::before{background:var(--sage,#DDE6D8);}.ds-wordmark:focus-visible,.ds-header-nav a:focus-visible,.ds-header-icon-link:focus-visible,.ds-menu-button:focus-visible,.ds-header-mobile-nav a:focus-visible{outline:3px solid var(--green,#2D5E3A);outline-offset:4px;}.ds-header-mobile-nav{display:grid;position:absolute;top:100%;left:0;right:0;width:calc(100% - 48px);max-width:none;max-height:calc(100dvh - 88px);margin:0 auto;overflow-y:auto;gap:6px;padding:12px 12px 18px;border:1px solid var(--line,#CAD4C7);border-radius:var(--radius-card,16px);background:var(--white,#FFFFFF);}.ds-header-mobile-nav[hidden]{display:none;}.ds-header-mobile-nav a{padding:11px 15px;border:0;border-radius:var(--radius-control,12px);background:var(--cream,#F5F3EE);color:inherit;font-size:14px;text-decoration:none;}.ds-header-mobile-nav a:hover{text-decoration:underline;text-underline-offset:4px;}.ds-header-mobile-nav a[aria-current=\"page\"]{background:var(--sage,#DDE6D8);font-weight:700;}@media(max-width:1023px){.ds-wordmark span{display:none;}.ds-header-nav{gap:20px;}}@media(max-width:700px){.ds-header-nav{display:none;}.ds-menu-button{display:inline-flex;}.ds-header-actions{gap:4px;}.ds-header-icon-nav{gap:0;}}@media(max-width:639px){.ds-site-header-inner{min-height:72px;width:calc(100% - 32px);}.ds-header-mobile-nav{width:calc(100% - 32px);}.ds-wordmark{font-size:27px;}}@media(prefers-reduced-motion:reduce){.ds-header-icon-link::before,.ds-menu-button::before{transition:none;}}"
+    },
+    {
+      "name": "Category Pills",
+      "kind": "chip",
+      "refersTo": "category-pill",
+      "description": "Tombol kategori dengan aria-pressed; filter serta label sebenarnya disediakan LandingMarket dan API.",
+      "html": "<div class=\"ds-category-row\" role=\"group\" aria-label=\"Kategori barang\"><button class=\"ds-category-pill\" type=\"button\" aria-pressed=\"true\">Semua</button><button class=\"ds-category-pill\" type=\"button\" aria-pressed=\"false\">Buku</button></div>",
+      "css": ".ds-category-row{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;padding:4px;}.ds-category-pill{flex:0 0 auto;min-height:44px;padding:10px 17px;border:1px solid var(--surface-line,#E2E8DF);border-radius:var(--radius-pill,999px);background:var(--white,#FFFFFF);color:var(--muted,#5B6D60);font-family:var(--font-ui,\"Plus Jakarta Sans\",Arial,sans-serif);font-size:13px;font-weight:500;line-height:1.6;cursor:pointer;transition:background-color var(--duration-fast,150ms) var(--ease-ui,cubic-bezier(.2,.8,.2,1)),border-color var(--duration-fast,150ms) var(--ease-ui,cubic-bezier(.2,.8,.2,1));}.ds-category-pill:hover{border-color:var(--green,#2D5E3A);background:var(--cream,#F5F3EE);color:var(--forest,#1B3A28);}.ds-category-pill[aria-pressed=\"true\"]{border-color:var(--forest,#1B3A28);background:var(--forest,#1B3A28);color:var(--white,#FFFFFF);}.ds-category-pill[aria-pressed=\"true\"]:hover{background:var(--green,#2D5E3A);}.ds-category-pill:focus-visible{outline:3px solid var(--green,#2D5E3A);outline-offset:4px;}@media(max-width:639px){.ds-category-row{justify-content:flex-start;flex-wrap:nowrap;overflow-x:auto;padding:4px 2px 12px;scrollbar-width:thin;overscroll-behavior-x:contain;}.ds-category-pill{padding:10px 16px;}}@media(prefers-reduced-motion:reduce){.ds-category-pill{transition:none;}}@media(forced-colors:active){.ds-category-pill[aria-pressed=\"true\"]{border-color:Highlight;outline:2px solid Highlight;outline-offset:2px;}}"
+    },
+    {
+      "name": "Public Listing Card — Missing Photo",
+      "kind": "card",
+      "refersTo": "market-card",
+      "description": "Preview statis MarketCard yang digunakan ulang oleh Beranda, katalog /market, dan barang terkait pada detail PublicShell, dengan fallback foto. Tautan runtime menuju detail PublicShell; bukan Listing aktif atau klaim kondisi unit. Passport publik /passport/[id] dan Admin /app/admin tetap di luar scope; kartu barang privat pengguna memakai ItemCard tersendiri dalam AccountShell.",
+      "html": "<a class=\"ds-market-card\" href=\"/market\"><div class=\"ds-card-image\"><div class=\"ds-photo-empty\" role=\"img\" aria-label=\"Foto contoh barang belum tersedia\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"28\" height=\"28\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><line x1=\"2\" x2=\"22\" y1=\"2\" y2=\"22\"></line><path d=\"M10.41 10.41a2 2 0 1 1-2.83-2.83\"></path><line x1=\"13.5\" x2=\"6\" y1=\"13.5\" y2=\"21\"></line><line x1=\"18\" x2=\"21\" y1=\"12\" y2=\"15\"></line><path d=\"M3.59 3.59A1.99 1.99 0 0 0 3 5v14a2 2 0 0 0 2 2h14c.55 0 1.052-.22 1.41-.59\"></path><path d=\"M21 15V5a2 2 0 0 0-2-2H9\"></path></svg><span>Foto belum tersedia</span></div></div><div class=\"ds-card-content\"><div class=\"ds-card-kicker\"><span>Resell</span><span>Buku</span></div><h3 title=\"Contoh barang\">Contoh barang</h3><p class=\"ds-card-description\">Ringkasan kondisi yang diberikan pemilik tampil di sini.</p><div class=\"ds-card-bottom\"><div><strong>Harga belum tersedia</strong><small>Kondisi baik · Jakarta</small></div><span class=\"ds-card-arrow\" aria-hidden=\"true\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M7 7h10v10\"></path><path d=\"M7 17 17 7\"></path></svg></span></div></div></a>",
+      "css": ".ds-market-card{display:flex;flex-direction:column;min-width:0;width:384px;max-width:100%;padding:8px;border:1px solid var(--surface-line,#E2E8DF);border-radius:var(--radius-card,16px);background:var(--white,#FFFFFF);color:var(--forest,#1B3A28);font-family:var(--font-ui,\"Plus Jakarta Sans\",Arial,sans-serif);font-size:16px;line-height:1.6;font-weight:500;text-decoration:none;transition:border-color var(--duration-normal,200ms) var(--ease-ui,cubic-bezier(.2,.8,.2,1));}.ds-market-card:hover{border-color:var(--green,#2D5E3A);text-decoration:none;}.ds-market-card:focus-visible{outline:3px solid var(--green,#2D5E3A);outline-offset:4px;}.ds-card-image{position:relative;height:auto;aspect-ratio:4/3;overflow:hidden;border-radius:var(--radius-control,12px);background:var(--cream,#F5F3EE);}.ds-photo-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;width:100%;height:100%;min-height:0;background:var(--cream,#F5F3EE);color:var(--muted,#5B6D60);font-size:13px;}.ds-card-content{display:flex;flex:1;flex-direction:column;padding:16px 8px 8px;}.ds-card-kicker{display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--muted,#5B6D60);font-size:12px;font-weight:600;letter-spacing:0;}.ds-card-kicker>span:first-child{padding:4px 9px;border-radius:var(--radius-pill,999px);background:var(--sage,#DDE6D8);color:var(--forest,#1B3A28);}.ds-card-kicker>span:last-child{text-align:right;}.ds-market-card h3{display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2;min-height:2.6em;margin:14px 0 8px;font-size:20px;font-weight:700;line-height:1.3;letter-spacing:-.025em;overflow-wrap:break-word;text-wrap:balance;}.ds-card-description{display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2;min-height:3.2em;margin:0;color:var(--muted,#5B6D60);font-size:13px;line-height:1.6;}.ds-card-bottom{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-top:auto;padding:18px 0 0;}.ds-card-bottom>div{display:grid;gap:3px;min-width:0;}.ds-card-bottom strong{display:inline-block;padding:6px 10px;border:1px solid var(--surface-line,#E2E8DF);border-radius:8px;background:var(--cream,#F5F3EE);font-size:14px;line-height:1.4;font-weight:600;}.ds-card-bottom small{display:block;margin-top:10px;color:var(--muted,#5B6D60);font-size:12px;line-height:1.6;letter-spacing:0;font-variant-numeric:tabular-nums;}.ds-card-arrow{display:inline-flex;align-items:center;justify-content:center;flex:0 0 36px;width:36px;height:36px;border:1px solid var(--surface-line,#E2E8DF);border-radius:var(--radius-pill,999px);}@media(max-width:639px){.ds-card-content{padding:16px 12px 12px;}}@media(prefers-reduced-motion:reduce){.ds-market-card{transition:none;}}@media(forced-colors:active){.ds-market-card{border-color:CanvasText;}}"
+    },
+    {
+      "name": "Public Impact Metric — Unavailable",
+      "kind": "card",
+      "refersTo": "impact-metric-cream",
+      "description": "Bidang Impact pertama memakai Cream dan state nilai null yang benar; tanpa angka contoh yang dikarang.",
+      "html": "<section class=\"ds-impact-metric\"><span>Barang dinilai ulang</span><strong>Belum tersedia</strong></section>",
+      "css": ".ds-impact-metric{display:flex;flex-direction:column;gap:14px;min-height:182px;max-width:320px;padding:26px;border:1px solid var(--surface-line,#E2E8DF);border-radius:var(--radius-card,16px);background:var(--cream,#F5F3EE);color:var(--forest,#1B3A28);font-family:var(--font-ui,\"Plus Jakarta Sans\",Arial,sans-serif);font-size:14px;font-weight:500;line-height:1.6;overflow-wrap:anywhere;}.ds-impact-metric strong{font-size:clamp(28px,3.2vw,42px);font-weight:700;line-height:1.2;letter-spacing:-.035em;font-variant-numeric:tabular-nums;}@media(max-width:639px){.ds-impact-metric{min-height:154px;padding:24px;}.ds-impact-metric strong{font-size:38px;}}"
+    },
+    {
+      "name": "Public Passport Stack",
+      "kind": "card",
+      "refersTo": "radius-card",
+      "description": "Preview statis Profil barang pada stack tiga kartu. Contoh kursi dan tahun 2026 adalah ilustrasi; pemilihan kartu, fokus, dan isi lainnya dijalankan PassportStack.",
+      "html": "<div class=\"ds-passport-example\"><h3>Setiap barang<br>menyimpan cerita.</h3><p>Dari pertama dicatat, dirawat, hingga menemukan pemilik berikutnya.</p><div class=\"ds-passport-stack\"><div class=\"ds-passport-stack-stage\" role=\"group\" aria-label=\"Tiga bagian Passport barang\"><div class=\"ds-passport-stack-card\" data-layer=\"0\" style=\"--stack-shift:0px;--stack-scale:1;--stack-tab-height:44px;z-index:3\"><button class=\"ds-passport-stack-trigger\" type=\"button\" aria-pressed=\"true\"><span>Profil barang</span><span class=\"ds-passport-stack-number\" aria-hidden=\"true\">01</span></button><div class=\"ds-passport-stack-content ds-passport-stack-profile\"><img src=\"/images/editorial/care-chair.png\" width=\"1260\" height=\"1260\" alt=\"Ilustrasi kursi kayu dengan dudukan anyaman\"><div class=\"ds-passport-stack-identity\"><strong>Kursi kayu</strong><span>Rumah &amp; furnitur</span><span class=\"ds-passport-stack-year\">2026<small>Tahun pencatatan</small></span><p>Foto, identitas, dan kategori dalam satu Passport.</p></div></div></div><div class=\"ds-passport-stack-card\" data-layer=\"1\" style=\"--stack-shift:-44px;--stack-scale:0.94;--stack-tab-height:46.808510638297875px;z-index:2\"><button class=\"ds-passport-stack-trigger\" type=\"button\" aria-pressed=\"false\"><span>Kondisi & perawatan</span><span class=\"ds-passport-stack-number\" aria-hidden=\"true\">02</span></button></div><div class=\"ds-passport-stack-card\" data-layer=\"2\" style=\"--stack-shift:-88px;--stack-scale:0.88;--stack-tab-height:50px;z-index:1\"><button class=\"ds-passport-stack-trigger\" type=\"button\" aria-pressed=\"false\"><span>Cerita berikutnya</span><span class=\"ds-passport-stack-number\" aria-hidden=\"true\">03</span></button></div></div><p class=\"ds-passport-stack-note\">Ilustrasi Passport. Pilih kartu untuk melihat isinya.</p></div></div>",
+      "css": ".ds-passport-example{--surface:var(--white,#FFFFFF);--surface-subtle:var(--cream,#F5F3EE);--surface-soft:var(--sage,#DDE6D8);--surface-ink:var(--forest,#1B3A28);--surface-muted:var(--muted,#5B6D60);--radius-card:16px;--radius-control:12px;width:620px;max-width:100%;padding:28px;border-radius:16px;background:#EDF1EA;color:var(--surface-ink);font-family:var(--font-ui,\"Plus Jakarta Sans\",Arial,sans-serif);line-height:1.6;box-sizing:border-box;}.ds-passport-example *{box-sizing:border-box;}.ds-passport-example h3{margin:0;font-size:28px;line-height:1.2;font-style:italic;font-weight:500;letter-spacing:-.035em;}.ds-passport-example>p{max-width:42ch;margin:13px 0 0;color:var(--surface-muted);font-size:14px;}.ds-passport-example button,.ds-passport-example a{font-family:inherit;}.ds-passport-example a{color:inherit;text-decoration:none;}.ds-passport-example a:hover{text-decoration:underline;}.ds-passport-example :focus-visible{outline:3px solid var(--green,#2D5E3A);outline-offset:4px;}.ds-passport-stack-card{box-shadow:none;}.ds-passport-stack { margin-top: 28px; }\n.ds-passport-stack-stage { position: relative; height: 352px; isolation: isolate; }\n.ds-passport-stack-card { position: absolute; top: 88px; left: 0; width: 100%; height: 264px; border-radius: var(--radius-card); background: var(--surface); transform: translateY(var(--stack-shift)) scale(var(--stack-scale)); transform-origin: center top; transition: transform 350ms cubic-bezier(.16, 1, .3, 1), background-color 200ms ease; }\n.ds-passport-stack-card[data-layer=\"1\"] { background: #F7F9F5; }\n.ds-passport-stack-card[data-layer=\"2\"] { background: #F2F5EF; }\n.ds-passport-stack-trigger { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-height: var(--stack-tab-height); padding: 8px 16px; border: 0; border-radius: var(--radius-card) var(--radius-card) 0 0; background: transparent; color: var(--surface-ink); text-align: left; font-size: 13px; font-weight: 600; cursor: pointer; }\n.ds-passport-stack-trigger:hover { background: var(--surface-soft); }\n.ds-passport-stack-number { flex: 0 0 auto; font-size: 15px; font-weight: 500; font-variant-numeric: tabular-nums; }\n.ds-passport-stack-content { height: 220px; padding: 0 8px 8px; }\n.ds-passport-stack-content[hidden] { display: none; }\n.ds-passport-stack-profile { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 16px; }\n.ds-passport-stack-profile > img { width: 100%; height: 100%; min-height: 0; object-fit: cover; border-radius: var(--radius-control); }\n.ds-passport-stack-identity { display: flex; flex-direction: column; min-width: 0; padding: 12px 8px 8px 0; }\n.ds-passport-stack-identity strong { font-size: clamp(18px, 1.8vw, 25px); font-weight: 600; line-height: 1.2; letter-spacing: -.025em; }\n.ds-passport-stack-identity > span { margin-top: 8px; font-size: 12px; color: var(--surface-muted); }\n.ds-passport-stack-identity > .ds-passport-stack-year { margin-top: 18px; color: var(--surface-ink); font-size: 24px; line-height: 1.15; font-weight: 500; font-variant-numeric: tabular-nums; }\n.ds-passport-stack-year small { display: block; margin-top: 4px; color: var(--surface-muted); font-size: 11px; line-height: 1.4; letter-spacing: 0; }\n.ds-passport-example .ds-passport-stack-identity p { margin-top: auto; font-size: 12px; line-height: 1.65; }\n.ds-passport-stack-details { display: flex; flex-direction: column; height: 100%; padding: 4px 12px 0; }\n.ds-passport-example .ds-passport-stack-details > p { margin: 0; color: var(--surface-ink); font-size: 18px; line-height: 1.35; font-weight: 500; }\n.ds-passport-stack-details dl { display: grid; gap: 12px; margin-top: 16px; }\n.ds-passport-stack-details dl > div { display: flex; align-items: center; gap: 12px; }\n.ds-passport-stack-details dt { font-size: 12px; font-weight: 600; }\n.ds-passport-stack-details dd { margin: 2px 0 0; color: var(--surface-muted); font-size: 12px; }\n.ds-passport-stack-link { display: inline-flex; align-items: center; align-self: flex-start; gap: 8px; min-height: 44px; margin-top: auto; font-size: 12px; font-weight: 600; }\n.ds-passport-stack-options { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 18px 0 12px; }\n.ds-passport-stack-options li { padding: 5px 12px; border-radius: var(--radius-pill); background: var(--surface-subtle); font-size: 12px; }\n.ds-passport-stack-status { color: var(--surface-muted); font-size: 12px; }\n.ds-passport-example .ds-passport-stack-note { margin-top: 12px; font-size: 12px; line-height: 1.65; }\n@media(max-width:1023px){.ds-passport-stack-profile{gap:10px;}}@media(max-width:639px){.ds-passport-stack-identity{padding-right:0;}}@media(max-width:359px){.ds-passport-stack-stage{height:380px;}.ds-passport-stack-card{height:292px;}.ds-passport-stack-content{height:248px;}}@media(prefers-reduced-motion:reduce){.ds-passport-stack-card{transition:none;}}@media(forced-colors:active){.ds-passport-stack-card{outline:1px solid CanvasText;}.ds-passport-stack-trigger[aria-pressed=\"true\"]{text-decoration:underline;}}"
+    },
+    {
+      "name": "Public Footer",
+      "kind": "navigation",
+      "refersTo": "surface-ink",
+      "description": "Footer Forest membulat dengan empat kelompok Jelajahi, Layanan, Tentang kami, dan Akun; empat kolom desktop, dua hingga 1023px, brand di atas grid. Tautan ponsel 44px dengan padding vertikal 6px. Tidak dirender AuthShell.",
+      "html": "<div class=\"ds-public-footer-example valora-surface\"><footer class=\"site-footer\"><div class=\"container\"><div class=\"footer-top\"><div class=\"footer-brand\"><a class=\"wordmark\" href=\"/\">valora</a><div class=\"footer-social-icons\" role=\"group\" aria-label=\"Ikon sosial dan kontak\"><span class=\"footer-social-mark\" role=\"img\" aria-label=\"Instagram\"><svg width=\"19\" height=\"19\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect width=\"20\" height=\"20\" x=\"2\" y=\"2\" rx=\"5\"></rect><circle cx=\"12\" cy=\"12\" r=\"4\"></circle><circle cx=\"18\" cy=\"6\" r=\".5\" fill=\"currentColor\"></circle></svg></span><span class=\"footer-social-mark\" role=\"img\" aria-label=\"TikTok\"><svg width=\"19\" height=\"19\" viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M19.59 6.69a4.83 4.83 0 0 1-3.77-4.14V2h-3.7v13.26a2.9 2.9 0 1 1-2.9-2.9 2.8 2.8 0 0 1 .88.14V8.72a6.6 6.6 0 1 0 5.72 6.54V9.04a8.45 8.45 0 0 0 4.94 1.58V6.93a4.8 4.8 0 0 1-1.17-.24Z\" /></svg></span><span class=\"footer-social-mark\" role=\"img\" aria-label=\"Gmail\"><svg width=\"19\" height=\"19\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect width=\"20\" height=\"16\" x=\"2\" y=\"4\" rx=\"2\"></rect><path d=\"m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7\"></path></svg></span><span class=\"footer-social-mark\" role=\"img\" aria-label=\"YouTube\"><svg width=\"19\" height=\"19\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17\"></path><path d=\"m10 15 5-3-5-3z\"></path></svg></span></div></div><div class=\"footer-navigation\"><nav class=\"footer-nav-group\" aria-label=\"Jelajahi\"><span class=\"footer-nav-heading\">Jelajahi</span><a href=\"/market\">Market</a><a href=\"/cara-kerja\">Cara kerja</a><a href=\"/impact\">Impact</a></nav><nav class=\"footer-nav-group\" aria-label=\"Layanan\"><span class=\"footer-nav-heading\">Layanan</span><a href=\"/layanan#passport\">Valora Passport</a><a href=\"/layanan#penilaian\">Penilaian kondisi</a><a href=\"/layanan#perawatan\">Catatan perawatan</a><a href=\"/layanan#jual-tukar-donasi\">Jual, tukar &amp; donasi</a></nav><nav class=\"footer-nav-group\" aria-label=\"Tentang kami\"><span class=\"footer-nav-heading\">Tentang kami</span><a href=\"/tentang-kami#valora\">Tentang Valora</a><a href=\"/tentang-kami#misi\">Misi &amp; nilai</a><a href=\"/tentang-kami#faq\">Pertanyaan umum</a></nav><nav class=\"footer-nav-group\" aria-label=\"Akun\"><span class=\"footer-nav-heading\">Akun</span><a href=\"/daftar\">Daftar</a><a href=\"/masuk\">Masuk</a></nav></div></div><div class=\"footer-bottom\"><span>Valora · INSYFEST 2026</span><span>Barang baik punya cerita berikutnya.</span></div></div></footer></div>",
+      "css": ".site-footer { width: calc(100% - 48px); margin: 56px auto 16px; padding: 56px 0 35px; overflow: hidden; border-radius: 24px; background: var(--forest); color: var(--cream); }\n.site-footer > .container { width: calc(100% - 80px); max-width: none; }\n.site-footer .wordmark { display: inline-block; font-size: clamp(2.6rem, 5vw, 3.4rem); line-height: 1; letter-spacing: -.06em; }\n.site-footer .wordmark:hover { text-decoration: none; }\n.footer-top { display: flex; justify-content: space-between; gap: 48px; padding-bottom: 64px; }\n.footer-brand { display: grid; align-content: start; gap: 23px; }\n.footer-social-icons { display: flex; flex-wrap: wrap; gap: 8px; }\n.footer-social-mark { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border: 1px solid rgb(255 255 255 / 27%); border-radius: 999px; color: var(--cream); }\n.footer-navigation { display: flex; flex-wrap: wrap; gap: 44px clamp(36px, 6vw, 88px); }\n.footer-nav-group { display: grid; align-content: start; justify-items: start; gap: 11px; min-width: 84px; font-size: .9rem; }\n.footer-nav-heading { margin-bottom: 5px; color: #b8ccb9; font-size: .68rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }\n.footer-nav-group a { min-height: 28px; text-underline-offset: 5px; }\n.footer-nav-group a:hover { text-decoration-thickness: 1px; }\n.footer-nav-group a:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }\n.footer-bottom { border-top: 1px solid #4d6955; padding-top: 20px; display: flex; justify-content: space-between; color: #b8ccb9; font-size: .75rem; }\n\n.valora-surface .site-footer { width: calc(100% - 48px); margin: 64px auto 16px; padding: 42px 0 28px; border: 0; border-radius: 24px; background: var(--forest); color: var(--cream); }\n.valora-surface .site-footer > .container { width: calc(100% - 80px); max-width: none; }\n.valora-surface .footer-top { align-items: flex-start; padding-bottom: 32px; gap: 48px; }\n.valora-surface .site-footer .wordmark { font-size: 46px; }\n.valora-surface .footer-brand { gap: 20px; }\n.valora-surface .footer-social-mark { border-color: rgb(255 255 255 / 27%); color: var(--cream); }\n.valora-surface .footer-navigation { gap: 48px clamp(44px, 7vw, 96px); }\n.valora-surface .footer-nav-group { min-width: 92px; font-size: 14px; }\n.valora-surface .footer-nav-heading { color: #b8ccb9; }\n.valora-surface .footer-bottom { padding-top: 20px; border-color: #4d6955; color: #b8ccb9; font-size: 12px; }\n\n.ds-public-footer-example.valora-surface{width:100%;max-width:1440px;min-height:0;margin:0 auto;padding:0;border:0;border-radius:0;background:var(--white,#FFFFFF);color:var(--forest,#1B3A28);--surface:var(--white,#FFFFFF);--surface-line:#E2E8DF;--surface-ink:var(--forest,#1B3A28);--surface-muted:var(--muted,#5B6D60);--font-ui:\"Plus Jakarta Sans\",Arial,sans-serif;}.ds-public-footer-example .site-footer{box-sizing:border-box;}.ds-public-footer-example .site-footer *{box-sizing:border-box;}@media(max-width:1023px){.ds-public-footer-example.valora-surface .site-footer>.container{width:calc(100% - 64px);}}@media(max-width:639px){.ds-public-footer-example.valora-surface .site-footer{width:calc(100% - 32px);margin:48px auto 16px;padding:34px 0 24px;border-radius:18px;}.ds-public-footer-example.valora-surface .site-footer>.container{width:calc(100% - 56px);}}\n.ds-public-footer-example .footer-navigation{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:32px;flex:0 1 780px;min-width:0;width:100%;}.ds-public-footer-example.valora-surface .footer-navigation{gap:32px clamp(24px,3vw,48px);}.ds-public-footer-example .footer-nav-group{gap:8px;min-width:0;}.ds-public-footer-example .footer-nav-group a{display:inline-flex;align-items:center;min-height:32px;max-width:100%;overflow-wrap:anywhere;}@media(max-width:1023px){.ds-public-footer-example .footer-top{flex-direction:column;}.ds-public-footer-example .footer-navigation{grid-template-columns:repeat(2,minmax(0,1fr));flex:none;}}@media(max-width:700px){.ds-public-footer-example .footer-nav-group{gap:0;}.ds-public-footer-example .footer-nav-group a{min-height:44px;padding-block:6px;}}@media(max-width:639px){.ds-public-footer-example.valora-surface .footer-navigation{gap:24px;}.ds-public-footer-example.valora-surface .footer-nav-group{gap:0;font-size:13px;}}"
+    },
+    {
+      "name": "Public Account Menu",
+      "kind": "navigation",
+      "refersTo": "surface-ink",
+      "description": "Popover akun dari ikon navbar. Pengguna masuk memilih Ringkasan, Profil saya, atau Keluar; tamu memilih Masuk atau Daftar.",
+      "html": "<div class=\"ds-account-menu-preview\"><button class=\"ds-account-trigger\" type=\"button\" aria-expanded=\"true\" aria-controls=\"ds-account-popover\" aria-label=\"Menu akun\"><svg width=\"19\" height=\"19\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"></circle><circle cx=\"12\" cy=\"10\" r=\"4\"></circle><path d=\"M6 20a6 6 0 0 1 12 0\"></path></svg></button><div id=\"ds-account-popover\" class=\"ds-account-popover\"><div class=\"ds-account-identity\"><strong>Nama pengguna</strong><span>email@contoh.id</span></div><div class=\"ds-account-actions\"><a href=\"/app\">Ringkasan</a><a href=\"/app/profil\">Profil saya</a><button type=\"button\">Keluar</button></div></div></div>",
+      "css": ".ds-account-menu-preview{position:relative;min-height:250px;padding:16px;background:var(--white,#FFFFFF);color:var(--forest,#1B3A28);font-family:var(--font-ui,\"Plus Jakarta Sans\",Arial,sans-serif);}.ds-account-trigger{position:relative;display:grid;place-items:center;width:44px;height:44px;margin-left:auto;border:0;border-radius:999px;background:transparent;color:var(--forest,#1B3A28);cursor:pointer;}.ds-account-trigger::before{content:\"\";position:absolute;inset:5px;border:1px solid var(--line,#CAD4C7);border-radius:999px;background:var(--cream,#F5F3EE);}.ds-account-trigger svg{position:relative;}.ds-account-popover{position:absolute;top:68px;right:16px;display:grid;gap:8px;width:min(280px,calc(100% - 32px));padding:10px;border:1px solid var(--line,#CAD4C7);border-radius:16px;background:var(--white,#FFFFFF);}.ds-account-identity{display:grid;gap:4px;padding:12px;border-radius:11px;background:var(--cream,#F5F3EE);}.ds-account-identity strong{font-size:14px;font-weight:600;}.ds-account-identity span{color:var(--muted,#5B6D60);font-size:12px;}.ds-account-actions{display:grid;gap:2px;}.ds-account-actions a,.ds-account-actions button{display:flex;align-items:center;width:100%;min-height:42px;padding:10px 12px;border:0;border-radius:10px;background:transparent;color:inherit;font:inherit;font-size:13px;text-align:left;text-decoration:none;cursor:pointer;}.ds-account-actions a:hover,.ds-account-actions button:hover{background:var(--sage,#DDE6D8);}@media(max-width:370px){.ds-account-popover{right:-48px;}}"
+    },
+    {
+      "name": "Account Field and Password Toggle",
+      "kind": "input",
+      "refersTo": "auth-input",
+      "description": "Pratinjau field akun; toggle native 44px, helper/error IDs dan invalid border. Perubahan visibilitas serta ref dijalankan form aplikasi, preview ini tetap milik AuthShell. Dashboard pengguna kini memakai override AccountShell yang terpisah.",
+      "html": "<div class=\"ds-auth-field\"><label for=\"ds-auth-password\">Kata sandi</label><div class=\"ds-auth-password\"><input id=\"ds-auth-password\" type=\"password\" required autocomplete=\"new-password\" aria-describedby=\"ds-auth-password-hint\" placeholder=\"Kata sandi\"><button type=\"button\" aria-label=\"Tampilkan kata sandi\" aria-pressed=\"false\" aria-controls=\"ds-auth-password\"><svg width=\"19\" height=\"19\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" aria-hidden=\"true\"><path d=\"M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z\"></path><circle cx=\"12\" cy=\"12\" r=\"3\"></circle></svg></button></div><p id=\"ds-auth-password-hint\">Minimal 12 karakter.</p></div>",
+      "css": ".ds-auth-field{display:grid;gap:8px;max-width:480px;font-family:var(--font-ui,\"Plus Jakarta Sans\",Arial,sans-serif);color:var(--forest,#1B3A28);}.ds-auth-field label{font-size:13px;font-weight:600;}.ds-auth-password{position:relative;}.ds-auth-password input{box-sizing:border-box;width:100%;min-height:50px;padding:13px 58px 13px 16px;border:1px solid var(--surface-line,#E2E8DF);border-radius:var(--radius-control,12px);background:var(--white,#FFFFFF);color:inherit;font:inherit;font-size:16px;line-height:1.6;}.ds-auth-password input::placeholder{color:var(--muted,#5B6D60);}.ds-auth-password input:focus{border-color:var(--green,#2D5E3A);box-shadow:0 0 0 2px var(--sage,#DDE6D8);}.ds-auth-password input[aria-invalid=\"true\"]{border-color:var(--danger,#A33A2B);}.ds-auth-password button{position:absolute;top:3px;right:4px;display:grid;place-items:center;width:44px;height:44px;padding:0;border:0;border-radius:999px;background:transparent;color:var(--muted,#5B6D60);cursor:pointer;}.ds-auth-password button:hover,.ds-auth-password button[aria-pressed=\"true\"]{background:var(--cream,#F5F3EE);color:var(--forest,#1B3A28);}.ds-auth-field :focus-visible{outline:3px solid var(--green,#2D5E3A);outline-offset:4px;}.ds-auth-field p{margin:0;color:var(--muted,#5B6D60);font-size:12px;line-height:1.6;}"
+    },
+    {
+      "name": "Account Primary Button",
+      "kind": "button",
+      "refersTo": "auth-primary",
+      "description": "Aksi pill selebar form akun, min-height 50px; state pending dan guard permintaan dijalankan form.",
+      "html": "<button type=\"button\" class=\"ds-auth-primary\">Masuk</button>",
+      "css": ".ds-auth-primary{box-sizing:border-box;width:100%;max-width:480px;min-height:50px;padding:13px 22px;border:1px solid transparent;border-radius:var(--radius-pill,999px);background:var(--forest,#1B3A28);color:var(--white,#FFFFFF);font-family:var(--font-ui,\"Plus Jakarta Sans\",Arial,sans-serif);font-size:14px;font-weight:600;line-height:1.2;cursor:pointer;transition:background-color 150ms cubic-bezier(.2,.8,.2,1);}.ds-auth-primary:hover{background:var(--green,#2D5E3A);}.ds-auth-primary:focus-visible{outline:3px solid var(--green,#2D5E3A);outline-offset:4px;}.ds-auth-primary:disabled{opacity:.52;cursor:not-allowed;}@media(prefers-reduced-motion:reduce){.ds-auth-primary{transition:none;}}"
+    },
+    {
+      "name": "Account Informational Notice",
+      "kind": "custom",
+      "refersTo": "auth-notice-info",
+      "description": "Notice informasi Cream; sukses memakai Sage, gagal Error Surface/Error Line. Role status untuk info/sukses dan alert untuk error.",
+      "html": "<div class=\"ds-auth-notice\" role=\"status\">Kamu sudah masuk. <a href=\"/app\">Lanjut ke akun</a></div>",
+      "css": ".ds-auth-notice{padding:13px 16px;border:1px solid var(--surface-line,#E2E8DF);border-radius:var(--radius-control,12px);background:var(--cream,#F5F3EE);font-family:var(--font-ui,\"Plus Jakarta Sans\",Arial,sans-serif);color:var(--forest,#1B3A28);font-size:13px;line-height:1.6;overflow-wrap:anywhere;}.ds-auth-notice a{color:inherit;text-decoration:underline;text-underline-offset:4px;}.ds-auth-notice a:hover{color:var(--green,#2D5E3A);}.ds-auth-notice a:focus-visible{outline:3px solid var(--green,#2D5E3A);outline-offset:4px;}"
+    },
+    {
+      "name": "Service Section",
+      "kind": "custom",
+      "refersTo": "service-note",
+      "description": "Section Layanan split, heading 25–32px/27px ponsel, isi 15px/14px ponsel, catatan Cream 13px.",
+      "html": "<section class=\"ds-service-section\"><h2>Penilaian kondisi</h2><div><p>Kenali kondisi barang melalui penilaian sesuai kategorinya.</p><p class=\"ds-service-note\">Penilaian ini bukan sertifikat kondisi fisik atau jaminan harga jual.</p><a href=\"/cara-kerja#penilaian\">Pelajari cara penilaian</a></div></section>",
+      "css": ".ds-service-section{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:64px;padding:40px 0;border-top:1px solid var(--surface-line,#E2E8DF);font-family:var(--font-ui,\"Plus Jakarta Sans\",Arial,sans-serif);color:var(--forest,#1B3A28);}.ds-service-section h2{max-width:22ch;margin:0;font-size:clamp(25px,2.8vw,32px);font-weight:700;line-height:1.2;letter-spacing:-.035em;}.ds-service-section p{max-width:70ch;margin:0;color:var(--muted,#5B6D60);font-size:15px;line-height:1.8;}.ds-service-section .ds-service-note{margin-top:20px;padding:16px 20px;border-radius:var(--radius-control,12px);background:var(--cream,#F5F3EE);font-size:13px;line-height:1.7;}.ds-service-section a{display:inline-flex;align-items:center;min-height:44px;margin-top:16px;color:inherit;font-size:13px;font-weight:600;text-underline-offset:4px;}.ds-service-section a:hover{color:var(--green,#2D5E3A);}.ds-service-section a:focus-visible{outline:3px solid var(--green,#2D5E3A);outline-offset:4px;}@media(max-width:1023px){.ds-service-section{gap:32px;}}@media(max-width:639px){.ds-service-section{grid-template-columns:minmax(0,1fr);gap:20px;padding:28px 0;}.ds-service-section h2{font-size:27px;}.ds-service-section p{font-size:14px;}.ds-service-section .ds-service-note{padding:16px;font-size:13px;}}"
+    },
+    {
+      "name": "Native About FAQ",
+      "kind": "custom",
+      "refersTo": "faq-summary",
+      "description": "details/summary native, Enter/Space, name valora-faq; ringkasan 16px/15px ponsel dan target 64px.",
+      "html": "<details class=\"ds-faq-item\" name=\"valora-faq\"><summary><span>Apa arti Valora Score?</span><svg class=\"ds-faq-expand\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" aria-hidden=\"true\"><path d=\"M12 5v14M5 12h14\"></path></svg><svg class=\"ds-faq-collapse\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" aria-hidden=\"true\"><path d=\"M5 12h14\"></path></svg></summary><p>Score bukan sertifikat kondisi fisik atau jaminan harga jual.</p></details>",
+      "css": ".ds-faq-item{border-top:1px solid var(--surface-line,#E2E8DF);border-bottom:1px solid var(--surface-line,#E2E8DF);font-family:var(--font-ui,\"Plus Jakarta Sans\",Arial,sans-serif);color:var(--forest,#1B3A28);}.ds-faq-item summary{display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:64px;padding:20px 0;box-sizing:border-box;list-style:none;cursor:pointer;font-size:16px;font-weight:600;line-height:1.5;}.ds-faq-item summary::-webkit-details-marker{display:none;}.ds-faq-item summary:hover{color:var(--green,#2D5E3A);}.ds-faq-item summary:focus-visible{outline:3px solid var(--green,#2D5E3A);outline-offset:4px;}.ds-faq-item summary svg{flex-shrink:0;}.ds-faq-item .ds-faq-collapse,.ds-faq-item[open] .ds-faq-expand{display:none;}.ds-faq-item[open] .ds-faq-collapse{display:block;}.ds-faq-item p{max-width:70ch;margin:0;padding-bottom:24px;color:var(--muted,#5B6D60);font-size:14px;line-height:1.8;}@media(max-width:639px){.ds-faq-item summary{gap:16px;font-size:15px;}}"
+    },
+    {
+      "name": "Catalogue Compact Hero",
+      "kind": "custom",
+      "refersTo": "catalog-hero",
+      "description": "Preview mandiri tanpa foto; runtime memakai foto editorial existing, shade responsif, dan anchor hasil.",
+      "html": "<section class=\"ds-catalog-hero\"><div><h1>Barang baik,<br>untuk cerita berikutnya.</h1><p>Temukan barang untuk keseharianmu. Jual kembali, tukar, atau terima lewat donasi.</p></div><a class=\"ds-catalog-hero-link\" href=\"#market-results\">Jelajahi barang <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M7 7h10v10M7 17 17 7\"/></svg></a></section>",
+      "css": ".ds-catalog-hero{font-family:var(--font-ui,\"Plus Jakarta Sans\",Arial,sans-serif);font-weight:500;line-height:1.6;color:var(--forest,#1B3A28);display:flex;align-items:center;justify-content:space-between;gap:32px;min-height:280px;padding:36px 48px;border-radius:24px;background:var(--forest,#1B3A28);color:var(--white,#FFFFFF);overflow:hidden;}.ds-catalog-hero>div{max-width:620px;}.ds-catalog-hero h1{margin:0 0 16px;font-size:44px;font-weight:700;line-height:1.15;letter-spacing:-.035em;text-wrap:balance;}.ds-catalog-hero p{max-width:48ch;margin:0;font-size:14px;line-height:1.75;}.ds-catalog-hero-link{display:inline-flex;align-items:center;gap:8px;flex-shrink:0;align-self:flex-end;min-height:48px;padding:13px 22px;border-radius:999px;background:var(--white,#FFFFFF);color:var(--forest,#1B3A28);font-size:14px;font-weight:600;text-decoration:none;}.ds-catalog-hero-link:hover{background:var(--sage,#DDE6D8);}.ds-catalog-hero-link:focus-visible{outline:3px solid white;outline-offset:4px;}.ds-catalog-hero-link:active{background:var(--sage,#DDE6D8);}@media(max-width:1023px){.ds-catalog-hero{padding:32px;}.ds-catalog-hero h1{font-size:36px;}}@media(max-width:639px){.ds-catalog-hero{display:block;min-height:200px;padding:24px;border-radius:16px;}.ds-catalog-hero h1{font-size:28px;margin-bottom:12px;}.ds-catalog-hero p{font-size:12px;max-width:35ch;}.ds-catalog-hero-link{min-height:44px;margin-top:20px;padding:10px 16px;font-size:12px;}}"
+    },
+    {
+      "name": "Catalogue Pills and Inline Filters",
+      "kind": "custom",
+      "refersTo": "catalog-filter-panel",
+      "description": "Preview statis panel terbuka dan pill katalog. Submit, removable chips, price/type guard, dan city keyboard dijalankan MarketPage; field contoh tidak mengirim data.",
+      "html": "<section class=\"ds-catalog-filter-example\"><div class=\"ds-catalog-pill-row\" role=\"group\" aria-label=\"Jenis penawaran\"><button type=\"button\" class=\"ds-catalog-pill\" aria-pressed=\"true\">Semua</button><button type=\"button\" class=\"ds-catalog-pill\" aria-pressed=\"false\">Jual kembali</button><button type=\"button\" class=\"ds-catalog-pill\" aria-pressed=\"false\">Tukar</button><button type=\"button\" class=\"ds-catalog-pill\" aria-pressed=\"false\">Donasi</button></div><button class=\"ds-catalog-disclosure\" type=\"button\" aria-expanded=\"true\" aria-controls=\"ds-market-extra\">Filter</button><div id=\"ds-market-extra\" class=\"ds-catalog-panel\"><div class=\"ds-catalog-extra-grid\"><label>Kondisi<select><option>Semua kondisi</option><option>Baik</option></select></label><label>Kabupaten/kota<input placeholder=\"Cari kota\" autocomplete=\"off\"><small>Ketik minimal dua huruf, lalu pilih kota.</small></label><label>Harga minimum<input inputmode=\"numeric\" placeholder=\"Rp 0\"></label><label>Harga maksimum<input inputmode=\"numeric\" placeholder=\"Tanpa batas\"></label></div><div class=\"ds-catalog-panel-bottom\"><p>Filter harga berlaku untuk barang jual kembali.</p><button type=\"button\" class=\"ds-catalog-apply\">Terapkan filter</button></div></div></section>",
+      "css": ".ds-catalog-filter-example{font-family:var(--font-ui,\"Plus Jakarta Sans\",Arial,sans-serif);font-weight:500;line-height:1.6;color:var(--forest,#1B3A28);}.ds-catalog-pill-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}.ds-catalog-pill{min-height:44px;padding:10px 20px;border:1px solid var(--surface-line,#E2E8DF);border-radius:999px;background:var(--white,#FFFFFF);color:var(--forest,#1B3A28);font:inherit;font-size:13px;cursor:pointer;transition:background-color 150ms ease,border-color 150ms ease;}.ds-catalog-pill:hover{background:var(--cream,#F5F3EE);border-color:var(--green,#2D5E3A);}.ds-catalog-pill[aria-pressed=\"true\"]{border-color:var(--forest,#1B3A28);background:var(--forest,#1B3A28);color:white;}.ds-catalog-pill:active{background:var(--sage,#DDE6D8);color:var(--forest,#1B3A28);}.ds-catalog-disclosure{min-height:48px;margin-bottom:24px;padding:13px 18px;border:1px solid var(--green,#2D5E3A);border-radius:12px;background:var(--sage,#DDE6D8);color:var(--forest,#1B3A28);font:inherit;font-size:13px;cursor:pointer;}.ds-catalog-panel{padding:24px;border-radius:16px;background:var(--cream,#F5F3EE);}.ds-catalog-extra-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;align-items:start;}.ds-catalog-extra-grid label{display:grid;gap:8px;min-width:0;font-size:13px;font-weight:600;}.ds-catalog-extra-grid input,.ds-catalog-extra-grid select{min-width:0;min-height:48px;padding:11px 13px;border:1px solid var(--surface-line,#E2E8DF);border-radius:12px;background:white;color:var(--forest,#1B3A28);font:inherit;font-size:16px;font-weight:500;}.ds-catalog-extra-grid small{font-size:12px;font-weight:500;color:var(--muted,#5B6D60);}.ds-catalog-panel-bottom{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-top:20px;}.ds-catalog-panel-bottom p{margin:0;font-size:12px;color:var(--muted,#5B6D60);}.ds-catalog-apply{min-height:48px;padding:13px 22px;border:1px solid var(--forest,#1B3A28);border-radius:999px;background:var(--forest,#1B3A28);color:white;font:inherit;font-size:13px;font-weight:600;cursor:pointer;}.ds-catalog-apply:hover{background:var(--green,#2D5E3A);}.ds-catalog-apply:active,.ds-catalog-disclosure:hover,.ds-catalog-disclosure:active{background:var(--cream,#F5F3EE);color:var(--forest,#1B3A28);}.ds-catalog-filter-example button:focus-visible,.ds-catalog-filter-example input:focus-visible,.ds-catalog-filter-example select:focus-visible{outline:3px solid var(--green,#2D5E3A);outline-offset:4px;}.ds-catalog-extra-grid input:disabled{background:var(--sage,#DDE6D8);color:var(--muted,#5B6D60);cursor:not-allowed;}.ds-catalog-extra-grid input[aria-invalid=\"true\"]{border-color:var(--danger,#A33A2B);}@media(max-width:1023px){.ds-catalog-extra-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}@media(max-width:639px){.ds-catalog-extra-grid{grid-template-columns:minmax(0,1fr);}.ds-catalog-panel{padding:20px;}.ds-catalog-panel-bottom{flex-direction:column;align-items:stretch;}.ds-catalog-pill{padding-inline:16px;font-size:12px;}}@media(prefers-reduced-motion:reduce){.ds-catalog-pill{transition:none;}}@media(forced-colors:active){.ds-catalog-pill[aria-pressed=\"true\"]{border:2px solid Highlight;}}"
+    },
+    {
+      "name": "Catalogue Initial Loading",
+      "kind": "card",
+      "refersTo": "catalog-skeleton-line",
+      "description": "Satu placeholder mandiri dari enam skeleton awal katalog; status loading terpisah dari skeleton aria-hidden. Garis statis, tanpa animasi tambahan.",
+      "html": "<div class=\"ds-catalog-loading\"><p role=\"status\">Memuat barang…</p><div class=\"ds-catalog-skeleton\" aria-hidden=\"true\"><div></div><span></span><span></span><span></span></div></div>",
+      "css": ".ds-catalog-loading{font-family:var(--font-ui,\"Plus Jakarta Sans\",Arial,sans-serif);font-weight:500;line-height:1.6;color:var(--forest,#1B3A28);width:384px;max-width:100%;}.ds-catalog-loading>p{font-size:12px;color:var(--muted,#5B6D60);}.ds-catalog-skeleton{padding:8px;border:1px solid var(--surface-line,#E2E8DF);border-radius:16px;}.ds-catalog-skeleton>div{aspect-ratio:4/3;border-radius:12px;background:var(--cream,#F5F3EE);}.ds-catalog-skeleton>span{display:block;height:14px;width:65%;margin:20px 8px;border-radius:4px;background:var(--sage,#DDE6D8);}.ds-catalog-skeleton>span:nth-child(3){width:85%;}.ds-catalog-skeleton>span:last-child{width:35%;}@media(forced-colors:active){.ds-catalog-skeleton>div,.ds-catalog-skeleton>span{border:1px solid CanvasText;}}"
+    },
+    {
+      "name": "Detail Inline Offer — Open",
+      "kind": "custom",
+      "refersTo": "detail-offer-panel",
+      "description": "Pratinjau statis form RESELL terbuka dengan field native 16px dan aksi pill; tanpa pengiriman data. ListingActions mengelola session gate, fokus pembukaan/penutupan, pending, retry ID, konflik, dan chat. Padding 24px/20px ponsel.",
+      "html": "<form class=\"ds-detail-offer-form\" aria-label=\"Contoh penawaran\"><div class=\"ds-detail-form-heading\"><h2>Ajukan penawaran</h2><button class=\"ds-detail-form-close\" type=\"button\" aria-label=\"Tutup formulir penawaran\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" aria-hidden=\"true\"><path d=\"M6 6l12 12M18 6L6 18\"/></svg></button></div><fieldset><label class=\"ds-detail-field\" for=\"ds-detail-offer-price\">Nominal penawaran<input id=\"ds-detail-offer-price\" type=\"number\" inputmode=\"numeric\" min=\"1\" max=\"1000000000000\" step=\"1\" required aria-describedby=\"ds-detail-price-hint\"><span id=\"ds-detail-price-hint\">Nominal usulan dalam rupiah, bukan pembayaran.</span></label><label class=\"ds-detail-field\" for=\"ds-detail-offer-message\">Pesan untuk pemilik (opsional)<textarea id=\"ds-detail-offer-message\" maxlength=\"500\" placeholder=\"Tulis pertanyaan atau konteks singkat.\"></textarea></label><button class=\"ds-detail-submit\" type=\"button\">Kirim penawaran<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" aria-hidden=\"true\"><path d=\"M7 17L17 7M7 7h10v10\"/></svg></button></fieldset></form>",
+      "css": ".ds-detail-offer-form{margin-top:20px;padding:24px;border-radius:16px;background:var(--cream,#F5F3EE);color:var(--forest,#1B3A28);font-family:var(--font-ui,\"Plus Jakarta Sans\",Arial,sans-serif);font-weight:500;line-height:1.6}.ds-detail-form-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}.ds-detail-form-heading h2{margin:0;font-size:20px;font-weight:700;line-height:1.4}.ds-detail-form-close{display:grid;place-items:center;flex-shrink:0;width:44px;height:44px;padding:0;border:1px solid var(--surface-line,#E2E8DF);border-radius:999px;background:var(--white,#FFFFFF);color:inherit;cursor:pointer}.ds-detail-form-close:hover{background:var(--sage,#DDE6D8)}.ds-detail-offer-form fieldset{display:grid;gap:20px;min-width:0;margin:0;padding:0;border:0}.ds-detail-field{display:grid;gap:8px;min-width:0;font-size:13px;font-weight:600}.ds-detail-field input,.ds-detail-field textarea{min-width:0;min-height:48px;padding:11px 13px;border:1px solid var(--surface-line,#E2E8DF);border-radius:12px;background:var(--white,#FFFFFF);color:inherit;font-family:inherit;font-size:16px;font-weight:500;line-height:1.6}.ds-detail-field textarea{min-height:104px;resize:vertical}.ds-detail-field span{color:var(--muted,#5B6D60);font-size:12px;font-weight:500;line-height:1.7}.ds-detail-field input:focus,.ds-detail-field textarea:focus{border-color:var(--green,#2D5E3A);box-shadow:0 0 0 2px var(--sage,#DDE6D8)}.ds-detail-submit{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:13px 22px;border:1px solid var(--forest,#1B3A28);border-radius:999px;background:var(--forest,#1B3A28);color:var(--white,#FFFFFF);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer}.ds-detail-submit:hover{background:var(--green,#2D5E3A);border-color:var(--green,#2D5E3A)}.ds-detail-offer-form :focus-visible{outline:3px solid var(--green,#2D5E3A);outline-offset:4px}.ds-detail-offer-form :disabled{opacity:.52;cursor:not-allowed}@media(max-width:639px){.ds-detail-offer-form{padding:20px}}"
+    },
+    {
+      "name": "User Workspace Task Controls",
+      "kind": "custom",
+      "refersTo": "account-task-panel",
+      "description": "Preview mandiri field, badge warning berlabel, dan aksi tugas AccountShell. Mengikuti account.css dan ui.tsx; tidak mengirim data. Drawer, sesi, konfirmasi dan retry tetap dijalankan komponen aplikasi.",
+      "html": "<section class=\"ds-account-task\" aria-labelledby=\"ds-account-task-title\"><div class=\"ds-account-task-heading\"><h2 id=\"ds-account-task-title\">Catatan barang</h2><span class=\"ds-account-badge\">Perlu data</span></div><label class=\"ds-account-field\" for=\"ds-account-name\">Nama barang<input id=\"ds-account-name\" class=\"ds-account-input\" placeholder=\"Contoh: Keyboard mekanis\" autocomplete=\"off\"></label><div class=\"ds-account-actions\"><button class=\"ds-account-primary\" type=\"button\">Simpan barang</button><button class=\"ds-account-quiet\" type=\"button\">Batal</button></div></section>",
+      "css": ".ds-account-task { width: min(100%, 460px); padding: 24px; border: 1px solid #E2E8DF; border-radius: 16px; background: #FFFFFF; color: var(--forest, #1B3A28); font-family: var(--font-ui, \"Plus Jakarta Sans\", Arial, sans-serif); font-size: 16px; font-weight: 500; line-height: 1.5; } .ds-account-task-heading { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 18px; } .ds-account-task-heading h2 { margin: 0; font-size: 20px; font-weight: 700; line-height: 1.35; letter-spacing: -.025em; } .ds-account-badge { display: inline-flex; border: 0; border-radius: 100px; padding: 6px 11px; background: #F4EAD5; color: #6C471D; font-size: 12px; font-weight: 600; line-height: 1.45; letter-spacing: .02em; } .ds-account-field { display: grid; gap: 8px; font-size: 14px; font-weight: 600; } .ds-account-input { width: 100%; min-height: 48px; padding: 12px 14px; border: 1px solid var(--line, #CAD4C7); border-radius: 10px; background: #FFFFFF; color: var(--forest, #1B3A28); font-family: inherit; font-size: 16px; font-weight: 500; line-height: 1.5; caret-color: var(--green, #2D5E3A); } .ds-account-input::placeholder { color: var(--muted, #5B6D60); } .ds-account-input:focus { border-color: var(--green, #2D5E3A); box-shadow: none; } .ds-account-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; } .ds-account-primary, .ds-account-quiet { min-height: 44px; padding: 11px 18px; border: 1px solid transparent; border-radius: 100px; font-family: inherit; font-size: 14px; font-weight: 600; line-height: 1.4; cursor: pointer; transition: background-color .15s, border-color .15s; } .ds-account-primary { background: var(--forest, #1B3A28); color: #FFFFFF; } .ds-account-primary:hover { background: var(--green, #2D5E3A); } .ds-account-quiet { border: 0; background: transparent; color: var(--forest, #1B3A28); } .ds-account-quiet:hover { text-decoration: underline; text-underline-offset: 5px; } .ds-account-task :focus-visible { outline: 2px solid var(--green, #2D5E3A); outline-offset: 3px; } .ds-account-task button:disabled { cursor: not-allowed; opacity: .55; } @media (prefers-reduced-motion: reduce) { .ds-account-task button { transition: none; } }",
+      "source": "src/styles/account.css; src/components/ui/primitives.tsx; src/features/items/form.tsx"
+    }
+  ],
+  "narrative": {
+    "northStar": "Barang lama, cerita baru",
+    "overview": "Valora memakai suasana katalog rumah yang tenang: permukaan putih, teks hijau hutan, foto barang yang besar, dan bidang cream atau sage secukupnya. Halaman putih memenuhi layar dengan tepi tipis; hero, foto, dan kartu memakai sudut membulat. Judul yang tegas dan jarak antarkelompok memberi tempat bagi benda sehari-hari untuk terlihat bernilai dan mudah dipahami.\n\nTipografi Indonesia tetap mudah dibaca. Foto editorial memberi konteks, sedangkan kartu Listing menempatkan jenis penawaran, kategori, judul, kondisi, harga atau tujuan pertukaran, dan kota di luar foto. Komponen terasa ringan melalui garis dan perubahan warna yang jelas.\n\nDokumen ini mencatat Beranda, katalog Market (/market), detail Listing (/market/[listingId]), Cara Kerja, Impact publik, Layanan, dan Tentang kami melalui PublicShell, serta lima route autentikasi melalui AuthShell. Keduanya mewarisi lingkup .valora-surface. Navbar sticky bersama menyediakan tiga tautan teks — Market, Cara kerja, dan Impact — serta disclosure akun; ikon lonceng dan penawaran hanya dirender saat sesi AUTHENTICATED. Footer bersama memiliki kelompok Jelajahi, Layanan, Tentang kami, dan Akun; AuthShell tidak menampilkan footer. Dua puluh satu entrypoint pengguna /app kini memakai AccountShell: kanvas putih, sidebar Cream yang kompak, toolbar sticky tanpa shadow, foto membulat, dan hierarki tugas yang lebih kecil. Passport pemilik (/app/barang/[id]/passport) termasuk scope pengguna ini. Route Passport publik /passport/[id] dan Admin /app/admin tetap memakai tata letak sebelumnya; keduanya berada di luar redesign pengguna.",
+    "keyCharacteristics": [
+      "Permukaan putih dengan Forest sebagai teks dan aksi utama.",
+      "Foto berbagai kategori barang, ruang lapang, serta sudut membulat sesuai peran.",
+      "Kontrol pill dan kartu datar dengan fokus keyboard yang terlihat.",
+      "Kondisi, sumber data, serta state gagal atau kosong tetap terbaca."
+    ],
+    "rules": [
+      {
+        "name": "The Surface Rule",
+        "body": "Gunakan White untuk permukaan utama, Cream atau Sage untuk bidang pendukung, dan Surface Line untuk garis pada komponen publik baru.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Family Rule",
+        "body": "Gunakan Plus Jakarta Sans yang disajikan aplikasi dengan bobot asli sesuai peran; pertahankan teks Indonesia dan angka rupiah agar terbaca utuh.",
+        "section": "typography"
+      },
+      {
+        "name": "The Canvas Rule",
+        "body": "Kanvas publik memenuhi layar tanpa bingkai luar. Header, hero, grid, dan footer sejajar pada gutter 24px di desktop/tablet dan 16px di ponsel. Paragraf langkah, catatan kecil, dan paragraf Passport pada Cara Kerja memakai lebar baca maksimum 70ch.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat Surface Rule",
+        "body": "Pisahkan bidang dengan ruang, latar, dan garis tipis. Ring fokus adalah penanda akses, bukan bayangan dekoratif.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do gunakan token frontmatter sebagai sumber nilai dan periksa lingkup PublicShell, AuthShell, AccountShell, serta SiteHeader bersama sebelum menerapkan pola baru.",
+      "Do pertahankan putih, hijau hutan, cream/sage terukur, foto barang besar, dan sudut membulat sesuai peran.",
+      "Do tampilkan judul, kondisi, jenis Listing, harga atau tujuan, serta kota sebagai teks di luar foto.",
+      "Do pertahankan kategori terpilih pada tautan Market, state pemulihan, fallback foto, dan CTA sesuai sesi.",
+      "Do pertahankan focus keyboard, reduced motion, serta penanda pilihan yang terbaca dalam forced colors.",
+      "Do bawa catatan sumber, periode, coverage, dan nilai belum tersedia bersama metrik Impact.",
+      "Do pertahankan form akun unframed, hierarki heading yang dicatat, bantuan/error tertaut, serta navbar aktivitas sesuai sesi.",
+      "Do pertahankan tautan footer yang membungkus dengan target ponsel 44px dan FAQ native yang dapat dioperasikan lewat keyboard.",
+      "Do pertahankan galeri detail yang tidak mencrop foto utama, penawaran inline dengan fokus dan recovery, serta MarketCard bersama untuk barang terkait.",
+      "Do gunakan skala tugas dan radius workspace sesuai peran selector; pertahankan form steps, signed photo access, status berlabel, pending/retry, serta fokus native.",
+      "Do baca lebar konten untuk grid barang pengguna dan pertahankan navigasi grup aktif pada route nested, termasuk koreksi serta penilaian baru."
+    ],
+    "donts": [
+      "Don't menyatakan Passport publik /passport/[id] atau Admin /app/admin telah dimigrasi; keduanya tetap berada di luar scope 21 entrypoint pengguna AccountShell.",
+      "Don't memakai radius lama atau grid Market lama sebagai spesifikasi kartu dan preview publik baru.",
+      "Don't menambahkan bayangan dekoratif, glassmorphism, blur dekoratif, atau gradient mencolok.",
+      "Don't menyamakan ilustrasi editorial, foto katalog demo, dan foto unit Listing yang terverifikasi.",
+      "Don't menambah badge verifikasi, angka pemasaran, nilai pengganti, atau klaim CO₂ yang tidak bersumber dari produk.",
+      "Don't menghilangkan penjelasan kondisi, disclosure simulasi, atau catatan sumber untuk mendapatkan tampilan yang lebih ringkas."
+    ]
+  }
+}

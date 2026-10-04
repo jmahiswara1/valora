@@ -1,0 +1,98 @@
+[
+  {
+    "route": "/",
+    "viewport": 1440,
+    "visible": true,
+    "width": 280,
+    "left": 1136,
+    "right": 1416,
+    "links": [
+      "Masuk",
+      "Daftar"
+    ],
+    "closedAfterEscape": true,
+    "focusReturnedToTrigger": true,
+    "closedAfterOutsidePointer": true,
+    "documentWidth": 1440
+  },
+  {
+    "route": "/",
+    "viewport": 390,
+    "visible": true,
+    "width": 280,
+    "left": 46,
+    "right": 326,
+    "links": [
+      "Masuk",
+      "Daftar"
+    ],
+    "closedAfterEscape": true,
+    "focusReturnedToTrigger": true,
+    "closedAfterOutsidePointer": true,
+    "documentWidth": 390
+  },
+  {
+    "route": "/",
+    "viewport": 320,
+    "visible": true,
+    "width": 280,
+    "left": 24,
+    "right": 304,
+    "links": [
+      "Masuk",
+      "Daftar"
+    ],
+    "closedAfterEscape": true,
+    "focusReturnedToTrigger": true,
+    "closedAfterOutsidePointer": true,
+    "documentWidth": 320
+  },
+  {
+    "route": "/market",
+    "viewport": 1440,
+    "visible": true,
+    "width": 280,
+    "left": 1040,
+    "right": 1320,
+    "links": [
+      "Masuk",
+      "Daftar"
+    ],
+    "closedAfterEscape": true,
+    "focusReturnedToTrigger": true,
+    "closedAfterOutsidePointer": true,
+    "documentWidth": 1440
+  },
+  {
+    "route": "/market",
+    "viewport": 390,
+    "visible": true,
+    "width": 280,
+    "left": 44,
+    "right": 324,
+    "links": [
+      "Masuk",
+      "Daftar"
+    ],
+    "closedAfterEscape": true,
+    "focusReturnedToTrigger": true,
+    "closedAfterOutsidePointer": true,
+    "documentWidth": 390
+  },
+  {
+    "route": "/market",
+    "viewport": 320,
+    "visible": true,
+    "width": 280,
+    "left": 22,
+    "right": 302,
+    "links": [
+      "Masuk",
+      "Daftar"
+    ],
+    "closedAfterEscape": true,
+    "focusReturnedToTrigger": true,
+    "closedAfterOutsidePointer": true,
+    "documentWidth": 320
+  }
+]
