@@ -20,12 +20,18 @@ export async function authorizeReplay(tx: Prisma.TransactionClient, actorId: str
   const input = (payload ?? {}) as Record<string, string>;
   const user = await tx.user.findUnique({ where: { id: actorId } });
   if (!user || user.status !== 'ACTIVE') throw new AppException(403, 'ACCOUNT_SUSPENDED', 'Akun tidak dapat digunakan.');
-  const member = ['accept', 'confirm', 'cancel-request', 'cancel-respond', 'dispute', 'overdue-case', 'evidence', 'correction-open', 'correction-evidence'].includes(name);
+  const member = ['accept', 'confirm', 'cancel-request', 'cancel-respond', 'dispute', 'overdue-case', 'evidence', 'correction-open', 'correction-evidence', 'review-create', 'review-reply'].includes(name);
   if (!member && user.role !== 'ADMIN') throw new AppException(403, 'FORBIDDEN', 'Izin admin diperlukan.');
   if (['confirm', 'cancel-request', 'cancel-respond', 'dispute', 'overdue-case', 'correction-open'].includes(name)) {
     const row = await tx.transaction.findUnique({ where: { id } });
     if (!row || ![row.sellerOrDonorId, row.buyerOrRecipientId].includes(actorId)) throw new AppException(404, 'NOT_FOUND', 'Transaksi tidak ditemukan.');
   }
+  if (name === 'review-create' || name === 'review-reply') {
+    if (!user.emailVerifiedAt) throw new AppException(403, 'EMAIL_UNVERIFIED', 'Verifikasi email sebelum melanjutkan.');
+    const review = name === 'review-create' ? await tx.review.findUnique({ where: { transactionId_authorId: { transactionId: id, authorId: actorId } }, include: { transaction: true, subject: true, author: true } }) : await tx.review.findUnique({ where: { id }, include: { transaction: true, subject: true, author: true } });
+    if (!review || (name === 'review-reply' && review.subjectId !== actorId) || review.purgedAt || review.transaction.correctedAt || review.transaction.status !== 'COMPLETED' || review.subject.status !== 'ACTIVE' || review.author.status !== 'ACTIVE') throw new AppException(404, 'NOT_FOUND', 'Ulasan tidak tersedia.');
+  }
+  if (name === 'review-visibility') await grant(tx, actorId, 'REPORT', input.reportId);
   if (name === 'accept') {
     const offer = await tx.offer.findUnique({ where: { id }, include: { listing: true } });
     if (!offer || ![offer.bidderId, offer.listing.ownerId].includes(actorId)) throw new AppException(404, 'NOT_FOUND', 'Penawaran tidak ditemukan.');

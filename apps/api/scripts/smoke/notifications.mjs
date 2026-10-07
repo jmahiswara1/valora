@@ -95,7 +95,7 @@ try {
   check(await other.account.request('/me/close', { method: 'POST', body: { reason: 'Selesai menguji notifikasi.' } }), 201, 'Tutup');
   assert.equal(await db.inAppNotification.count({ where: { userId: other.user.id } }), 0);
   check(await other.account.request('/me/notifications/summary'), 401, 'Sesi dicabut');
-  const spec = await (await fetch(base + '/api/docs-json')).json(); assert.equal(spec.info.version, '1.11.0');
+  const spec = await (await fetch(base + '/api/docs-json')).json(); assert.equal(spec.info.version, '1.12.0');
   for (const path of ['/me/notifications', '/me/notifications/summary', '/me/notifications/read-all', '/me/notifications/{id}/read']) assert(spec.paths['/api/v1' + path]);
   console.log('Pusat notifikasi smoke lulus: kejadian atomik, rollback, deduplikasi, timeout, privasi, sesi/CSRF, isolasi, cursor/filter, total unread, baca idempoten, adapter, dan penutupan akun.');
 } finally {

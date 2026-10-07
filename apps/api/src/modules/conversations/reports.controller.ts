@@ -26,6 +26,12 @@ export class ReportsController {
       const message = await tx.message.findUnique({ where: { id: input.targetId }, include: { conversation: true } });
       if (!message || message.deletedAt || (message.conversation.participantAId !== reporterId && message.conversation.participantBId !== reporterId) || message.senderId === reporterId) throw new AppException(404, 'NOT_FOUND', 'Konten tidak ditemukan.');
       messageId = message.id;
+    } else if (input.targetType === 'REVIEW' || input.targetType === 'REVIEW_REPLY') {
+      const content = input.targetType === 'REVIEW' ? await tx.review.findUnique({ where: { id: input.targetId }, include: { author: true, subject: true, transaction: true } }) : await tx.reviewReply.findUnique({ where: { id: input.targetId }, include: { review: { include: { author: true, subject: true, transaction: true } } } });
+      const review = content && ('review' in content ? content.review : content);
+      if (!content || !review || content.authorId === reporterId || content.visibility !== 'VISIBLE' || content.purgedAt || review.visibility !== 'VISIBLE' || review.purgedAt || review.author.status !== 'ACTIVE' || review.subject.status !== 'ACTIVE' || review.transaction.status !== 'COMPLETED' || review.transaction.correctedAt) throw new AppException(404, 'NOT_FOUND', 'Konten tidak ditemukan.');
+      const existing = await tx.report.findFirst({ where: { reporterId, targetType: input.targetType, targetId: input.targetId, status: { in: ['OPEN', 'IN_REVIEW'] } } });
+      if (existing) return { id: existing.id, status: existing.status, createdAt: existing.createdAt.toISOString() };
     } else if (input.targetType === 'TRANSACTION') {
       const transaction = await tx.transaction.findUnique({ where: { id: input.targetId } });
       if (!transaction || ![transaction.sellerOrDonorId, transaction.buyerOrRecipientId].includes(reporterId)) throw new AppException(404, 'NOT_FOUND', 'Transaksi tidak ditemukan.');

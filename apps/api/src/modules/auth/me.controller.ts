@@ -29,7 +29,7 @@ export class MeController {
 
   @Patch()
   @ApiOperation({ summary: 'Ubah profil sendiri; perubahan email memerlukan verifikasi' })
-  patch(@Req() request: AppRequest, @Body(new ZodPipe(profilePatchSchema)) input: { displayName?: string; cityId?: string; email?: string }): Promise<UserDto> {
+  patch(@Req() request: AppRequest, @Body(new ZodPipe(profilePatchSchema)) input: { displayName?: string; cityId?: string; email?: string; profilePhotoPublic?: boolean }): Promise<UserDto> {
     return this.auth.patchProfile(request.actor!.id, input);
   }
 

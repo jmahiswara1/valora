@@ -103,7 +103,7 @@ export function ProfilePhotoEditor({ user }: { user: UserDto }) {
 
   const hasPhoto = user.profilePhotoProvider !== null;
   return <section className="profile-photo-editor" aria-labelledby="profile-photo-title">
-    <div className="profile-photo-current"><ProfileAvatar photoUrl={user.profilePhotoUrl} displayName={user.displayName} className="profile-avatar-large" /><div><h3 id="profile-photo-title">Foto profil</h3><p>Foto tampil di akun dan percakapanmu.</p></div></div>
+    <div className="profile-photo-current"><ProfileAvatar photoUrl={user.profilePhotoUrl} displayName={user.displayName} className="profile-avatar-large" /><div><h3 id="profile-photo-title">Foto profil</h3><p>Foto tampil di akun dan percakapanmu. Atur tampilannya untuk pengunjung pada bagian Profil publik. Atur tampilannya untuk pengunjung pada bagian Profil publik.</p></div></div>
     {user.profilePhotoProvider === 'LOCAL' && !user.profilePhotoMigrationAvailable && <p className="field-hint">Foto tersimpan dan tetap digunakan pada akunmu.</p>}
     {user.profilePhotoProvider === 'CLOUDINARY' && !user.profilePhotoUrl && <p className="field-hint">Foto profil belum dapat ditampilkan. Coba lagi nanti.</p>}
     {user.profilePhotoMigrationAvailable && <p className="field-hint">Foto lokal {migrationFailed ? 'belum dipindahkan.' : busy ? 'sedang dipindahkan ke Cloudinary.' : 'akan dipindahkan ke Cloudinary.'}</p>}

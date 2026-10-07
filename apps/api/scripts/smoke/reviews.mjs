@@ -1,0 +1,133 @@
+import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
+import sharp from 'sharp';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from '../../dist/generated/prisma/client.js';
+import { RetentionService } from '../../dist/modules/retention/service.js';
+import { base, client, check, photo, login, createItem, createListing, approve } from '../helpers/fixtures.mjs';
+
+if (!new URL(process.env.DATABASE_URL).pathname.endsWith('_test')) throw new Error('Ulasan membutuhkan database test.');
+const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }) });
+const seed = await db.user.findUniqueOrThrow({ where: { email: 'owner.demo@valora.local' } });
+async function actor(verified = true, role = 'USER') {
+  const user = await db.user.create({ data: { email: `review-${randomUUID()}@demo.valora.local`, displayName: 'Fixture Ulasan', cityId: seed.cityId, passwordHash: seed.passwordHash, emailVerifiedAt: verified ? new Date() : null, role } });
+  return { user, account: await login(user.email) };
+}
+const mutate = (a, path, body, key = randomUUID()) => a.account.request(path, { method: 'POST', body, extraHeaders: { 'Idempotency-Key': key } });
+async function transaction(owner, buyer, admin, type = 'RESELL') {
+  const fixture = await createItem(owner.account, 'electronics', 'Barang fixture ulasan');
+  const listing = await approve(admin.account, await createListing(owner.account, fixture.item, fixture.assessment, seed.cityId, type, fixture.item.title));
+  let exchangeItemId;
+  if (type === 'EXCHANGE') exchangeItemId = (await createItem(buyer.account, 'electronics', 'Barang penukar fixture')).item.id;
+  const offer = check(await buyer.account.request(`/listings/${listing.id}/offers`, { method: 'POST', body: { expectedListingVersion: listing.version, listingRevisionId: listing.revision.id, clientRequestId: randomUUID(), ...(type === 'RESELL' ? { priceIdr: 300000 } : {}), ...(exchangeItemId ? { exchangeItemId } : {}) } }), 201, 'Offer');
+  let row = check(await mutate(owner, `/offers/${offer.id}/accept`, { expectedVersion: offer.version, offerRevisionId: offer.currentRevision.id, listingRevisionId: offer.listingRevisionId }), 201, 'Accept');
+  for (const c of row.requiredConfirmations) row = check(await mutate(c.actorId === owner.user.id ? owner : buyer, `/transactions/${row.id}/confirmations`, { expectedVersion: row.version, itemId: c.itemId, kind: c.kind }), 201, 'Konfirmasi');
+  assert.equal(row.status, 'COMPLETED'); return row;
+}
+const input = (tx, rating = 5, comment = 'Pengalaman bertransaksi baik.') => ({ expectedTransactionVersion: tx.version, rating, comment });
+try {
+  const owner = await actor(), buyer = await actor(), outsider = await actor(), unverified = await actor(false), admin = await actor(true, 'ADMIN'), otherAdmin = await actor(true, 'ADMIN'), guest = client();
+  const tx = await transaction(owner, buyer, admin);
+  check(await guest.request(`/transactions/${tx.id}/reviews`), 401, 'Guest tidak membaca ulasan privat');
+  check(await outsider.account.request(`/transactions/${tx.id}/reviews`), 404, 'Bukan peserta');
+  for (const status of ['AWAITING_HANDOVER', 'ONE_SIDE_CONFIRMED', 'DISPUTED', 'CANCELLED']) {
+    await db.transaction.update({ where: { id: tx.id }, data: { status } });
+    check(await mutate(buyer, `/transactions/${tx.id}/reviews`, input(tx)), 409, 'Transaksi belum selesai');
+  }
+  await db.transaction.update({ where: { id: tx.id }, data: { status: 'COMPLETED' } });
+  const profile = check(await guest.request(`/profiles/${owner.user.id}`), 200, 'Profil publik');
+  assert.deepEqual(profile.rating, { average: null, count: 0 }); assert.equal(profile.profilePhotoUrl, null);
+  assert.deepEqual(Object.keys(profile).sort(), ['id', 'displayName', 'profilePhotoUrl', 'city', 'joinedAt', 'rating'].sort());
+  check(await guest.request('/profiles/invalid'), 404, 'UUID salah');
+  const noCsrf = await fetch(`${base}/api/v1/transactions/${tx.id}/reviews`, { method: 'POST', headers: { Cookie: buyer.account.cookieHeader(), 'Content-Type': 'application/json' }, body: JSON.stringify(input(tx)) }); assert.equal(noCsrf.status, 403);
+  check(await buyer.account.request(`/transactions/${tx.id}/reviews`, { method: 'POST', body: input(tx) }), 400, 'Key wajib');
+  for (const rating of [0, 6, 2.5, '5']) check(await mutate(buyer, `/transactions/${tx.id}/reviews`, input(tx, rating)), 400, 'Rating salah');
+  check(await mutate(buyer, `/transactions/${tx.id}/reviews`, input(tx, 5, 'x'.repeat(1001))), 400, 'Komentar panjang');
+  check(await mutate(owner, `/transactions/${tx.id}/reviews`, input(tx)), 409, 'Penjual tidak mengulas Resell');
+  check(await mutate(buyer, `/transactions/${tx.id}/reviews`, { ...input(tx), expectedTransactionVersion: tx.version - 1 }), 409, 'Versi lama');
+  await db.user.update({ where: { id: buyer.user.id }, data: { emailVerifiedAt: null } });
+  check(await mutate(buyer, `/transactions/${tx.id}/reviews`, input(tx)), 403, 'Email perlu diverifikasi');
+  await db.user.update({ where: { id: buyer.user.id }, data: { emailVerifiedAt: new Date() } });
+  await db.$executeRawUnsafe(`CREATE OR REPLACE FUNCTION review_notification_failure() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.type = 'REVIEW_RECEIVED' AND NEW.payload->>'transactionId' = TG_ARGV[0] THEN RAISE EXCEPTION 'review notification rollback'; END IF; RETURN NEW; END $$`);
+  await db.$executeRawUnsafe(`CREATE TRIGGER review_notification_failure BEFORE INSERT ON "InAppNotification" FOR EACH ROW EXECUTE FUNCTION review_notification_failure('${tx.id}')`);
+  try { check(await mutate(buyer, `/transactions/${tx.id}/reviews`, input(tx)), 500, 'Notifikasi gagal menggagalkan ulasan'); }
+  finally { await db.$executeRawUnsafe('DROP TRIGGER review_notification_failure ON "InAppNotification"'); await db.$executeRawUnsafe('DROP FUNCTION review_notification_failure()'); }
+  assert.equal(await db.review.count({ where: { transactionId: tx.id } }), 0);
+  const key = randomUUID(), payload = input(tx, 4, '   ');
+  const row = check(await mutate(buyer, `/transactions/${tx.id}/reviews`, payload, key), 201, 'Rating tanpa komentar'); assert.equal(row.comment, null); assert.equal(row.subjectId, owner.user.id);
+  assert.equal(check(await mutate(buyer, `/transactions/${tx.id}/reviews`, payload, key), 201, 'Retry idempoten').id, row.id);
+  check(await mutate(buyer, `/transactions/${tx.id}/reviews`, input(tx), key), 409, 'Key beda payload');
+  check(await mutate(buyer, `/transactions/${tx.id}/reviews`, payload), 409, 'Satu ulasan');
+  assert.equal((await db.inAppNotification.findMany({ where: { type: 'REVIEW_RECEIVED', userId: owner.user.id } })).length, 1);
+  const publicRows = check(await guest.request(`/profiles/${owner.user.id}/reviews`), 200, 'Terbit langsung'); assert.equal(publicRows[0].id, row.id);
+  assert(!JSON.stringify(publicRows).includes(tx.id)); assert(!JSON.stringify(publicRows).includes(owner.user.email));
+  assert.deepEqual(check(await guest.request(`/profiles/${owner.user.id}`), 200, 'Rating publik').rating, { average: 4, count: 1 });
+  check(await mutate(outsider, `/reviews/${row.id}/reply`, { expectedReviewVersion: row.version, body: 'Balasan' }), 404, 'Balasan bukan penerima');
+  const replyKey = randomUUID(), replyPayload = { expectedReviewVersion: row.version, body: 'Terima kasih sudah menggunakan kembali barangnya.' };
+  const replied = check(await mutate(owner, `/reviews/${row.id}/reply`, replyPayload, replyKey), 201, 'Balasan');
+  assert.equal(check(await mutate(owner, `/reviews/${row.id}/reply`, replyPayload, replyKey), 201, 'Retry balasan').reply.id, replied.reply.id);
+  check(await mutate(owner, `/reviews/${row.id}/reply`, { ...replyPayload, expectedReviewVersion: replied.version }), 409, 'Balasan kedua ditolak');
+  assert.equal(await db.inAppNotification.count({ where: { type: 'REVIEW_REPLY_RECEIVED', userId: buyer.user.id } }), 1);
+  const replyReport = check(await buyer.account.request('/reports', { method: 'POST', body: { targetType: 'REVIEW_REPLY', targetId: replied.reply.id, reasonCode: 'OTHER', details: 'Perlu meninjau balasan ini.' } }), 201, 'Laporan balasan');
+  const reportInput = { targetType: 'REVIEW', targetId: row.id, reasonCode: 'OTHER', details: 'Perlu meninjau ulasan ini.' };
+  check(await buyer.account.request('/reports', { method: 'POST', body: reportInput }), 404, 'Tidak melaporkan sendiri');
+  check(await unverified.account.request('/reports', { method: 'POST', body: reportInput }), 403, 'Laporan perlu verifikasi');
+  const report = check(await owner.account.request('/reports', { method: 'POST', body: reportInput }), 201, 'Laporan ulasan');
+  assert.equal(check(await owner.account.request('/reports', { method: 'POST', body: reportInput }), 201, 'Laporan aktif tidak berulang').id, report.id);
+  const hide = { reportId: report.id, expectedVersion: replied.version, visibility: 'HIDDEN', reason: 'Konten ditinjau untuk pengujian.' };
+  check(await mutate(admin, `/admin/reviews/${row.id}/visibility`, hide), 403, 'Penugasan wajib');
+  check(await mutate(admin, `/admin/reports/${report.id}/claim`, { expectedVersion: 1, reason: hide.reason }), 201, 'Klaim');
+  check(await mutate(admin, `/admin/reviews/${row.id}/visibility`, hide), 403, 'Grant wajib');
+  check(await mutate(admin, `/admin/reports/${report.id}/access`, { reason: hide.reason }), 201, 'Grant');
+  const detail = check(await admin.account.request(`/admin/reports/${report.id}`), 200, 'Detail'); assert.equal(detail.reviewContent.id, row.id); assert.equal(detail.message, null); assert.equal(detail.listing, null);
+  const hidden = check(await mutate(admin, `/admin/reviews/${row.id}/visibility`, hide), 201, 'Sembunyikan');
+  assert.equal(check(await guest.request(`/profiles/${owner.user.id}`), 200, 'Rating dikeluarkan').rating.count, 0);
+  check(await mutate(otherAdmin, `/admin/reviews/${row.id}/visibility`, { ...hide, expectedVersion: hidden.version, visibility: 'VISIBLE' }), 403, 'Admin lain');
+  check(await mutate(admin, `/admin/reviews/${row.id}/visibility`, { ...hide, reportId: replyReport.id, expectedVersion: hidden.version }), 403, 'Scope laporan salah');
+  check(await mutate(admin, `/admin/reviews/${row.id}/visibility`, { ...hide, expectedVersion: hidden.version, visibility: 'VISIBLE' }), 201, 'Pulihkan');
+  assert.equal(check(await guest.request(`/profiles/${owner.user.id}`), 200, 'Rating kembali').rating.count, 1);
+  check(await mutate(admin, `/admin/reports/${report.id}/resolve`, { expectedVersion: 2, decision: 'RESOLVED', reason: hide.reason }), 201, 'Selesai laporan');
+  check(await mutate(admin, `/admin/reports/${replyReport.id}/claim`, { expectedVersion: 1, reason: hide.reason }), 201, 'Klaim balasan');
+  check(await mutate(admin, `/admin/reports/${replyReport.id}/access`, { reason: hide.reason }), 201, 'Grant balasan');
+  check(await mutate(admin, `/admin/review-replies/${replied.reply.id}/visibility`, { reportId: replyReport.id, expectedVersion: 1, visibility: 'HIDDEN', reason: hide.reason }), 201, 'Sembunyikan balasan');
+  assert.equal(check(await guest.request(`/profiles/${owner.user.id}/reviews`), 200, 'Balasan tersembunyi')[0].reply.body, null);
+  assert.equal(check(await guest.request(`/profiles/${owner.user.id}`), 200, 'Balasan tidak mengubah rating').rating.count, 1);
+  const crop = await sharp(photo).resize(512, 512).webp().toBuffer();
+  check(await owner.account.request('/me/profile-photo', { method: 'PUT', body: crop, type: 'image/webp' }), 200, 'Unggah avatar');
+  assert.equal((await fetch(`${base}/api/v1/profiles/${owner.user.id}/photo`)).status, 404);
+  check(await owner.account.request('/me', { method: 'PATCH', body: { profilePhotoPublic: true } }), 200, 'Opt in');
+  const image = await fetch(`${base}/api/v1/profiles/${owner.user.id}/photo`); assert.equal(image.status, 200); assert.equal(image.headers.get('cache-control'), 'no-store');
+  check(await owner.account.request('/me', { method: 'PATCH', body: { profilePhotoPublic: false } }), 200, 'Opt out'); assert.equal((await fetch(`${base}/api/v1/profiles/${owner.user.id}/photo`)).status, 404);
+  const donate = await transaction(owner, buyer, admin, 'DONATE');
+  check(await mutate(owner, `/transactions/${donate.id}/reviews`, input(donate)), 409, 'Pemberi tidak mengulas');
+  await db.transaction.update({ where: { id: donate.id }, data: { completedAt: new Date(Date.now() - 30 * 86400000) } });
+  check(await mutate(buyer, `/transactions/${donate.id}/reviews`, input(donate)), 409, 'Batas tepat 30 hari');
+  await db.transaction.update({ where: { id: donate.id }, data: { completedAt: new Date(Date.now() - 29 * 86400000) } });
+  const correction = await db.correctionCase.create({ data: { transactionId: donate.id, openedById: buyer.user.id, reason: 'Kasus fixture ulasan', status: 'OPEN' } });
+  check(await mutate(buyer, `/transactions/${donate.id}/reviews`, input(donate)), 409, 'Koreksi menahan baru');
+  await db.correctionCase.update({ where: { id: correction.id }, data: { status: 'RESOLVED', resolution: 'REVIEW_CLOSED' } });
+  check(await mutate(buyer, `/transactions/${donate.id}/reviews`, input(donate, 5)), 201, 'Donate diulas dalam 30 hari');
+  assert.deepEqual(check(await guest.request(`/profiles/${owner.user.id}`), 200, 'Rata-rata').rating, { average: 4.5, count: 2 });
+  await db.transaction.update({ where: { id: donate.id }, data: { correctedAt: new Date() } });
+  assert.equal(check(await guest.request(`/profiles/${owner.user.id}`), 200, 'Ownership terkoreksi').rating.count, 1);
+  const exchange = await transaction(owner, buyer, admin, 'EXCHANGE');
+  check(await mutate(owner, `/transactions/${exchange.id}/reviews`, input(exchange, 3)), 201, 'Exchange pihak satu');
+  const competing = await Promise.all([mutate(buyer, `/transactions/${exchange.id}/reviews`, input(exchange, 5)), mutate(buyer, `/transactions/${exchange.id}/reviews`, input(exchange, 5))]);
+  assert.deepEqual(competing.map(r => r.status).sort(), [201, 409], 'Ulasan bersamaan tetap satu');
+  assert.equal(await db.review.count({ where: { transactionId: exchange.id } }), 2);
+  await db.user.update({ where: { id: buyer.user.id }, data: { status: 'SUSPENDED' } });
+  assert.equal(check(await guest.request(`/profiles/${owner.user.id}`), 200, 'Penulis tidak aktif').rating.count, 0);
+  check(await guest.request(`/profiles/${buyer.user.id}`), 404, 'Profil ditangguhkan');
+  await db.user.update({ where: { id: buyer.user.id }, data: { status: 'ACTIVE' } });
+  check(await guest.request(`/profiles/${owner.user.id}/reviews?cursor=invalid`), 400, 'Cursor salah');
+  assert.equal(check(await guest.request(`/profiles/${owner.user.id}/listings`), 200, 'Barang selesai tidak aktif').length, 0);
+  // Account holds include reviews/replies targeted by a third-party report.
+  await db.user.update({ where: { id: owner.user.id }, data: { status: 'CLOSED', closedAt: new Date(Date.now() - 31 * 86400000) } });
+  check(await guest.request(`/profiles/${owner.user.id}`), 404, 'Profil ditutup');
+  const retention = new RetentionService(db, { prune: async () => 0 });
+  await retention.accounts(); assert.equal((await db.user.findUniqueOrThrow({ where: { id: owner.user.id } })).anonymizedAt, null, 'Laporan balasan terbuka menahan');
+  await db.report.update({ where: { id: replyReport.id }, data: { status: 'RESOLVED', resolvedAt: new Date() } });
+  await retention.accounts(); assert((await db.user.findUniqueOrThrow({ where: { id: owner.user.id } })).anonymizedAt); assert.equal((await db.reviewReply.findUniqueOrThrow({ where: { id: replied.reply.id } })).body, null);
+  const spec = await (await fetch(base + '/api/docs-json')).json(); assert.equal(spec.info.version, '1.12.0'); assert(spec.paths['/api/v1/profiles/{id}/reviews']); assert(spec.paths['/api/v1/admin/review-replies/{id}/visibility']);
+  console.log('Public profiles/reviews smoke PASS: permissions, lifecycle, privacy, idempotency, moderation, photos, retention, all transaction types.');
+} finally { await db.$disconnect(); }

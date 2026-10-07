@@ -19,7 +19,7 @@ export const authOutputs = {
 Session: obj({ state: { type: 'string', enum: ['GUEST', 'AUTHENTICATED', 'RESTRICTED'] }, reason: nil(str), serverTime: date, user: nil(ref('User')), sessionId: nil(uuid), expiresAt: nil(date), reauthenticatedUntil: nil(date) }),
 ActiveSession: obj({ id: uuid, createdAt: date, lastSeenAt: date, expiresAt: date, current: { type: 'boolean' } }),
 ActionStatus: obj({ status: { type: 'string', enum: ['COMMITTED', 'PURGED', 'NOT_FOUND'] }, completedAt: nil(date) }),
-User: object({ id: uuid, email: text, displayName: text, city: ref('City'), role: { type: 'string', enum: ['USER', 'ADMIN'] }, status: { type: 'string', enum: ['ACTIVE', 'SUSPENDED', 'CLOSED'] }, emailVerifiedAt: nullable(date), profilePhotoProvider: nullable({ type: 'string', enum: ['LOCAL', 'CLOUDINARY'] }), profilePhotoUrl: nullable(text), profilePhotoMigrationAvailable: { type: 'boolean' } })
+User: object({ profilePhotoPublic: { type: 'boolean' }, id: uuid, email: text, displayName: text, city: ref('City'), role: { type: 'string', enum: ['USER', 'ADMIN'] }, status: { type: 'string', enum: ['ACTIVE', 'SUSPENDED', 'CLOSED'] }, emailVerifiedAt: nullable(date), profilePhotoProvider: nullable({ type: 'string', enum: ['LOCAL', 'CLOUDINARY'] }), profilePhotoUrl: nullable(text), profilePhotoMigrationAvailable: { type: 'boolean' } })
 };
 
 export const authRoutes: Route[] = [

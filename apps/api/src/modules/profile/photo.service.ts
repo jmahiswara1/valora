@@ -197,6 +197,28 @@ export class ProfilePhotoService {
     await this.enqueue(tx, photo, at);
   }
 
+  async publicImage(targetId: string): Promise<Buffer> {
+    if (!uuidSchema.safeParse(targetId).success) throw new AppException(404, 'NOT_FOUND', 'Foto tidak ditemukan.');
+    const user = await this.db.user.findFirst({ where: { id: targetId, status: 'ACTIVE', profilePhotoPublic: true }, include: { profilePhoto: true } });
+    const photo = user?.profilePhoto;
+    if (!photo) throw new AppException(404, 'NOT_FOUND', 'Foto tidak ditemukan.');
+    try {
+      let bytes: Buffer;
+      if (photo.provider === 'LOCAL') bytes = await this.storage.read(photo.storageKey);
+      else {
+        const url = await this.photoUrl(photo);
+        if (!url) throw new Error('Unavailable provider');
+        const response = await fetch(url, { signal: AbortSignal.timeout(10000), redirect: 'error' });
+        if (!response.ok) throw new Error('Unavailable image');
+        bytes = Buffer.from(await response.arrayBuffer());
+        if (bytes.length > maxBytes) throw new Error('Invalid image size');
+      }
+      // A remote download must not serve a photo whose consent/asset changed meanwhile.
+      if (!await this.db.user.findFirst({ where: { id: targetId, status: 'ACTIVE', profilePhotoPublic: true, profilePhoto: { storageKey: photo.storageKey } }, select: { id: true } })) throw new Error('Photo access changed');
+      return bytes;
+    } catch { throw new AppException(404, 'NOT_FOUND', 'Foto tidak ditemukan.'); }
+  }
+
   async localImageForViewer(viewerId: string, targetId: string): Promise<Buffer> {
     if (!uuidSchema.safeParse(targetId).success) throw new AppException(404, 'NOT_FOUND', 'Foto tidak ditemukan.');
     if (viewerId !== targetId) {

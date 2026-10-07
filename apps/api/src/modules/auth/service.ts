@@ -193,14 +193,14 @@ export class AuthService {
     const user = await this.db.user.findUniqueOrThrow({ where: { id }, include: { city: true } });
     if (!user.city) throw new AppException(409, 'STATE_CONFLICT', 'Kota profil belum tersedia.');
     return {
-      id: user.id, email: user.email, displayName: user.displayName,
+      id: user.id, email: user.email, displayName: user.displayName, profilePhotoPublic: user.profilePhotoPublic,
       city: { id: user.city.id, code: user.city.code, name: user.city.name, provinceName: user.city.provinceName },
       role: user.role, status: user.status, emailVerifiedAt: user.emailVerifiedAt?.toISOString() ?? null,
       ...await this.photos.fields(id),
     };
   }
 
-  async patchProfile(id: string, input: { displayName?: string; cityId?: string; email?: string }): Promise<UserDto> {
+  async patchProfile(id: string, input: { displayName?: string; cityId?: string; email?: string; profilePhotoPublic?: boolean }): Promise<UserDto> {
     const current = await this.db.user.findUniqueOrThrow({ where: { id } });
     if (input.cityId && !(await this.db.city.findFirst({ where: { id: input.cityId, active: true } }))) throw new AppException(400, 'INVALID_INPUT', 'Pilih kota yang tersedia.');
     if (input.email && input.email !== current.email) {
@@ -212,6 +212,7 @@ export class AuthService {
       if (input.email && input.email !== current.email) await requireRecentAuthentication(tx);
       await tx.user.update({ where: { id }, data: {
         ...(input.displayName ? { displayName: input.displayName } : {}),
+        ...(input.profilePhotoPublic !== undefined ? { profilePhotoPublic: input.profilePhotoPublic } : {}),
         ...(input.cityId ? { cityId: input.cityId } : {}),
         ...(input.email && input.email !== current.email ? { pendingEmail: input.email } : {}),
         version: { increment: 1 },
@@ -245,6 +246,9 @@ export class AuthService {
       await requireRecentAuthentication(tx);
       const ids = await closeForAccount(tx, id);
       await this.photos.closeForAccount(tx, id, now);
+      await tx.favorite.deleteMany({ where: { userId: id } });
+      await tx.savedSearch.deleteMany({ where: { userId: id } });
+      await tx.inAppNotification.deleteMany({ where: { userId: id } });
       await tx.user.update({ where: { id }, data: { status: 'CLOSED', closedAt: now, closureReason: reason ?? null, version: { increment: 1 } } });
       await tx.session.updateMany({ where: { userId: id, revokedAt: null }, data: { revokedAt: now } });
       return ids;

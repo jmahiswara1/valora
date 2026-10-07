@@ -1,3 +1,4 @@
+import { reviewsInputs, reviewsOutputs, reviewsRoutes } from './reviews.js';
 import { inputSchema, ref, envelope } from './helpers.js';
 import type { OpenAPIObject, OperationObject } from '@nestjs/swagger';
 import { authInputs, authOutputs, authRoutes } from './auth.js';
@@ -22,9 +23,9 @@ import { favoritesInputs, favoritesOutputs, favoritesRoutes } from './favorites.
 
 import { searchesInputs, searchesOutputs, searchesRoutes } from './searches.js';
 
-const inputs = { ...authInputs, ...offersInputs, ...transactionsInputs, ...disputesInputs, ...commonInputs, ...operationsInputs, ...historyInputs, ...retentionInputs, ...assessmentsInputs, ...catalogInputs, ...adminInputs, ...itemsInputs, ...mediaInputs, ...repairsInputs, ...listingsInputs, ...conversationsInputs, ...profileInputs, ...favoritesInputs, ...notificationsInputs, ...searchesInputs };
-const outputSchemas = { ...authOutputs, ...offersOutputs, ...transactionsOutputs, ...disputesOutputs, ...commonOutputs, ...operationsOutputs, ...historyOutputs, ...retentionOutputs, ...assessmentsOutputs, ...catalogOutputs, ...adminOutputs, ...itemsOutputs, ...mediaOutputs, ...repairsOutputs, ...listingsOutputs, ...conversationsOutputs, ...profileOutputs, ...favoritesOutputs, ...notificationsOutputs, ...searchesOutputs };
-const routes = [...authRoutes, ...offersRoutes, ...transactionsRoutes, ...disputesRoutes, ...commonRoutes, ...operationsRoutes, ...historyRoutes, ...retentionRoutes, ...assessmentsRoutes, ...catalogRoutes, ...adminRoutes, ...itemsRoutes, ...mediaRoutes, ...repairsRoutes, ...listingsRoutes, ...conversationsRoutes, ...profileRoutes, ...favoritesRoutes, ...notificationsRoutes, ...searchesRoutes].sort((a,b) => a.order - b.order);
+const inputs = { ...authInputs, ...offersInputs, ...transactionsInputs, ...disputesInputs, ...commonInputs, ...operationsInputs, ...historyInputs, ...retentionInputs, ...assessmentsInputs, ...catalogInputs, ...adminInputs, ...itemsInputs, ...mediaInputs, ...repairsInputs, ...listingsInputs, ...conversationsInputs, ...profileInputs, ...favoritesInputs, ...notificationsInputs, ...searchesInputs, ...reviewsInputs };
+const outputSchemas = { ...authOutputs, ...offersOutputs, ...transactionsOutputs, ...disputesOutputs, ...commonOutputs, ...operationsOutputs, ...historyOutputs, ...retentionOutputs, ...assessmentsOutputs, ...catalogOutputs, ...adminOutputs, ...itemsOutputs, ...mediaOutputs, ...repairsOutputs, ...listingsOutputs, ...conversationsOutputs, ...profileOutputs, ...favoritesOutputs, ...notificationsOutputs, ...searchesOutputs, ...reviewsOutputs };
+const routes = [...authRoutes, ...offersRoutes, ...transactionsRoutes, ...disputesRoutes, ...commonRoutes, ...operationsRoutes, ...historyRoutes, ...retentionRoutes, ...assessmentsRoutes, ...catalogRoutes, ...adminRoutes, ...itemsRoutes, ...mediaRoutes, ...repairsRoutes, ...listingsRoutes, ...conversationsRoutes, ...profileRoutes, ...favoritesRoutes, ...notificationsRoutes, ...searchesRoutes, ...reviewsRoutes].sort((a,b) => a.order - b.order);
 
 export function completeOpenApi(document: OpenAPIObject): OpenAPIObject {
   document.openapi = '3.1.0';

@@ -103,6 +103,8 @@ enum OfferStatus {
 }
 
 enum ReportTargetType {
+  REVIEW
+  REVIEW_REPLY
   LISTING
   MESSAGE
   USER
@@ -147,6 +149,10 @@ model Category {
 }
 
 model User {
+  profilePhotoPublic Boolean @default(false)
+  reviewsWritten Review[] @relation("ReviewAuthor")
+  reviewsReceived Review[] @relation("ReviewSubject")
+  reviewReplies ReviewReply[]
   id                String              @id @default(uuid()) @db.Uuid
   email             String              @unique @db.VarChar(254)
   pendingEmail      String?             @db.VarChar(254)
@@ -613,6 +619,7 @@ enum TransactionStatus {
 }
 
 model Transaction {
+  reviews Review[]
   id String @id @default(uuid()) @db.Uuid
   listingId String @db.Uuid
   listing Listing @relation(fields: [listingId], references: [id], onDelete: Restrict)
@@ -1053,4 +1060,35 @@ model AuthRateBucket {
   count Int @default(1)
   resetAt DateTime
   @@index([resetAt])
+}
+
+model Review {
+  id String @id @default(uuid()) @db.Uuid
+  transactionId String @db.Uuid
+  transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Restrict)
+  authorId String @db.Uuid
+  author User @relation("ReviewAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+  subjectId String @db.Uuid
+  subject User @relation("ReviewSubject", fields: [subjectId], references: [id], onDelete: Restrict)
+  rating Int
+  comment String? @db.VarChar(1000)
+  visibility String @default("VISIBLE") @db.VarChar(10)
+  version Int @default(1)
+  createdAt DateTime @default(now())
+  purgedAt DateTime?
+  reply ReviewReply?
+  @@unique([transactionId, authorId])
+  @@index([subjectId, visibility, createdAt, id])
+}
+model ReviewReply {
+  id String @id @default(uuid()) @db.Uuid
+  reviewId String @unique @db.Uuid
+  review Review @relation(fields: [reviewId], references: [id], onDelete: Restrict)
+  authorId String @db.Uuid
+  author User @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  body String? @db.VarChar(1000)
+  visibility String @default("VISIBLE") @db.VarChar(10)
+  version Int @default(1)
+  createdAt DateTime @default(now())
+  purgedAt DateTime?
 }

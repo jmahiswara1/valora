@@ -22,6 +22,7 @@ export const resetRequestSchema = z.object({ email: emailSchema });
 export const resetConfirmSchema = z.object({ token: z.string().min(20).max(256), password: passwordSchema });
 
 export const profilePatchSchema = z.object({
+  profilePhotoPublic: z.boolean().optional(),
   displayName: z.string().trim().min(2).max(80).optional(),
   cityId: uuidSchema.optional(),
   email: emailSchema.optional(),
@@ -35,7 +36,7 @@ export type RegisterInput = z.infer<typeof registerSchema>;
 
 export type LoginInput = z.infer<typeof loginSchema>;
 
-export interface UserDto { id: string; email: string; displayName: string; city: CityDto; role: 'USER' | 'ADMIN'; status: 'ACTIVE' | 'SUSPENDED' | 'CLOSED'; emailVerifiedAt: string | null; profilePhotoProvider: 'LOCAL' | 'CLOUDINARY' | null; profilePhotoUrl: string | null; profilePhotoMigrationAvailable: boolean }
+export interface UserDto { profilePhotoPublic: boolean; id: string; email: string; displayName: string; city: CityDto; role: 'USER' | 'ADMIN'; status: 'ACTIVE' | 'SUSPENDED' | 'CLOSED'; emailVerifiedAt: string | null; profilePhotoProvider: 'LOCAL' | 'CLOUDINARY' | null; profilePhotoUrl: string | null; profilePhotoMigrationAvailable: boolean }
 
 export const reauthenticateSchema = z.object({ password: z.string().min(1).max(128) });
 

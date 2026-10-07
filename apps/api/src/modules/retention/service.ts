@@ -45,13 +45,19 @@ export class RetentionService {
     const conversations = await tx.conversation.findMany({ where: { OR: [{ participantAId: userId }, { participantBId: userId }] }, select: { listingId: true } });
     const messages = await tx.message.findMany({ where: { conversation: { OR: [{ participantAId: userId }, { participantBId: userId }] } }, select: { id: true } });
     const listingIds = (await tx.listing.findMany({ where: { ownerId: userId }, select: { id: true } })).map((l) => l.id);
-    const reports = await tx.report.findMany({ where: { OR: [{ reporterId: userId }, { targetId: { in: [userId, ...ids, ...listingIds, ...conversations.map((c) => c.listingId), ...messages.map((m) => m.id)] } }] } });
+    const reviews = await tx.review.findMany({ where: { OR: [{ authorId: userId }, { subjectId: userId }] }, select: { id: true } });
+    const replies = await tx.reviewReply.findMany({ where: { OR: [{ authorId: userId }, { reviewId: { in: reviews.map(r => r.id) } }] }, select: { id: true } });
+    const reports = await tx.report.findMany({ where: { OR: [{ reporterId: userId }, { targetId: { in: [userId, ...ids, ...reviews.map(r => r.id), ...replies.map(r => r.id), ...listingIds, ...conversations.map((c) => c.listingId), ...messages.map((m) => m.id)] } }] } });
     for (const r of reports) if (['OPEN', 'IN_REVIEW'].includes(r.status) || (r.retentionHoldUntil && r.retentionHoldUntil > now) || await this.blockedScope(tx, 'REPORT', r.id, now)) return true;
     return false;
   }
   async accounts(now = new Date()) {
     let count = 0;
-    const accounts = await this.db.user.findMany({ where: { status: 'CLOSED', closedAt: { lte: new Date(now.getTime() - 30 * day) }, anonymizedAt: null }, take: 25 });
+    let cursor: string | undefined;
+    for (;;) {
+    const accounts = await this.db.user.findMany({ where: { status: 'CLOSED', closedAt: { lte: new Date(now.getTime() - 30 * day) }, anonymizedAt: null, ...(cursor ? { id: { gt: cursor } } : {}) }, orderBy: { id: 'asc' }, take: 25 });
+    if (!accounts.length) break;
+    cursor = accounts.at(-1)!.id;
     for (const account of accounts) count += await serial(this.db, async (tx) => {
       await lockRows(tx, 'User', [account.id]);
       const fresh = await tx.user.findUniqueOrThrow({ where: { id: account.id } });
@@ -63,10 +69,13 @@ export class RetentionService {
       await tx.assessment.updateMany({ where: { createdById: account.id }, data: { answersSnapshot: {}, sourceSnapshot: {} } });
       await tx.repairCorrection.updateMany({ where: { createdById: account.id }, data: { responseSnapshot: Prisma.DbNull, beforeState: {}, afterState: {} } });
       await tx.idempotencyRequest.updateMany({ where: { actorId: account.id, purgedAt: null }, data: { responseBody: { retained: false }, purgedAt: now } });
-      await tx.user.update({ where: { id: account.id }, data: { email: 'closed-' + account.id + '@invalid.valora.local', pendingEmail: null, displayName: 'Akun ditutup', cityId: null, closureReason: null, passwordHash: randomBytes(32).toString('hex'), anonymizedAt: now, version: { increment: 1 } } });
+      await tx.review.updateMany({ where: { authorId: account.id, purgedAt: null }, data: { comment: null, purgedAt: now, version: { increment: 1 } } });
+      await tx.reviewReply.updateMany({ where: { authorId: account.id, purgedAt: null }, data: { body: null, purgedAt: now, version: { increment: 1 } } });
+      await tx.user.update({ where: { id: account.id }, data: { profilePhotoPublic: false, email: 'closed-' + account.id + '@invalid.valora.local', pendingEmail: null, displayName: 'Akun ditutup', cityId: null, closureReason: null, passwordHash: randomBytes(32).toString('hex'), anonymizedAt: now, version: { increment: 1 } } });
       await tx.session.deleteMany({ where: { userId: account.id } }); await tx.verificationToken.deleteMany({ where: { userId: account.id } });
       return 1;
     });
+    }
     return count;
   }
   async purge(now = new Date()) { return await exclusiveJob('retention', () => this.purgeUnlocked(now)) ?? { messages: 0, cases: 0, accounts: 0, storage: 0, skipped: true }; }
@@ -84,7 +93,9 @@ export class RetentionService {
           const ids = transactions.map((t) => t.id); const messageIds = (await tx.message.findMany({ where: { conversationId: ref.id }, select: { id: true } })).map((m) => m.id);
           const disputes = await tx.disputeCase.findMany({ where: { transactionId: { in: ids } } });
           const corrections = await tx.correctionCase.findMany({ where: { transactionId: { in: ids } } });
-          const reports = await tx.report.findMany({ where: { OR: [{ targetType: 'LISTING', targetId: ref.listingId }, { targetType: 'TRANSACTION', targetId: { in: ids } }, { messageId: { in: messageIds } }, { targetType: 'USER', targetId: { in: [ref.participantAId, ref.participantBId] } }, { reporterId: { in: [ref.participantAId, ref.participantBId] }, targetType: 'USER' }] } });
+          const reviewIds = (await tx.review.findMany({ where: { transactionId: { in: ids } }, select: { id: true } })).map(r => r.id);
+          const replyIds = (await tx.reviewReply.findMany({ where: { reviewId: { in: reviewIds } }, select: { id: true } })).map(r => r.id);
+          const reports = await tx.report.findMany({ where: { OR: [{ targetType: 'REVIEW', targetId: { in: reviewIds } }, { targetType: 'REVIEW_REPLY', targetId: { in: replyIds } }, { targetType: 'LISTING', targetId: ref.listingId }, { targetType: 'TRANSACTION', targetId: { in: ids } }, { messageId: { in: messageIds } }, { targetType: 'USER', targetId: { in: [ref.participantAId, ref.participantBId] } }, { reporterId: { in: [ref.participantAId, ref.participantBId] }, targetType: 'USER' }] } });
           const scopes = [...disputes.map((r) => ({ ...r, type: 'DISPUTE' })), ...corrections.map((r) => ({ ...r, type: 'CORRECTION', retentionHoldUntil: null })), ...reports.map((r) => ({ ...r, type: 'REPORT' }))];
           for (const scope of scopes) if (['OPEN', 'IN_REVIEW'].includes(scope.status) || (scope.retentionHoldUntil && scope.retentionHoldUntil > now) || await this.blockedScope(tx, scope.type, scope.id, now)) return { messages: 0, cases: 0 };
           const associated = transactions.length || scopes.length;

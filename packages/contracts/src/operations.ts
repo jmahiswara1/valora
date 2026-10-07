@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { uuidSchema, versionReasonSchema } from './common.js';
 
-export const reportCreateSchema = z.object({ targetType: z.enum(['LISTING', 'MESSAGE', 'USER', 'TRANSACTION']), targetId: uuidSchema, reasonCode: z.string().trim().min(2).max(60), details: z.string().trim().min(5).max(1000) });
+export const reportCreateSchema = z.object({ targetType: z.enum(['LISTING', 'MESSAGE', 'USER', 'TRANSACTION', 'REVIEW', 'REVIEW_REPLY']), targetId: uuidSchema, reasonCode: z.string().trim().min(2).max(60), details: z.string().trim().min(5).max(1000) });
 
 export const reportReviewSchema = z.object({ expectedVersion: z.number().int().positive(), decision: z.enum(['RESOLVED', 'DISMISSED']), reason: z.string().trim().min(5).max(1000) });
 
