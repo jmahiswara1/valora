@@ -569,7 +569,10 @@
         "src/components/ui/primitives.tsx",
         "src/features/profile/avatar.tsx",
         "src/features/profile/photo-editor.tsx",
-        "src/features/profile/sessions.tsx"
+        "src/features/profile/sessions.tsx",
+        "src/features/notifications/list.tsx",
+        "src/features/notifications/bell.tsx",
+        "src/styles/notifications.css"
       ],
       "entrypoints": [
         "src/app/app/page.tsx",
@@ -592,7 +595,9 @@
         "src/app/app/pesan/[id]/page.tsx",
         "src/app/app/koreksi/[id]/page.tsx",
         "src/app/app/impact/page.tsx",
-        "src/app/app/profil/page.tsx"
+        "src/app/app/profil/page.tsx",
+        "src/app/app/favorit/page.tsx",
+        "src/app/app/notifikasi/page.tsx"
       ],
       "layout": {
         "sidebar": "240px fixed; 100dvh; padding 26px 16px 18px; viewport >=1024px",
@@ -652,6 +657,84 @@
         "assets": "No new or replaced raster assets; existing local photos only in intercepted review fixtures",
         "limits": "Frontend fixture evidence and style/scope regressions; real backend upload/payment/ownership integration and real mutations not asserted"
       }
+    },
+    "favorites": {
+      "route": "/app/favorit",
+      "scope": "Private account listing bookmarks; public and account navigation; Market, home, related cards and detail.",
+      "columns": {
+        "desktop": 4,
+        "tablet": 2,
+        "phone": 2
+      },
+      "controls": {
+        "hitAreaPx": 44,
+        "visualDiameterPx": 36,
+        "icon": "Heart",
+        "saved": "Filled Green on Sage",
+        "mutation": "Server confirmed; shared pending; reconciliation on failure"
+      },
+      "privacy": {
+        "savedFields": [
+          "listingId",
+          "public title at save",
+          "createdAt"
+        ],
+        "unavailable": "No retained photo, price, or private details"
+      },
+      "sources": [
+        "src/features/favorites",
+        "src/features/market/grid.tsx",
+        "src/styles/favorites.css"
+      ],
+      "brief": ".impeccable/briefs/favorites.md"
+    },
+    "notifications": {
+      "route": "/app/notifikasi",
+      "brief": ".impeccable/briefs/notifications.md",
+      "sources": [
+        "src/features/notifications",
+        "src/styles/notifications.css"
+      ],
+      "entrypoints": [
+        "authenticated public/account bell",
+        "account sidebar/drawer",
+        "dashboard"
+      ],
+      "surfaces": "white, forest, cream; flat rows; sage unread with label",
+      "mobile": "bell visible; account Market moves to drawer at 600px",
+      "states": [
+        "pending",
+        "empty",
+        "error/retry",
+        "read pending",
+        "uncertain response reconciliation"
+      ],
+      "targets": "44px minimum; Escape/outside/focus return; focus after unread row removal"
+    },
+    "passportQr": {
+      "brief": ".impeccable/briefs/passport-qr.md",
+      "sources": ["src/features/passport/qr.tsx", "src/features/passport/hooks.ts", "src/styles/passport.css"],
+      "entrypoints": ["owner item detail", "owner Passport", "accessible public Passport"],
+      "surfaces": "white centered dialog, forest QR, sage access message, pill actions",
+      "geometry": "500px max width; 28px padding, phone 20px; 20px radius; QR 256px display, phone 224px, 1024px PNG",
+      "targets": "44px minimum; Escape, focus containment/return, viewport-bounded scroll",
+      "states": ["fresh projection loading", "API retry", "QR retry", "manual copy fallback", "public access explanation", "local URL", "session reset"]
+    },
+    "savedSearches": {
+      "route": "/app/pencarian",
+      "brief": ".impeccable/briefs/searches.md",
+      "scope": "Approved ordinary extension of public Market and the private account manager; incumbent normative tokens preserved.",
+      "sources": ["src/features/searches/save.tsx", "src/features/searches/list.tsx", "src/features/searches/dialog.tsx", "src/features/searches/criteria.tsx", "src/features/searches/hooks.ts", "src/styles/searches.css"],
+      "entrypoints": ["Market applied criteria", "account sidebar/drawer under Aktivitas Market"],
+      "surfaces": "white and forest; flat rows with Line dividers; wrapping Cream criteria; explicit alert status; existing pill and Danger actions",
+      "geometry": "Rows stack at 760px; centered dialog maximum 500px with 16px viewport clearance, 20px radius, 28px padding or 20px at 480px, bounded height and internal scrolling; name input 16px.",
+      "controls": "Reuse AccountHeading, AccountSkeleton, Button, Field, Input and Notice; only row icon buttons have fixed 44px square targets; Lihat hasil keeps readable label width; checkbox label target 44px.",
+      "targets": "Labelled native dialog; close control initially focused; Tab/Shift+Tab containment, Escape, scroll lock and opener focus return; confirmed removal focuses next result or heading; visible Green outline; named toggle with aria-pressed.",
+      "states": ["valid applied criteria", "minimum one criterion", "guest login return", "duplicate saved search", "quota", "loading", "empty", "error/retry", "shared mutation pending", "server-confirmed rename/toggle/delete", "account-scoped reconciliation", "session reset"],
+      "evidence": [".impeccable/review/searches/desktop.png", ".impeccable/review/searches/mobile.png", ".impeccable/review/searches/save-desktop.png", ".impeccable/review/searches/save-mobile.png", ".impeccable/review/searches/delete-desktop.png", ".impeccable/review/searches/delete-mobile.png"],
+      "review": "Final disposition ship; results-link sizing and destructive delete variant resolved in the final desktop/mobile captures.",
+      "verification": "docs/26-saved-searches.md records 112 browser regression/feature scenarios, two real API/worker browser flows, 24 feature confirmations, typecheck/lint and nine API suites passing.",
+      "drift": "No CONTEXT_STALE finding was reported; completed detector returned no findings. No unrelated system or historical scope metadata repaired."
     }
   },
   "components": [

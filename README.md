@@ -47,8 +47,35 @@ pnpm build
 
 Source dikelompokkan per fitur. Lihat [aturan penamaan dan pemetaan file](docs/22-file-organization.md).
 
+## Fitur setelah MVP
+
+[Favorit](docs/23-favorites.md) menyimpan listing privat di akun melalui tombol
+hati pada Market dan menyediakan daftar di `/app/favorit`. Barang yang tidak
+lagi tersedia tetap tercatat tanpa membuka foto atau detail lama.
+
+[Pusat Notifikasi](docs/24-notification-center.md) mengumpulkan kabar penawaran
+dan transaksi serta barang baru yang cocok, dengan preview lonceng serta riwayat privat di `/app/notifikasi`.
+
+[Passport QR](docs/25-passport-qr.md) menyediakan tautan publik barang yang
+dapat disalin dan diunduh sebagai PNG, mengikuti akses Passport yang berlaku.
+Atur `APP_BASE_URL` ke alamat publik sebelum membagikan QR untuk dipindai
+dari perangkat lain.
+
+[Pencarian Tersimpan](docs/26-saved-searches.md) menyimpan kriteria Market
+dan mengirim kabar publikasi pertama listing yang cocok. Kelola nama dan
+notifikasinya di `/app/pencarian`.
+
+[Profil Publik dan Ulasan](docs/27-public-profiles-reviews.md) menampilkan barang
+dan pengalaman transaksi pengguna, dengan foto publik opsional, rating, balasan,
+laporan, dan moderasi.
+
 ## Kontribusi
 
 Lihat [panduan kontribusi](CONTRIBUTING.md) untuk format commit dan aturan file
 yang boleh masuk repository. Commit pertama memakai `initial commit`; commit
 berikutnya memakai `type: short desc` tanpa scope.
+
+[Peningkatan Chat](docs/28-chat-enhancements.md) menambahkan tiga foto privat,
+tanda dibaca, pemulihan kirim dan notifikasi per percakapan. OpenAPI terkini 1.14.0.
+
+[Koordinasi Serah Terima](docs/29-handover-coordination.md) menambahkan jadwal yang disepakati, alamat/lokasi privat, resi manual per barang, linimasa dan pengingat pada detail transaksi. Tenggat tetap 14 hari.

@@ -2,7 +2,7 @@
 
 **Status:** spesifikasi MVP dan implementasi tahap 1–6 karya INSYFEST 2026, 2 Oktober 2026. O04–O09 telah ditutup sebagai baseline rancangan K01–K06; O11 tetap khusus sebelum operasi publik. Perbedaan Pencil diselesaikan saat implementasi UI sesuai PRD/docs. [Status kode tahap 6](21-stage6-implementation.md) memisahkan fitur yang telah berjalan dari kontrak tahap berikutnya.
 
-Dokumen ini menerjemahkan [PRD v1.14](../PRD.md) menjadi keputusan, alur, aturan, model data, kontrak API, dan skenario penerimaan yang dapat diperiksa sebelum implementasi. Valora disiapkan untuk lomba INSYFEST 2026; PRD menjadi acuan perilaku produk. Kanvas Pencil Valora menjadi referensi visual; perbedaan atau kekosongan desain dicatat dalam audit dan diselesaikan langsung dalam UI yang dikodekan.
+Dokumen ini menerjemahkan [PRD v1.24](../PRD.md) menjadi keputusan, alur, aturan, model data, kontrak API, dan skenario penerimaan yang dapat diperiksa sebelum implementasi. Valora disiapkan untuk lomba INSYFEST 2026; PRD menjadi acuan perilaku produk. Kanvas Pencil Valora menjadi referensi visual; perbedaan atau kekosongan desain dicatat dalam audit dan diselesaikan langsung dalam UI yang dikodekan.
 
 | Dokumen | Isi |
 | --- | --- |
@@ -39,3 +39,27 @@ Rubrik, moderasi Passport, retensi demo, model data, kontrak API, dan matriks pe
 ## Struktur source terkini
 
 [22 — Struktur source dan pemetaan file](22-file-organization.md) mencatat perapihan frontend/backend/contracts, skrip dan test. Catatan tahap sebelumnya tetap menjadi bukti historis.
+
+## Perluasan setelah MVP
+
+[23 — Favorit](23-favorites.md) mencatat penyimpanan privat akun, tombol hati,
+daftar dashboard, kontrak OpenAPI 1.8.0, dan skenario verifikasi.
+
+[24 — Pusat Notifikasi](24-notification-center.md) mencatat sumber aktivitas,
+preview lonceng, riwayat/filter, penandaan dibaca, dan OpenAPI 1.9.0.
+
+[25 — Passport QR](25-passport-qr.md) mencatat QR sejak barang didaftarkan,
+tautan kanonis, unduhan PNG, privasi, konfigurasi domain, dan OpenAPI 1.10.0.
+
+[26 — Pencarian Tersimpan](26-saved-searches.md) mencatat filter URL Market,
+pengelolaan privat, notifikasi publikasi pertama, worker/checkpoint, watermark
+aktivasi, migrasi historis, dan OpenAPI 1.11.0.
+
+[27 — Profil Publik dan Ulasan](27-public-profiles-reviews.md) mencatat profil
+Market, rating dari transaksi selesai, foto opt-in, balasan, moderasi/retensi
+dan kontrak OpenAPI 1.12.0.
+
+[28 — Peningkatan Chat](28-chat-enhancements.md) mencatat foto privat, cursor
+baca, SSE bersama, notifikasi percakapan, bukti kasus dan kontrak OpenAPI 1.13.0.
+
+[29 — Koordinasi Serah Terima](29-handover-coordination.md) mencatat usulan jadwal, alamat privat, resi per barang, linimasa, pengingat, akses admin dan retensi. Kontrak OpenAPI terkini 1.14.0.

@@ -1,7 +1,7 @@
 # Valora — Product Requirements Document
 
-**Versi:** 1.17
-**Tanggal:** 3 Oktober 2026  
+**Versi:** 1.24
+**Tanggal:** 6 Oktober 2026  
 **Status:** Karya INSYFEST 2026; arah produk disepakati, spesifikasi MVP ada di `docs/`, dan implementasi tahap 1 dicatat pada `docs/15-stage1-implementation.md`  
 **Tagline:** *Keep Things Valuable*  
 **Platform:** Web application  
@@ -369,6 +369,24 @@ Untuk penilaian lomba, alur MVP harus dapat didemonstrasikan dengan akun dan dat
 
 **Future Features:** payment gateway/escrow; integrasi pengiriman; marketplace jasa repair; notifikasi email/push; lampiran chat tambahan; gamification, badge, dan community challenge; peta; analisis foto berbantuan AI; tutorial repair AI interaktif berbasis konten terkurasi; estimasi harga dari data pembanding; pertukaran banyak Item atau pertukaran dengan tambahan uang.
 
+**Perluasan setelah MVP:** Favorit menyimpan Listing privat di akun, menyediakan
+tombol hati dan halaman `/app/favorit`, serta mempertahankan nama saat disimpan
+ketika Listing tidak tersedia tanpa membuka detail/foto lama. Perilaku, batas,
+kontrak, dan verifikasi ada pada [fitur Favorit](docs/23-favorites.md). Fitur ini
+tidak mengubah cakupan wajib MVP tahap 1–6. Koleksi bernama, pencarian tersimpan,
+dan pemberitahuan perubahan harga menjadi pengembangan berikutnya.
+
+**Perluasan pusat notifikasi:** riwayat privat aktivitas penawaran dan transaksi,
+preview lonceng desktop/mobile, filter, dan penandaan dibaca. Pengingat MVP
+tetap tersedia; email/push dan notifikasi pesan/moderasi belum termasuk.
+Lihat [Pusat Notifikasi](docs/24-notification-center.md).
+
+**Perluasan Passport QR:** pemilik dapat menyimpan QR sejak barang didaftarkan;
+pengunjung dapat berbagi Passport publik yang dapat diakses. QR hanya berisi
+tautan kanonis barang, tetap sama lintas pemilik, serta menyediakan salin
+tautan dan unduh PNG. Kelayakan publik dan pembatasan moderasi tetap berlaku.
+Konfigurasi domain dan verifikasi ada pada [Passport QR](docs/25-passport-qr.md).
+
 Pada MVP, pilihan metode pembayaran dan serah terima hanya dicatat sebagai kesepakatan/koordinasi para pihak; Valora tidak memproses atau memverifikasi keduanya. Tampilan Transaction harus menjelaskan batas ini sebelum para pihak mengonfirmasi.
 
 Penyusunan implementasi mengikuti dependensi data dan status agar seluruh fitur MVP bekerja sebagai satu produk: domain Item dan Assessment → Listing/Offer/Chat → Transaction/ownership → Passport/Impact → moderasi dan pengujian alur ujung ke ujung. Urutan ini bukan pemotongan cakupan MVP.
@@ -390,3 +408,25 @@ Penyusunan implementasi mengikuti dependensi data dan status agar seluruh fitur 
 ## 15. Indikator hasil setelah produk digunakan
 
 Selain keberhasilan teknis, pantau jumlah Item dengan Assessment lengkap, persentase Item yang berlanjut ke Repair atau Listing, percakapan yang menghasilkan Offer, rasio Offer diterima menjadi Transaction selesai, jumlah transaksi bermasalah, jumlah sengketa yang terselesaikan, penggunaan dan kegagalan AI Explainer, serta tingkat koreksi data kondisi oleh pengguna. Target numerik ditentukan setelah data penggunaan awal tersedia; PRD tidak mengklaim besaran dampak yang belum terukur.
+
+**Perluasan Pencarian Tersimpan:** pengguna dapat menyimpan kriteria Market privat
+dan menerima satu notifikasi per listing yang pertama kali terbit dan cocok.
+Pengelolaan dasar, watermark aktivasi, serta pemrosesan antrean persisten
+dicatat pada [Pencarian Tersimpan](docs/26-saved-searches.md).
+
+**Perluasan Profil Publik dan Ulasan:** akun aktif memiliki profil berisi identitas
+minimal, barang aktif, dan pengalaman dari transaksi selesai. Foto publik opsional
+dan dinonaktifkan secara default. Pembeli/penerima mengulas penjual/donor; Exchange
+mengizinkan kedua peserta mengulas, sekali dalam 30 hari sejak selesai. Rating
+1–5 wajib, komentar opsional, dan satu balasan final tersedia. Privasi, koreksi,
+laporan, moderasi serta retensi dicatat pada
+[Profil Publik dan Ulasan](docs/27-public-profiles-reviews.md).
+
+
+**Perluasan Chat:** teks dan maksimal tiga foto privat per pesan, tanda dibaca
+berdasarkan pesan terlihat, notifikasi yang dikelompokkan per percakapan,
+dan profil publik dari header chat. Pengiriman idempoten, pemulihan respons,
+bukti kasus serta retensi dicatat pada [Peningkatan Chat](docs/28-chat-enhancements.md).
+
+
+**Perluasan koordinasi serah terima:** peserta dapat mengusulkan dan menyepakati jadwal/lokasi atau perkiraan penerimaan dengan alamat privat per penerima. Tenggat tetap 14 hari; konfirmasi formal mengunci koordinasi dan tetap menjadi dasar transfer kepemilikan. Resi manual beralasan, linimasa transaksi, pengingat 24/2 jam, akses admin lima menit serta retensi terdokumentasi pada [Koordinasi Serah Terima](docs/29-handover-coordination.md).

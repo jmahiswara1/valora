@@ -1013,6 +1013,14 @@ Composer chat sticky bottom 0 memakai textarea fleksibel min-height 52px/maksimu
 
 Passport pemilik memakai summary Cream dan foto contain, timeline dengan sumber/asal peristiwa, serta status publik yang tetap dijelaskan. Impact pengguna menampilkan periode Asia/Jakarta, satuan rupiah/kg, sumber, coverage berat, dan Belum tersedia tanpa angka pengganti. Profil memisahkan informasi/foto/sesi dari kata sandi dan penutupan akun; password toggle 42px berlabel dengan aria-pressed, pencabutan sesi memakai konfirmasi native, dan penutupan meminta teks TUTUP. Foto profil mempertahankan crop/zoom serta status unggah yang sudah ada.
 
+### Pencarian Tersimpan (2026-10-06)
+
+Perluasan Market dan `/app/pencarian` mengikuti [brief pencarian tersimpan](.impeccable/briefs/searches.md), dengan kanvas putih, teks Forest, label kriteria Cream, dan Plus Jakarta Sans yang sudah ada. Manager memakai AccountHeading dan daftar baris datar bergaris Line; nama serta kriteria panjang membungkus. Status notifikasi disertai teks, bukan hanya ikon atau warna. Hingga 760px aksi berpindah ke bawah isi baris. Tautan Lihat hasil menyediakan lebar untuk label dan panah; hanya tombol ikon toggle, ubah nama, dan hapus memiliki ukuran tetap 44px.
+
+Dialog simpan, ubah nama, dan hapus memakai pola terpusat White/Forest yang sudah digunakan QR: lebar maksimum 500px dengan jarak viewport 16px, radius 20px, padding 28px atau 20px hingga 480px, backdrop akun datar, tinggi terbatas viewport, dan scroll internal. Field nama tetap 16px; kriteria berupa label daftar yang membungkus. Button, Field, Input, Notice, dan AccountSkeleton digunakan ulang. Konfirmasi hapus memakai variant Danger yang sudah tersedia; checkbox notifikasi mempertahankan target label 44px.
+
+Dialog native mempertahankan fokus awal pada tombol tutup, containment Tab/Shift+Tab, Escape, scroll lock, dan pemulihan fokus. Setelah penghapusan terkonfirmasi fokus menuju tautan hasil berikutnya atau heading. Toggle memakai aria-pressed, feedback memakai status/alert, dan pending/error/retry mengikuti konfirmasi server serta daftar per akun. [Enam capture akhir](.impeccable/review/searches/) mencakup manager, simpan, dan hapus pada desktop/ponsel; reviewer memberi disposition ship setelah koreksi lebar Lihat hasil dan variant hapus. Perilaku produk dan hasil verifikasi dicatat pada [catatan fitur](../../docs/26-saved-searches.md). Catatan ini memperluas konteks komponen tanpa menambah token normatif.
+
 ### States and Motion
 
 Perubahan warna/border tombol pill dan kategori memakai duration-fast; perubahan border kartu dan transform media memakai duration-normal, keduanya dengan ease-ui. Lingkaran ikon navbar mengikuti transisi bersama 150ms ease. Skeleton memakai pulse yang sudah ada. Seluruh transisi, animasi, dan smooth scrolling publik dinonaktifkan ketika prefers-reduced-motion bernilai reduce.
@@ -1057,3 +1065,52 @@ Menu Market ditambahkan ke navigasi desktop bersama, dengan `aria-current="page"
 Semua pilihan tunggal pada filter dan form publik, akun, serta admin memakai `components/ui/select.tsx`. Pemicu mengikuti radius kontrol permukaan; panel putih memakai border Line, radius 14px, inset 6px, baris minimal 44px, sorotan Sage, dan centang Green pada nilai tersimpan. Label panjang membungkus di daftar dan dipersingkat secara visual pada pemicu. Panel dapat digulir, mengikuti lebar pemicu, dibatasi viewport, serta membuka ke atas ketika ruang di bawah tidak cukup. Daftar pencarian kota mengikuti radius dan jarak baris yang sama.
 
 Interaksi memakai combobox/listbox dengan ArrowUp/ArrowDown, Home/End, Enter/Space, pencarian melalui huruf awal, Escape untuk membatalkan, dan Tab untuk berpindah fokus. Select native tersembunyi mempertahankan FormData, required, defaultValue, fieldset disabled, dan reset. Kesalahan required mengarahkan fokus ke pemicu dan menampilkan pesan tertaut. Warna forced colors dan prefers-reduced-motion ditangani pada stylesheet bersama.
+
+### Favorit (2026-10-04)
+
+Perluasan setelah MVP menggunakan permukaan putih, Forest/Green, Cream/Sage,
+Plus Jakarta Sans, dan kartu barang rounded tanpa shadow. Tombol hati berada
+di kanan atas foto dengan area klik 44px dan permukaan visual 36px; state
+tersimpan memakai hati terisi Green di atas Sage. Tombol merupakan saudara
+tautan kartu, sehingga tindakan simpan tidak membuka detail barang.
+
+Daftar `/app/favorit` mengikuti AccountShell, dengan empat kolom dari 1024px dan
+dua di bawahnya. Phone mempertahankan foto, judul dua baris, jenis penawaran,
+harga, kota, dan hati. Kartu reserved/tidak tersedia mempertahankan nama publik
+saat disimpan, tanggal, status, dan kontrol hapus; tidak membawa foto/detail
+lama. Loading, empty, retry, pagination, respons terputus, dan fokus setelah
+penghapusan mengikuti [brief Favorit](.impeccable/briefs/favorites.md).
+
+Ikon hati tampil di navbar publik termasuk mobile. Navbar tetap sticky tanpa
+shadow/border luar; notifikasi/cart mobile tetap tersembunyi. Sidebar/drawer
+dan toolbar akun menyediakan akses Favorit; label Market pada toolbar ponsel
+menjadi ikon Store untuk menjaga kontrol 44px pada lebar 320px.
+
+## Pusat Notifikasi
+
+Privat di `/app/notifikasi`, dengan preview lima aktivitas dari lonceng
+publik/akun dan badge total belum dibaca (maksimum tampilan 99+). Lonceng hanya
+untuk sesi login, terlihat juga di mobile; cart tetap tersembunyi. Toolbar
+akun ≤600 px memindahkan Market ke drawer.
+
+Daftar aktivitas flat memakai sage dan label Baru untuk entri unread, ikon
+kategori, judul kejadian, nama barang saat kejadian, serta waktu. Filter
+Semua/Belum dibaca dan kategori memakai pill 44 px. Halaman menyediakan
+pagination, tandai satu/semua, dan empty/error/retry. Preview tidak menandai
+dibaca; perubahan menunggu server dan feedback gagal bertahan saat navigasi.
+
+Detail perilaku ada pada `.impeccable/briefs/notifications.md` dan
+`docs/24-notification-center.md`.
+
+## Passport QR
+
+Detail barang, Passport pemilik, dan Passport publik menyediakan aksi QR.
+Dialog putih berada di tengah viewport dengan radius 20 px, padding 28 px
+(20 px pada phone), lebar maksimum 500 px, dan scroll internal. QR forest di
+atas putih memakai quiet zone empat modul, tanpa logo menutupi kode.
+
+Status akses memakai bidang sage; tautan dapat dipilih dan tombol pill
+minimal 44 px. Phone menyusun aksi vertikal. Fokus awal pada tombol tutup,
+Escape mengembalikan fokus, dan pergantian akun membersihkan dialog. PNG
+1024 px berisi QR URL publik saja, bukan data privat barang. Detail ada pada
+`.impeccable/briefs/passport-qr.md` dan `docs/25-passport-qr.md`.
