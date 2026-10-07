@@ -4,6 +4,14 @@ import { requestContext } from '../../shared/request-context.js';
 
 type Payload = { title: string; offerId?: string; transactionId?: string; listingId?: string; day?: number; proposalId?: string; leadMinutes?: number };
 
+export async function notifyMessage(tx: Prisma.TransactionClient, userId: string, conversationId: string, messageId: string, sequence: number, title: string) {
+  if (!await tx.user.findFirst({ where: { id: userId, status: 'ACTIVE' } })) return;
+  const row = await tx.inAppNotification.findFirst({ where: { userId, conversationId, type: 'MESSAGE_RECEIVED', readAt: null } });
+  const data = { payload: { title, conversationId, latestMessageSequence: sequence }, createdAt: new Date() };
+  if (row) await tx.inAppNotification.update({ where: { id: row.id }, data });
+  else await tx.inAppNotification.create({ data: { ...data, userId, conversationId, type: 'MESSAGE_RECEIVED', eventKey: `message:${messageId}:${userId}` } });
+}
+
 // All callers run inside the domain transaction and its serial write gate.
 export async function notify(tx: Prisma.TransactionClient, type: Exclude<NotificationType, 'MESSAGE_RECEIVED'>, event: string, recipients: string[], payload: Payload, exclude?: string) {
   const ids = [...new Set(recipients)].filter(id => id !== exclude);

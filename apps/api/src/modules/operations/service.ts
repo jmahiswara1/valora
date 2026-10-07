@@ -1,3 +1,4 @@
+import { attachmentDto } from '../conversations/message.js';
 import { expireOffers } from '../notifications/events.js';
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../../infrastructure/database.service.js';
@@ -88,9 +89,9 @@ export class OperationsService {
       if (fresh.version !== input.expectedVersion || !['OPEN', 'IN_REVIEW'].includes(fresh.status)) throw new AppException(409, 'STATE_CONFLICT', 'Kasus sudah berubah.');
       let snapshot: unknown;
       if (input.messageId) {
-        const message = await tx.message.findFirst({ where: { id: input.messageId, deletedAt: null }, include: { conversation: true } });
+        const message = await tx.message.findFirst({ where: { id: input.messageId, deletedAt: null }, include: { conversation: true, attachments: { where: { deletedAt: null }, orderBy: { orderIndex: 'asc' } } } });
         if (!message || message.conversation.listingId !== transaction.listingId || ![message.conversation.participantAId, message.conversation.participantBId].every((p) => [transaction.sellerOrDonorId, transaction.buyerOrRecipientId].includes(p))) throw new AppException(404, 'NOT_FOUND', 'Pesan tidak terkait transaksi.');
-        snapshot = { body: message.body, sentAt: message.sentAt.toISOString() };
+        snapshot = { id: message.id, senderId: message.senderId, body: message.body, sentAt: message.sentAt.toISOString(), attachments: message.attachments.map(attachmentDto) };
       }
       if (new Set(input.ticketIds).size !== input.ticketIds.length) throw new AppException(400, 'MEDIA_INVALID', 'Foto bukti tidak boleh berulang.');
       const tickets = await tx.uploadTicket.findMany({ where: { id: { in: input.ticketIds }, correctionCaseId: id, userId: actorId, purpose: 'CASE_EVIDENCE', status: 'UPLOADED', expiresAt: { gt: new Date() } } });

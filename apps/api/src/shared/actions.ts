@@ -12,7 +12,7 @@ export async function requireRecentAuthentication(tx: Prisma.TransactionClient) 
 async function grant(tx: Prisma.TransactionClient, actorId: string, type: string, id: string, kind = 'EVIDENCE') {
   const row = type === 'DISPUTE' ? await tx.disputeCase.findUnique({ where: { id } }) : type === 'CORRECTION' ? await tx.correctionCase.findUnique({ where: { id } }) : await tx.report.findUnique({ where: { id } });
   if (!row || row.assignedAdminId !== actorId) throw new AppException(404, 'NOT_FOUND', 'Kasus tidak ditugaskan kepada akun ini.');
-  const access = type === 'DISPUTE' ? await tx.caseAccessGrant.findFirst({ where: { caseId: id, adminId: actorId, kind: kind as 'EVIDENCE' | 'CHAT', expiresAt: { gt: new Date() } } }) : await tx.operationsAccessGrant.findFirst({ where: { scopeType: type, scopeId: id, adminId: actorId, expiresAt: { gt: new Date() } } });
+  const access = type === 'DISPUTE' ? await tx.caseAccessGrant.findFirst({ where: { caseId: id, adminId: actorId, kind: kind as 'EVIDENCE' | 'CHAT' | 'HANDOVER', expiresAt: { gt: new Date() } } }) : await tx.operationsAccessGrant.findFirst({ where: { scopeType: type, scopeId: id, adminId: actorId, expiresAt: { gt: new Date() } } });
   if (!access) throw new AppException(403, 'ACCESS_REASON_REQUIRED', 'Akses kasus berakhir. Perbarui alasan akses.');
 }
 export async function authorizeReplay(tx: Prisma.TransactionClient, actorId: string, operation: string, payload: unknown) {
@@ -20,9 +20,9 @@ export async function authorizeReplay(tx: Prisma.TransactionClient, actorId: str
   const input = (payload ?? {}) as Record<string, string>;
   const user = await tx.user.findUnique({ where: { id: actorId } });
   if (!user || user.status !== 'ACTIVE') throw new AppException(403, 'ACCOUNT_SUSPENDED', 'Akun tidak dapat digunakan.');
-  const member = ['accept', 'confirm', 'cancel-request', 'cancel-respond', 'dispute', 'overdue-case', 'evidence', 'correction-open', 'correction-evidence', 'review-create', 'review-reply'].includes(name);
+  const member = ['handover-propose', 'handover-respond', 'handover-withdraw', 'shipment-update', 'accept', 'confirm', 'cancel-request', 'cancel-respond', 'dispute', 'overdue-case', 'evidence', 'correction-open', 'correction-evidence', 'review-create', 'review-reply'].includes(name);
   if (!member && user.role !== 'ADMIN') throw new AppException(403, 'FORBIDDEN', 'Izin admin diperlukan.');
-  if (['confirm', 'cancel-request', 'cancel-respond', 'dispute', 'overdue-case', 'correction-open'].includes(name)) {
+  if (['handover-propose', 'handover-respond', 'handover-withdraw', 'shipment-update', 'confirm', 'cancel-request', 'cancel-respond', 'dispute', 'overdue-case', 'correction-open'].includes(name)) {
     const row = await tx.transaction.findUnique({ where: { id } });
     if (!row || ![row.sellerOrDonorId, row.buyerOrRecipientId].includes(actorId)) throw new AppException(404, 'NOT_FOUND', 'Transaksi tidak ditemukan.');
   }

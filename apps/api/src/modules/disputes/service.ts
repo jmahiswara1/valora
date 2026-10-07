@@ -1,3 +1,5 @@
+import { invalidateHandover } from '../handover/lifecycle.js';
+import { messageDto, attachmentDto } from '../conversations/message.js';
 import type { Prisma } from '../../generated/prisma/client.js';
 import type { EvidenceDto, TransactionSnapshot, MediaTicketInput, EvidenceInput, ResolveDisputeInput } from '@valora/contracts';
 import { notifyTransaction } from '../notifications/events.js';
@@ -29,6 +31,7 @@ export class DisputesService {
       if (!row.overdueAt || row.status === 'DISPUTED' || [row.sellerOrDonorId, row.buyerOrRecipientId].includes(actorId)) throw new AppException(409, 'STATE_CONFLICT', 'Transaksi belum memerlukan tindak lanjut ini atau admin merupakan peserta.');
       const record = await tx.disputeCase.create({ data: { transactionId, openedById: actorId, assignedAdminId: actorId, reason: input.reason, status: 'IN_REVIEW' } });
       await tx.caseEvidence.create({ data: { caseId: record.id, submittedById: actorId, note: 'Tindak lanjut admin atas target serah terima terlewati: ' + input.reason } });
+      await invalidateHandover(tx, transactionId, 'DISPUTE_OPENED', actorId);
       await tx.transaction.update({ where: { id: transactionId }, data: { status: 'DISPUTED', version: { increment: 1 } } });
       await notifyTransaction(tx, row, 'DISPUTE_OPENED', `dispute:${record.id}:opened`);
       await tx.adminAction.create({ data: { adminId: actorId, targetType: 'DISPUTE', targetId: record.id, action: 'OPEN_OVERDUE_CASE', reason: input.reason } });
@@ -52,10 +55,10 @@ export class DisputesService {
       if (row.status === 'RESOLVED') throw new AppException(409, 'STATE_CONFLICT', 'Kasus sudah ditutup.');
       let messageSnapshot: Prisma.InputJsonValue | undefined;
       if (input.messageId) {
-        const message = await tx.message.findUnique({ where: { id: input.messageId }, include: { conversation: true } });
+        const message = await tx.message.findUnique({ where: { id: input.messageId }, include: { conversation: true, attachments: { where: { deletedAt: null }, orderBy: { orderIndex: 'asc' } } } });
         const parties = [row.transaction.sellerOrDonorId, row.transaction.buyerOrRecipientId];
         if (!message || message.deletedAt || message.conversation.listingId !== row.transaction.listingId || !parties.includes(message.conversation.participantAId) || !parties.includes(message.conversation.participantBId)) throw new AppException(404, 'NOT_FOUND', 'Pesan tidak berasal dari percakapan transaksi ini.');
-        messageSnapshot = json({ id: message.id, senderId: message.senderId, body: message.body, sentAt: message.sentAt.toISOString() });
+        messageSnapshot = json({ id: message.id, senderId: message.senderId, body: message.body, sentAt: message.sentAt.toISOString(), attachments: message.attachments.map(attachmentDto) });
       }
       const tickets = await tx.uploadTicket.findMany({ where: { id: { in: input.ticketIds }, userId: actorId, caseId, purpose: 'CASE_EVIDENCE', status: 'UPLOADED', expiresAt: { gt: new Date() } } });
       if (tickets.length !== input.ticketIds.length || tickets.some((t) => !t.storageKey || !t.actualBytes || !t.actualMime)) throw new AppException(400, 'MEDIA_INVALID', 'Foto bukti belum siap atau berasal dari kasus lain.');
@@ -102,7 +105,7 @@ export class DisputesService {
       return { claimed: true };
     });
   }
-  async grant(actorId: string, caseId: string, kind: 'CHAT' | 'EVIDENCE', reason: string, key?: string) {
+  async grant(actorId: string, caseId: string, kind: 'CHAT' | 'EVIDENCE' | 'HANDOVER', reason: string, key?: string) {
     return idempotent(this.db, actorId, 'case-access:' + caseId + ':' + kind, key, { reason }, async (tx) => {
       await assignedCase(tx, actorId, caseId);
       const expiresAt = new Date(Date.now() + 5 * 60000);
@@ -117,9 +120,9 @@ export class DisputesService {
     let sequence: number | undefined;
     if (before) { sequence = Number(before); if (!Number.isSafeInteger(sequence) || sequence < 1) throw new AppException(400, 'INVALID_INPUT', 'Cursor pesan tidak valid.'); }
     const parties = [row.transaction.sellerOrDonorId, row.transaction.buyerOrRecipientId];
-    const messages = await this.db.message.findMany({ where: { conversation: { listingId: row.transaction.listingId, participantAId: { in: parties }, participantBId: { in: parties } }, deletedAt: null, ...(sequence ? { sequence: { lt: sequence } } : {}) }, orderBy: { sequence: 'desc' }, take: 31 });
+    const messages = await this.db.message.findMany({ where: { conversation: { listingId: row.transaction.listingId, participantAId: { in: parties }, participantBId: { in: parties } }, deletedAt: null, ...(sequence ? { sequence: { lt: sequence } } : {}) }, orderBy: { sequence: 'desc' }, take: 31, include: { attachments: { where: { deletedAt: null }, orderBy: { orderIndex: 'asc' } } } });
     const page = messages.slice(0, 30);
-    return { data: page.reverse().map((m) => ({ id: m.id, senderId: m.senderId, body: m.body, sentAt: m.sentAt.toISOString() })), meta: { nextCursor: messages.length > 30 ? String(page[0].sequence) : null } };
+    return { data: page.reverse().map(messageDto), meta: { nextCursor: messages.length > 30 ? String(page[0].sequence) : null } };
   }
   async resolve(actorId: string, transactionId: string, input: ResolveDisputeInput, key?: string) {
     return idempotent(this.db, actorId, 'resolve:' + transactionId, key, input, async (tx) => {

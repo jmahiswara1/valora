@@ -101,6 +101,9 @@ export class RetentionService {
           const associated = transactions.length || scopes.length;
           const latest = associated ? Math.max(...transactions.map((t) => (t.completedAt ?? t.cancelledAt ?? t.acceptedAt).getTime()), ...scopes.map((s) => (s.resolvedAt ?? s.createdAt).getTime())) : (conversation.messages[0]?.sentAt.getTime() ?? conversation.createdAt.getTime());
           if (now.getTime() - latest < (associated ? 180 : 90) * day) return { messages: 0, cases: 0 };
+          const photos = await tx.messageAttachment.findMany({ where: { messageId: { in: messageIds }, deletedAt: null } });
+          for (const photo of photos) await tx.storageDeletion.upsert({ where: { storageKey: photo.storageKey }, update: {}, create: { storageKey: photo.storageKey } });
+          await tx.messageAttachment.updateMany({ where: { messageId: { in: messageIds }, deletedAt: null }, data: { deletedAt: now } });
           const deleted = await tx.message.updateMany({ where: { conversationId: ref.id, deletedAt: null }, data: { body: erased, deletedAt: now } });
           await tx.caseEvidence.updateMany({ where: { OR: [{ messageId: { in: messageIds } }, { caseId: { in: disputes.map((c) => c.id) } }] }, data: { note: null, messageSnapshot: Prisma.DbNull } });
           await tx.correctionEvidence.updateMany({ where: { OR: [{ messageId: { in: messageIds } }, { caseId: { in: corrections.map((c) => c.id) } }] }, data: { note: erased, messageSnapshot: Prisma.DbNull, purgedAt: now } });
@@ -112,6 +115,9 @@ export class RetentionService {
           await tx.correctionCase.updateMany({ where: { id: { in: corrections.map((c) => c.id) } }, data: { reason: erased, resolutionReason: null } });
           await tx.report.updateMany({ where: { id: { in: reports.map((c) => c.id) } }, data: { details: erased } });
           await tx.transaction.updateMany({ where: { id: { in: ids } }, data: { privateSnapshot: {} } });
+          const handovers = await tx.handoverProposal.findMany({ where: { transactionId: { in: ids } }, select: { id: true } });
+          await tx.shipmentRecord.updateMany({ where: { proposalId: { in: handovers.map(p => p.id) }, purgedAt: null }, data: { courier: null, trackingNumber: null, reason: null, purgedAt: now } });
+          await tx.handoverProposal.updateMany({ where: { transactionId: { in: ids }, purgedAt: null }, data: { privateDetails: Prisma.DbNull, purgedAt: now } });
           await tx.cancellationRequest.updateMany({ where: { transactionId: { in: ids } }, data: { reason: erased } });
           await tx.caseAccessGrant.updateMany({ where: { caseId: { in: disputes.map((c) => c.id) } }, data: { reason: erased } });
           await tx.operationsAccessGrant.updateMany({ where: { scopeId: { in: scopes.map((c) => c.id) } }, data: { reason: erased } });

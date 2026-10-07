@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { uuidSchema } from './common.js';
 
 // Stage 6: recovery operation names are shared by API and browser.
-export const actionOperationNames = ['accept', 'confirm', 'cancel-request', 'cancel-respond', 'dispute', 'overdue-case', 'evidence', 'case-claim', 'case-access', 'resolve', 'correction-open', 'correction-claim', 'operations-grant', 'correction-evidence', 'correction-close', 'ownership-correction', 'impact-adjust', 'source-correction', 'passport-visibility', 'user-status', 'report-claim', 'report-resolve', 'admin-listing', 'retention-hold', 'retention-release', 'rubric-draft', 'rubric-edit', 'rubric-publish', 'category', 'reference-status', 'economic-reference', 'repair-correct', 'repair-void', 'moderation', 'review-create', 'review-reply', 'review-visibility'] as const;
+export const actionOperationNames = ['handover-propose', 'handover-respond', 'handover-withdraw', 'shipment-update', 'accept', 'confirm', 'cancel-request', 'cancel-respond', 'dispute', 'overdue-case', 'evidence', 'case-claim', 'case-access', 'resolve', 'correction-open', 'correction-claim', 'operations-grant', 'correction-evidence', 'correction-close', 'ownership-correction', 'impact-adjust', 'source-correction', 'passport-visibility', 'user-status', 'report-claim', 'report-resolve', 'admin-listing', 'retention-hold', 'retention-release', 'rubric-draft', 'rubric-edit', 'rubric-publish', 'category', 'reference-status', 'economic-reference', 'repair-correct', 'repair-void', 'moderation', 'review-create', 'review-reply', 'review-visibility'] as const;
 
 export const actionStatusSchema = z.object({ operation: z.string().min(1).max(180).refine((s) => actionOperationNames.some((name) => s === name || s.startsWith(name + ':'))), key: uuidSchema });
 
@@ -11,6 +11,9 @@ export type ActionStatusDto = { status: 'COMMITTED' | 'PURGED' | 'NOT_FOUND'; co
 export function actionOperationFor(path: string, payload: unknown): string {
   const input = (payload ?? {}) as Record<string, string>;
   const rules: [RegExp, (m: RegExpMatchArray) => string][] = [
+    [/^\/transactions\/([^/]+)\/handover\/proposals$/, m => 'handover-propose:' + m[1]],
+    [/^\/transactions\/([^/]+)\/handover\/proposals\/([^/]+)\/(respond|withdraw)$/, m => 'handover-' + m[3] + ':' + m[1] + ':' + m[2]],
+    [/^\/transactions\/([^/]+)\/handover\/shipments\/([^/]+)$/, m => 'shipment-update:' + m[1] + ':' + m[2]],
     [/^\/transactions\/([^/]+)\/reviews$/, m => 'review-create:' + m[1]],
     [/^\/reviews\/([^/]+)\/reply$/, m => 'review-reply:' + m[1]],
     [/^\/admin\/(reviews|review-replies)\/([^/]+)\/visibility$/, m => 'review-visibility:' + (m[1] === 'reviews' ? 'REVIEW' : 'REVIEW_REPLY') + ':' + m[2]],
@@ -25,7 +28,7 @@ export function actionOperationFor(path: string, payload: unknown): string {
     [/^\/admin\/transactions\/([^/]+)\/open-case$/, m => 'overdue-case:' + m[1]],
     [/^\/admin\/transactions\/([^/]+)\/resolve-dispute$/, m => 'resolve:' + m[1]],
     [/^\/admin\/disputes\/([^/]+)\/claim$/, m => 'case-claim:' + m[1]],
-    [/^\/admin\/cases\/([^/]+)\/(chat|evidence)-access$/, m => 'case-access:' + m[1] + ':' + m[2].toUpperCase()],
+    [/^\/admin\/cases\/([^/]+)\/(chat|evidence|handover)-access$/, m => 'case-access:' + m[1] + ':' + m[2].toUpperCase()],
     [/^\/admin\/correction-cases\/([^/]+)\/(claim|close)$/, m => 'correction-' + m[2] + ':' + m[1]],
     [/^\/admin\/(reports|correction-cases)\/([^/]+)\/access$/, m => 'operations-grant:' + (m[1] === 'reports' ? 'REPORT' : 'CORRECTION') + ':' + m[2]],
     [/^\/admin\/reports\/([^/]+)\/(claim|resolve)$/, m => 'report-' + m[2] + ':' + m[1]],

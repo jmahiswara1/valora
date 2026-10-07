@@ -1,0 +1,36 @@
+/* Transaction coordination shares the existing forest and cream workspace. */
+.account-main .handover-panel { display: grid; gap: 18px; }
+.handover-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.handover-heading > h2, .handover-heading > h3 { margin: 0; }
+.handover-section { border-top: 1px solid #E2E8DF; padding-top: 22px; display: grid; gap: 14px; }
+.handover-details { display: grid; gap: 16px; overflow-wrap: anywhere; }
+.handover-details h4, .handover-shipment h4 { font-size: .9375rem; line-height: 1.5; margin: 0 0 5px; font-weight: 600; }
+.handover-details p { margin: 0; }
+.handover-facts { display: grid; gap: 12px; margin: 0; }
+.handover-facts > div { display: grid; grid-template-columns: minmax(100px, 1fr) minmax(0, 2fr); gap: 18px; }
+.handover-facts dt { color: #5B6D60; font-size: .875rem; }
+.handover-facts dd { margin: 0; font-size: .9375rem; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.handover-shipment { display: grid; gap: 10px; padding: 16px 0; border-bottom: 1px solid #E2E8DF; }
+.handover-shipment .button { justify-self: start; }
+.handover-timeline { padding: 0; margin: 0; list-style: none; }
+.handover-timeline li { padding: 18px 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid #E2E8DF; }
+.handover-timeline strong { font-size: .9375rem; }
+.handover-timeline p { margin-top: 5px; }
+.handover-comparison { border-block: 1px solid #E2E8DF; padding-block: 10px; }
+.handover-comparison + .handover-comparison { border-top: 0; }
+.handover-comparison summary { min-height: 44px; display: list-item; cursor: pointer; padding-block: 12px; font-size: .875rem; font-weight: 600; }
+.handover-comparison .handover-details { padding: 12px 0; }
+.handover-history-row { padding-block: 12px; border-bottom: 1px solid #E2E8DF; }
+.account-main .transaction-dialog.handover-dialog { width: min(600px, calc(100vw - 32px)); padding: 26px; max-height: calc(100dvh - 32px); scrollbar-width: thin; scrollbar-color: #CAD4C7 #fff; }
+.handover-dialog > h2 { margin-bottom: 20px; }
+.handover-fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+.handover-dialog .form-actions { margin-top: 4px; }
+.handover-feedback { display: grid; gap: 14px; margin-top: 16px; }
+@media (max-width: 600px) {
+  .handover-heading { align-items: flex-start; }
+  .handover-facts > div { grid-template-columns: 1fr; gap: 4px; }
+  .handover-timeline li { align-items: flex-start; flex-direction: column; gap: 8px; }
+  .account-main .transaction-dialog.handover-dialog { padding: 20px; }
+  .handover-dialog .form-actions { flex-direction: column; align-items: stretch; }
+  .handover-dialog .form-actions .button { width: 100%; }
+}

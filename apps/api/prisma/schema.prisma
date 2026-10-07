@@ -46,6 +46,7 @@ enum UploadPurpose {
   ITEM
   REPAIR_EVIDENCE
   CASE_EVIDENCE
+  MESSAGE_ATTACHMENT
 }
 
 enum AssessmentStatus {
@@ -185,6 +186,7 @@ model User {
   conversationsA    Conversation[]      @relation("ConversationParticipantA")
   conversationsB    Conversation[]      @relation("ConversationParticipantB")
   messages          Message[]
+  messageAttachments MessageAttachment[]
   blocksGiven       UserBlock[]         @relation("Blocker")
   blocksReceived    UserBlock[]         @relation("Blocked")
   reports           Report[]
@@ -288,6 +290,10 @@ model UploadTicket {
   user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   itemId        String?       @db.Uuid
   item          Item?         @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  conversationId String? @db.Uuid
+  conversation Conversation? @relation(fields: [conversationId], references: [id], onDelete: Restrict)
+  width Int?
+  height Int?
   fileName      String        @db.VarChar(180)
   declaredMime  String        @db.VarChar(40)
   declaredBytes Int
@@ -619,6 +625,10 @@ enum TransactionStatus {
 }
 
 model Transaction {
+  agreedHandoverId String? @unique @db.Uuid
+  agreedHandover HandoverProposal? @relation("ActiveHandover", fields: [agreedHandoverId], references: [id], onDelete: Restrict)
+  handoverProposals HandoverProposal[] @relation("TransactionHandovers")
+  handoverEvents HandoverEvent[]
   reviews Review[]
   id String @id @default(uuid()) @db.Uuid
   listingId String @db.Uuid
@@ -801,6 +811,8 @@ model InAppNotification {
   payload Json
   createdAt DateTime @default(now())
   readAt DateTime?
+  conversationId String? @db.Uuid
+  conversation Conversation? @relation(fields: [conversationId], references: [id], onDelete: Restrict)
   @@index([userId, createdAt, id])
   @@index([userId, readAt, createdAt, id])
 }
@@ -836,6 +848,8 @@ model Conversation {
   readSequenceB   Int       @default(0)
   archivedAt      DateTime?
   messages        Message[]
+  uploadTickets UploadTicket[]
+  notifications InAppNotification[]
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
@@ -856,12 +870,32 @@ model Message {
   sentAt          DateTime     @default(now())
   deletedAt       DateTime?
   reports         Report[]
+  requestHash String? @db.VarChar(64)
+  attachments MessageAttachment[]
 
   @@unique([conversationId, senderId, clientMessageId])
   @@unique([conversationId, sequence])
   @@index([conversationId, sentAt, id])
 }
 
+model MessageAttachment {
+  id String @id @default(uuid()) @db.Uuid
+  messageId String @db.Uuid
+  message Message @relation(fields: [messageId], references: [id], onDelete: Restrict)
+  uploadedById String @db.Uuid
+  uploadedBy User @relation(fields: [uploadedById], references: [id], onDelete: Restrict)
+  sourceTicketId String @unique @db.Uuid
+  storageKey String @unique @db.VarChar(180)
+  mime String @db.VarChar(40)
+  bytes Int
+  width Int
+  height Int
+  orderIndex Int
+  deletedAt DateTime?
+  createdAt DateTime @default(now())
+  @@unique([messageId, orderIndex])
+  @@index([messageId, deletedAt])
+}
 
 model UserBlock {
   id        String    @id @default(uuid()) @db.Uuid
@@ -1091,4 +1125,52 @@ model ReviewReply {
   version Int @default(1)
   createdAt DateTime @default(now())
   purgedAt DateTime?
+}
+
+model HandoverProposal {
+  id String @id @default(uuid()) @db.Uuid
+  transactionId String @db.Uuid
+  transaction Transaction @relation("TransactionHandovers", fields: [transactionId], references: [id], onDelete: Restrict)
+  activeFor Transaction? @relation("ActiveHandover")
+  proposedById String @db.Uuid
+  method String @db.VarChar(20)
+  plannedAt DateTime
+  timeZone String @db.VarChar(40)
+  status String @default("PENDING") @db.VarChar(20)
+  endReason String? @db.VarChar(60)
+  privateDetails Json?
+  createdAt DateTime @default(now())
+  respondedAt DateTime?
+  respondedById String? @db.Uuid
+  purgedAt DateTime?
+  shipments ShipmentRecord[]
+  @@index([transactionId, createdAt, id])
+  @@index([status, plannedAt])
+}
+
+model ShipmentRecord {
+  id String @id @default(uuid()) @db.Uuid
+  proposalId String @db.Uuid
+  proposal HandoverProposal @relation(fields: [proposalId], references: [id], onDelete: Restrict)
+  itemId String @db.Uuid
+  senderId String @db.Uuid
+  courier String? @db.VarChar(100)
+  trackingNumber String? @db.VarChar(100)
+  reason String? @db.VarChar(1000)
+  revision Int
+  recordedAt DateTime @default(now())
+  purgedAt DateTime?
+  @@unique([proposalId, itemId, revision])
+}
+
+model HandoverEvent {
+  id String @id @default(uuid()) @db.Uuid
+  transactionId String @db.Uuid
+  transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Restrict)
+  actorId String? @db.Uuid
+  type String @db.VarChar(50)
+  proposalId String? @db.Uuid
+  itemId String? @db.Uuid
+  occurredAt DateTime @default(now())
+  @@index([transactionId, occurredAt, id])
 }

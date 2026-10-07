@@ -1,3 +1,4 @@
+import { attachmentDto } from './message.js';
 import { ApiTags } from '@nestjs/swagger';
 import { Controller, UseGuards, Get, Query, Param, Post, Req, Body, Headers } from '@nestjs/common';
 import { SessionGuard, AdminGuard } from '../auth/guards.js';
@@ -44,8 +45,9 @@ export class AdminReportsController {
       await this.operations.requireGrant(tx, req.actor!.id, 'REPORT', id);
       const row = await tx.report.findUniqueOrThrow({ where: { id } });
       const listing = row.targetType === 'LISTING' ? await tx.listing.findUnique({ where: { id: row.targetId }, include: { item: true } }) : null;
-      const message = row.messageId ? await tx.message.findUnique({ where: { id: row.messageId } }) : null;
-      return { id, listing: listing ? { id: listing.id, status: listing.status, version: listing.version, itemId: listing.itemId, passportVersion: listing.item.passportVersion, passportVisibility: listing.item.passportVisibility } : null, targetType: row.targetType, targetId: row.targetId, details: row.details, reasonCode: row.reasonCode, status: row.status, version: row.version, message: message && !message.deletedAt ? { body: message.body, sentAt: message.sentAt.toISOString() } : null };
+      const message = row.messageId ? await tx.message.findUnique({ where: { id: row.messageId }, include: { attachments: { where: { deletedAt: null }, orderBy: { orderIndex: 'asc' } } } }) : null;
+      const reviewContent = row.targetType === 'REVIEW' ? await tx.review.findUnique({ where: { id: row.targetId }, select: { id: true, rating: true, comment: true, visibility: true, version: true, purgedAt: true } }) : row.targetType === 'REVIEW_REPLY' ? await tx.reviewReply.findUnique({ where: { id: row.targetId }, select: { id: true, body: true, visibility: true, version: true, purgedAt: true } }) : null;
+      return { id, reviewContent, listing: listing ? { id: listing.id, status: listing.status, version: listing.version, itemId: listing.itemId, passportVersion: listing.item.passportVersion, passportVisibility: listing.item.passportVisibility } : null, targetType: row.targetType, targetId: row.targetId, details: row.details, reasonCode: row.reasonCode, status: row.status, version: row.version, message: message && !message.deletedAt ? { id: message.id, conversationId: message.conversationId, body: message.body, sentAt: message.sentAt.toISOString(), attachments: message.attachments.map(attachmentDto) } : null };
     });
   }
   @Post(':id/resolve')

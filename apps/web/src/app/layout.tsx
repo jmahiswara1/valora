@@ -15,6 +15,8 @@ import "../styles/notifications.css";
 import "../styles/passport.css";
 import "../styles/searches.css";
 import "../styles/reviews.css";
+import "../styles/chat.css";
+import "../styles/handover.css";
 import { Providers } from '@/components/layout/providers';
 
 export const metadata: Metadata = {

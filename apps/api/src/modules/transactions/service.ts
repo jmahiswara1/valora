@@ -1,3 +1,4 @@
+import { invalidateHandover } from '../handover/lifecycle.js';
 import { expireOffers, notify, notifyTransaction } from '../notifications/events.js';
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../../infrastructure/database.service.js';
@@ -83,6 +84,7 @@ export class TransactionsService {
       const row = await lockTransaction(tx, id); participant(row, actorId); mutable(row, input.expectedVersion);
       if (row.status === 'DISPUTED') throw new AppException(409, 'STATE_CONFLICT', 'Konfirmasi ditahan selama sengketa.');
       if (!requiredConfirmations(row).some((c) => c.actorId === actorId && c.itemId === input.itemId && c.kind === input.kind)) throw new AppException(403, 'FORBIDDEN', 'Konfirmasi ini bukan tindakanmu pada barang tersebut.');
+      await invalidateHandover(tx, id, 'FIRST_CONFIRMATION', actorId);
       const confirmation = await tx.handoverConfirmation.upsert({ where: { transactionId_actorId_itemId_kind: { transactionId: id, actorId, itemId: input.itemId, kind: input.kind } }, update: {}, create: { transactionId: id, actorId, itemId: input.itemId, kind: input.kind, idempotencyKey: requestKey } });
       const count = await tx.handoverConfirmation.count({ where: { transactionId: id } });
       if (count === requiredConfirmations(row).length) await this.complete(tx, row, 'USER_CONFIRMED');
@@ -117,6 +119,7 @@ export class TransactionsService {
     if (row.type === 'RESELL' && row.finalPriceIdr !== null) for (const userId of [null, row.sellerOrDonorId]) await this.impact(tx, row.id, 'CONFIRMED_SALE_VALUE', row.finalPriceIdr, 'IDR', now, userId);
     await tx.listing.update({ where: { id: row.listingId }, data: { status: 'CLOSED', closedAt: now, publishedAt: null, version: { increment: 1 } } });
     await tx.cancellationRequest.updateMany({ where: { transactionId: row.id, status: 'PENDING' }, data: { status: 'REJECTED', endReason: 'TRANSACTION_COMPLETED', respondedAt: now } });
+    await invalidateHandover(tx, row.id, 'TRANSACTION_COMPLETED');
     await tx.transaction.update({ where: { id: row.id }, data: { status: 'COMPLETED', completedAt: now, resolutionOrigin: origin, version: { increment: 1 } } });
     await notifyTransaction(tx, row, 'TRANSACTION_COMPLETED', `transaction:${row.id}:completed`);
   }
@@ -129,6 +132,7 @@ export class TransactionsService {
     return idempotent(this.db, actorId, 'cancel-request:' + id, key, input, async (tx) => {
       const row = await lockTransaction(tx, id); participant(row, actorId); mutable(row, input.expectedVersion);
       if (row.status === 'DISPUTED' || await tx.cancellationRequest.findFirst({ where: { transactionId: id, status: 'PENDING' } })) throw new AppException(409, 'STATE_CONFLICT', 'Permintaan batal atau sengketa sudah terbuka.');
+      await invalidateHandover(tx, id, 'CANCELLATION_REQUESTED', actorId);
       const request = await tx.cancellationRequest.create({ data: { transactionId: id, requestedById: actorId, reason: input.reason } });
       await notifyTransaction(tx, row, 'CANCELLATION_REQUESTED', `cancellation:${request.id}:requested`, actorId);
       await tx.transaction.update({ where: { id }, data: { version: { increment: 1 } } });
@@ -173,6 +177,7 @@ export class TransactionsService {
     const now = new Date();
     await tx.listing.update({ where: { id: row.listingId }, data: { status, publishedAt: status === 'ACTIVE' ? now : null, version: { increment: 1 } } });
     await tx.cancellationRequest.updateMany({ where: { transactionId: row.id, status: 'PENDING' }, data: { status: 'ACCEPTED', endReason: 'ADMIN_CANCELLED', respondedAt: now } });
+    await invalidateHandover(tx, row.id, 'TRANSACTION_CANCELLED');
     await tx.transaction.update({ where: { id: row.id }, data: { status: 'CANCELLED', cancelledAt: now, version: { increment: 1 } } });
     await notifyTransaction(tx, row, 'TRANSACTION_CANCELLED', `transaction:${row.id}:cancelled`);
   }
@@ -181,6 +186,7 @@ export class TransactionsService {
     return idempotent(this.db, actorId, 'dispute:' + id, key, input, async (tx) => {
       const row = await lockTransaction(tx, id); participant(row, actorId); mutable(row, input.expectedVersion);
       if (row.status === 'DISPUTED') throw new AppException(409, 'STATE_CONFLICT', 'Sengketa sudah terbuka.');
+      await invalidateHandover(tx, id, 'DISPUTE_OPENED', actorId);
       const dispute = await tx.disputeCase.create({ data: { transactionId: id, openedById: actorId, reason: input.reason } });
       await tx.caseEvidence.create({ data: { caseId: dispute.id, submittedById: actorId, note: input.reason } });
       await notifyTransaction(tx, row, 'DISPUTE_OPENED', `dispute:${dispute.id}:opened`, actorId);
@@ -196,7 +202,7 @@ export class TransactionsService {
       if (!activeTransactionStatuses.includes(row.status as typeof activeTransactionStatuses[number])) return;
       const age = now.getTime() - row.acceptedAt.getTime();
       const title = (row.snapshot as unknown as TransactionSnapshot).items[0].title;
-      for (const milestone of [7, 12]) if (row.status !== 'DISPUTED' && age >= milestone * day) for (const userId of [row.sellerOrDonorId, row.buyerOrRecipientId]) {
+      for (const milestone of [7, 12]) if (!row.agreedHandoverId && row.status !== 'DISPUTED' && age >= milestone * day) for (const userId of [row.sellerOrDonorId, row.buyerOrRecipientId]) {
         await notify(tx, 'HANDOVER_REMINDER', 'handover:' + row.id + ':' + milestone, [userId], { transactionId: row.id, title, day: milestone });
       }
       if (now > row.targetHandoverAt) await tx.transaction.updateMany({ where: { id: row.id, status: { in: [...activeTransactionStatuses] }, overdueAt: null }, data: { overdueAt: now } });

@@ -1,3 +1,4 @@
+import type { MessageAttachmentDto } from './conversations.js';
 import { z } from 'zod';
 import { cancellationSchema } from './transactions.js';
 import { uuidSchema, versionActionSchema } from './common.js';
@@ -21,4 +22,4 @@ export type ResolveDisputeInput = z.infer<typeof resolveDisputeSchema>;
 
 export interface DisputeDto { id: string; transactionId: string; status: string; assignedAdminId: string | null; reason?: string; resolution: string | null; resolutionReason?: string | null; version: number; createdAt: string; resolvedAt: string | null; transactionVersion?: number; transactionTitle?: string; overdueAt?: string | null }
 
-export interface EvidenceDto { id: string; caseId: string; submittedById: string; note: string | null; message: { id: string; senderId: string; body: string; sentAt: string } | null; media: MediaDto[]; createdAt: string }
+export interface EvidenceDto { id: string; caseId: string; submittedById: string; note: string | null; message: { id: string; senderId: string; body: string; sentAt: string; attachments?: MessageAttachmentDto[] } | null; media: MediaDto[]; createdAt: string }

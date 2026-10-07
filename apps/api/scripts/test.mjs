@@ -41,6 +41,8 @@ try {
   run(resolve(process.cwd(), "scripts/smoke/notifications.mjs"), []);
   run(resolve(process.cwd(), "scripts/smoke/searches.mjs"), []);
   run(resolve(process.cwd(), "scripts/smoke/reviews.mjs"), []);
+  run(resolve(process.cwd(), "scripts/smoke/chat.mjs"), []);
+  run(resolve(process.cwd(), "scripts/smoke/handover.mjs"), []);
 } catch (error) {
   await new Promise((done) => setTimeout(done, 50));
   console.error(logs);

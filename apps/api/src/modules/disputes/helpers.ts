@@ -11,7 +11,7 @@ export async function caseForParticipant(tx: Prisma.TransactionClient, actorId: 
   return record;
 }
 
-export async function assignedCase(tx: Prisma.TransactionClient, actorId: string, caseId: string, kind?: 'CHAT' | 'EVIDENCE') {
+export async function assignedCase(tx: Prisma.TransactionClient, actorId: string, caseId: string, kind?: 'CHAT' | 'EVIDENCE' | 'HANDOVER') {
   validId(caseId);
   const record = await tx.disputeCase.findUnique({ where: { id: caseId }, include: { transaction: true } });
   if (!record || record.assignedAdminId !== actorId) throw new AppException(404, 'NOT_FOUND', 'Kasus tidak ditugaskan kepada akun ini.');

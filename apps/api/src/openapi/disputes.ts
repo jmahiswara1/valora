@@ -13,7 +13,7 @@ ResolveDisputeInput: resolveDisputeSchema
 
 export const disputesOutputs = {
 Dispute: obj({ id: uuid, transactionId: uuid, status: str, assignedAdminId: nil(uuid), reason: str, resolution: nil(str), resolutionReason: nil(str), version: num, createdAt: date, resolvedAt: nil(date), transactionVersion: num, transactionTitle: str, overdueAt: nil(date) }, ['id', 'transactionId', 'status', 'assignedAdminId', 'resolution', 'version', 'createdAt', 'resolvedAt']),
-Evidence: obj({ id: uuid, caseId: uuid, submittedById: uuid, note: nil(str), message: nil(obj({ id: uuid, senderId: uuid, body: str, sentAt: date })), media: arr(ref('Media')), createdAt: date }),
+Evidence: obj({ id: uuid, caseId: uuid, submittedById: uuid, note: nil(str), message: nil(obj({ id: uuid, senderId: uuid, body: str, sentAt: date, attachments: arr(ref('MessageAttachment')) })), media: arr(ref('Media')), createdAt: date }),
 CaseDetail: obj({ id: uuid, transactionId: uuid, status: str, reason: str, assignedAdminId: nil(uuid), resolution: nil(str), resolutionReason: nil(str), version: num, createdAt: date, resolvedAt: nil(date), evidence: arr(ref('Evidence')) }),
 CaseGrant: obj({ grantId: uuid, expiresAt: date })
 };
@@ -28,6 +28,6 @@ export const disputesRoutes: Route[] = [
 { order: 13, method: 'post', path: '/admin/disputes/{id}/claim', input: 'CaseClaimInput', output: obj({ claimed: { type: 'boolean' } }), auth: true, idempotent: true },
 { order: 14, method: 'post', path: '/admin/cases/{id}/chat-access', input: 'CaseAccessInput', output: ref('CaseGrant'), auth: true, idempotent: true },
 { order: 15, method: 'post', path: '/admin/cases/{id}/evidence-access', input: 'CaseAccessInput', output: ref('CaseGrant'), auth: true, idempotent: true },
-{ order: 16, method: 'get', path: '/admin/cases/{id}/messages', output: arr(obj({ id: uuid, senderId: uuid, body: str, sentAt: date })), auth: true, query: ['before'] },
+{ order: 16, method: 'get', path: '/admin/cases/{id}/messages', output: arr(ref('Message')), auth: true, query: ['before'] },
 { order: 17, method: 'get', path: '/admin/cases/{id}/evidence', output: arr(ref('Evidence')), auth: true }
 ];

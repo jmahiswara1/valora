@@ -8,6 +8,8 @@ import { AppException } from '../../shared/http.js';
 import sharp from 'sharp';
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import type { Response } from 'express';
+import type { Prisma } from '../../generated/prisma/client.js';
+import { validId } from '../../shared/transactions.js';
 
 const maxBytes = 8 * 1024 * 1024;
 
@@ -15,16 +17,28 @@ const maxPixels = 20_000_000;
 
 const mimeForFormat: Record<string, string> = { jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp' };
 
+async function authorizeConversationUpload(tx: Prisma.TransactionClient, userId: string, id: string) {
+  const conversation = await tx.conversation.findUnique({ where: { id }, include: { participantA: true, participantB: true } });
+  if (!conversation || ![conversation.participantAId, conversation.participantBId].includes(userId)) throw new AppException(404, 'NOT_FOUND', 'Percakapan tidak ditemukan.');
+  if (conversation.archivedAt || conversation.participantA.status !== 'ACTIVE' || conversation.participantB.status !== 'ACTIVE') throw new AppException(409, 'STATE_CONFLICT', 'Percakapan tidak menerima foto baru.');
+  if (await tx.userBlock.findFirst({ where: { revokedAt: null, OR: [{ blockerId: conversation.participantAId, blockedId: conversation.participantBId }, { blockerId: conversation.participantBId, blockedId: conversation.participantAId }] } })) throw new AppException(403, 'FORBIDDEN', 'Pesan baru dibatasi oleh salah satu pihak.');
+}
+
 @Injectable()
 export class MediaService {
   private readonly signingKey = secret('MEDIA_SIGNING_KEY');
 
   constructor(private readonly db: DatabaseService, private readonly storage: StorageService) {}
 
-  async ticket(userId: string, input: MediaTicketInput, itemId?: string, caseId?: string, correctionCaseId?: string): Promise<{ ticketId: string; uploadUrl: string; expiresAt: string }> {
+  async ticket(userId: string, input: MediaTicketInput, itemId?: string, caseId?: string, correctionCaseId?: string, conversationId?: string): Promise<{ ticketId: string; uploadUrl: string; expiresAt: string }> {
     return serial(this.db, async (tx) => {
     if (input.purpose === 'CASE_EVIDENCE' && !caseId && !correctionCaseId) throw new AppException(400, 'MEDIA_INVALID', 'Bukti kasus memerlukan tiket dari kasus terkait.');
     if (input.purpose === 'REPAIR_EVIDENCE' && !itemId) throw new AppException(400, 'MEDIA_INVALID', 'Bukti Repair harus terkait Item.');
+    if (input.purpose === 'MESSAGE_ATTACHMENT') {
+      if (!conversationId || itemId || caseId || correctionCaseId) throw new AppException(400, 'MEDIA_INVALID', 'Foto pesan memerlukan tiket percakapan.');
+      await authorizeConversationUpload(tx, userId, conversationId);
+      if (await tx.uploadTicket.count({ where: { userId, conversationId, status: { in: ['ISSUED', 'UPLOADED'] }, expiresAt: { gt: new Date() } } }) >= 12) throw new AppException(429, 'RATE_LIMITED', 'Terlalu banyak foto menunggu dikirim. Tunggu tiket berakhir.');
+    }
     if (itemId && !caseId && !correctionCaseId) {
       const item = await tx.item.findFirst({ where: { id: itemId, currentOwnerId: userId, archivedAt: null }, include: { media: { where: { deletedAt: null, repairRecordId: null, caseId: null, OR: [{ uploadedById: userId }, { shareWithFutureOwner: true }] } } } });
       if (!item) throw new AppException(404, 'NOT_FOUND', 'Item tidak ditemukan.');
@@ -32,7 +46,7 @@ export class MediaService {
       if (input.purpose === 'ITEM' && item.media.length >= 8) throw new AppException(400, 'MEDIA_INVALID', 'Maksimal delapan foto per Item.');
     }
     const created = await tx.uploadTicket.create({ data: {
-      userId, itemId, caseId, correctionCaseId, purpose: input.purpose, fileName: input.fileName, declaredMime: input.mime, declaredBytes: input.bytes,
+      userId, itemId, caseId, correctionCaseId, conversationId, purpose: input.purpose, fileName: input.fileName, declaredMime: input.mime, declaredBytes: input.bytes,
       expiresAt: new Date(Date.now() + 15 * 60 * 1000),
     } });
     return { ticketId: created.id, uploadUrl: '/api/v1/media/uploads/' + created.id, expiresAt: created.expiresAt.toISOString() };
@@ -40,6 +54,7 @@ export class MediaService {
   }
 
   async upload(userId: string, ticketId: string, body: unknown, contentType: string | undefined): Promise<{ ticketId: string; mime: 'image/webp'; bytes: number }> {
+    validId(ticketId);
     const ticket = await this.db.uploadTicket.findUnique({ where: { id: ticketId } });
     if (!ticket || ticket.userId !== userId) throw new AppException(404, 'NOT_FOUND', 'Tiket unggah tidak ditemukan.');
     if (ticket.status !== 'ISSUED' || ticket.expiresAt <= new Date()) throw new AppException(409, 'STATE_CONFLICT', 'Tiket unggah tidak berlaku.');
@@ -57,11 +72,17 @@ export class MediaService {
       throw new AppException(400, 'MEDIA_INVALID', 'Isi berkas bukan foto JPEG, PNG, atau WebP yang valid.');
     }
     const storageKey = ticket.id + '.webp';
+    const dimensions = await sharp(processed).metadata();
     await this.storage.write(storageKey, processed);
-    const changed = await serial(this.db, (tx) => tx.uploadTicket.updateMany({
+    const changed = await serial(this.db, async (tx) => {
+      if (ticket.purpose === 'MESSAGE_ATTACHMENT') {
+        if (!ticket.conversationId) throw new AppException(400, 'MEDIA_INVALID', 'Tiket foto tidak terikat percakapan.');
+        await authorizeConversationUpload(tx, userId, ticket.conversationId);
+      }
+      return tx.uploadTicket.updateMany({
       where: { id: ticket.id, status: 'ISSUED', expiresAt: { gt: new Date() } },
-      data: { status: 'UPLOADED', actualMime: 'image/webp', actualBytes: processed.length, storageKey, uploadedAt: new Date() },
-    })).catch(async (error: unknown) => { await this.db.storageDeletion.upsert({ where: { storageKey }, update: {}, create: { storageKey } }); throw error; });
+      data: { status: 'UPLOADED', actualMime: 'image/webp', actualBytes: processed.length, width: dimensions.width, height: dimensions.height, storageKey, uploadedAt: new Date() },
+    }); }).catch(async (error: unknown) => { await this.db.storageDeletion.upsert({ where: { storageKey }, update: {}, create: { storageKey } }); throw error; });
     if (changed.count !== 1) {
       await this.storage.remove(storageKey);
       throw new AppException(409, 'STATE_CONFLICT', 'Tiket unggah tidak berlaku.');

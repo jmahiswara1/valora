@@ -12,7 +12,7 @@ export type { RepairCreateInput, RepairCorrectionInput, RepairVoidInput, RepairD
 export type { CityDto, CategoryDto } from './catalog.js';
 export { listingTypes, listingStatuses, handoverMethods, listingSaveSchema, listingPatchSchema, moderationDecisionSchema, listingAdminActionSchema, listingAdminReleaseSchema } from './listings.js';
 export { listingOfferSchema, offerCounterSchema, offerDecisionSchema, offerAcceptSchema } from './offers.js';
-export { messageCreateSchema, conversationMessagesQuerySchema, blockUserSchema } from './conversations.js';
+export { messageCreateSchema, conversationMessagesQuerySchema, conversationReadSchema, messageStatusQuerySchema, messagePhotoScopeSchema, blockUserSchema } from './conversations.js';
 export { reportCreateSchema, reportReviewSchema, correctionOpenSchema, correctionEvidenceSchema, ownershipCorrectionSchema, impactCorrectionSchema, sourceCorrectionSchema, passportRestrictionSchema, retentionHoldSchema } from './operations.js';
 export { categoryAdminSchema } from './catalog.js';
 export { economicReferenceCreateSchema, rubricDraftSchema, rubricDraftUpdateSchema } from './admin.js';
@@ -20,7 +20,7 @@ export type { PassportTimelineEntry, PassportDto, PassportShareDto } from './pas
 export type { ImpactDto } from './impact.js';
 export type { ListingSaveInput, ListingPatchInput, ModerationDecisionInput, ListingAdminActionInput, ListingAdminReleaseInput, ListingDto, ListingRevisionDto, PublicListingDto, ModerationQueueDto, ModerationDetailDto } from './listings.js';
 export type { ListingOfferInput, OfferCounterInput, OfferRevisionDto, OfferDto, OfferAcceptInput } from './offers.js';
-export type { MessageCreateInput, MessageDto, ConversationDto } from './conversations.js';
+export type { MessageCreateInput, MessageDto, MessageAttachmentDto, MessagePhotoScope, ConversationDto } from './conversations.js';
 export type { ReportCreateInput, CorrectionCaseDto } from './operations.js';
 export type { ApiError, ApiSuccess } from './common.js';
 export { transactionStatuses, confirmationSchema, cancellationSchema, cancellationResponseSchema } from './transactions.js';
@@ -38,3 +38,5 @@ export { marketSearchSchema, marketSearchQuerySchema, marketSearchKeys, marketSo
 export type { MarketSearchFilters, MarketSearchQuery, SavedSearchDto, SavedSearchCreateInput, SavedSearchUpdateInput } from './searches.js';
 
 export * from './reviews.js';
+
+export * from './handover.js';

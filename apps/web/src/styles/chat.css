@@ -1,0 +1,44 @@
+.chat-page, .chat-compose-area, .chat-photo-composer { min-width: 0; }
+.chat-compose-area { position: sticky; bottom: 0; z-index: 2; background: var(--white); }
+.account-main .chat-page .chat-messages { padding-bottom: var(--chat-bottom-inset, 20px); }
+.chat-composer textarea::placeholder { color: var(--muted); opacity: 1; }
+.chat-participant { width: fit-content; min-height: 44px; color: var(--forest); text-decoration: none; border-radius: 8px; }
+.chat-participant:hover p { text-decoration: underline; text-underline-offset: 4px; }
+.chat-icon-button { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 44px; width: 44px; height: 44px; border: 0; border-radius: 50%; color: var(--forest); background: var(--soft-sage); cursor: pointer; }
+.chat-icon-button:hover:not(:disabled) { background: var(--sage); }
+.chat-icon-button:disabled, .chat-upload-retry:disabled { opacity: .45; cursor: not-allowed; }
+.chat-icon-button:focus-visible, .message-photo-open:focus-visible, .chat-message-report:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+.chat-draft-photos { display: flex; align-items: start; flex-wrap: wrap; gap: 12px; list-style: none; margin: 12px 0 0; padding: 0; }
+.chat-draft-photos li { position: relative; width: min(120px, 29%); min-width: 72px; display: grid; gap: 4px; }
+.chat-draft-photos img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 12px; }
+.chat-draft-photos .draft-remove { position: absolute; top: -8px; right: -8px; background: var(--forest); color: white; }
+.chat-draft-photos span, .chat-draft-photos small, .chat-photo-hint { font-size: .75rem; color: var(--muted); overflow-wrap: anywhere; }
+.chat-upload-retry { display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 44px; border: 0; border-radius: 8px; background: var(--soft-sage); color: var(--forest); font-size: .75rem; cursor: pointer; }
+.account-main .chat-compose-area .chat-composer { position: static; }
+.account-main .chat-composer textarea { min-width: 0; }
+.chat-photo-hint { margin: -2px 0 12px; }
+.message-photos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 96px), 1fr)); gap: 6px; width: min(100%, 440px); margin-bottom: 8px; }
+.message-photo-open { padding: 0; border: 0; border-radius: 10px; background: var(--soft-sage); overflow: hidden; cursor: zoom-in; min-width: 44px; min-height: 44px; }
+.message-photo-frame { display: grid; width: 100%; max-height: 300px; overflow: hidden; background: var(--soft-sage); }
+.message-photo-frame img { display: block; width: 100%; height: 100%; min-height: 0; object-fit: cover; }
+.message-photo-unavailable { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 100px; color: var(--muted); font-size: .8125rem; }
+.message-photo-retry { max-width: 24ch; font-size: .75rem; text-align: center; }
+.message-photo-dialog { position: fixed; inset: 0; margin: auto; width: min(900px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); border: 0; padding: 16px; border-radius: 16px; background: white; color: var(--forest); overflow-y: auto; }
+.message-photo-dialog::backdrop { background: rgb(15 34 22 / 65%); }
+.message-photo-toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.message-photo-toolbar > span { margin-right: auto; font-size: .8125rem; }
+.message-photo-frame.is-large { max-height: 70dvh; }
+.message-photo-frame.is-large img { object-fit: contain; }
+.message-photo-navigation { display: flex; justify-content: center; gap: 16px; margin-top: 12px; }
+.chat-message-footer { display: flex; align-items: center; flex-wrap: wrap; gap: 2px 10px; margin-top: 6px; }
+.chat-message-receipt { display: inline-flex; align-items: center; gap: 4px; font-size: .75rem; color: var(--forest); }
+.chat-message-report { display: inline-flex; align-items: center; justify-content: center; margin: -4px -8px -4px auto; padding: 0; width: 44px; height: 44px; border: 0; border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer; }
+.chat-message-report:hover { background: var(--soft-sage); }
+.account-main .chat-message p { overflow-wrap: anywhere; }
+.account-main .chat-message:has(.message-photos) { width: min(85%, 440px); }
+@media (max-width: 600px) {
+  .account-main .chat-message:has(.message-photos) { width: 92%; }
+  .account-main .chat-composer .button { padding-inline: 12px; min-width: 56px; }
+  .account-main .chat-message small { line-height: 1.6; }
+  .message-photo-dialog { padding: 12px; }
+}
