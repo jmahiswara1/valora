@@ -105,23 +105,23 @@
   .catalog-filter-panel { padding: 20px; }
   .catalog-extra-grid { grid-template-columns: minmax(0, 1fr); gap: 20px; }
   .catalog-grid { grid-template-columns: minmax(0, 1fr); gap: 20px; }
-  .market-catalog .catalog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-  .market-catalog .catalog-grid .market-card { padding: 6px; }
-  .market-catalog .catalog-grid .market-card-content { min-width: 0; padding: 10px 6px 6px; }
-  .market-catalog .catalog-grid .market-card-kicker { min-width: 0; }
-  .market-catalog .catalog-grid .market-card-kicker > span:first-child { padding: 4px 8px; }
-  .market-catalog .catalog-grid .market-card-kicker > span:last-child,
-  .market-catalog .catalog-grid .market-card-description,
-  .market-catalog .catalog-grid .market-card-condition,
-  .market-catalog .catalog-grid .market-card-arrow { display: none; }
-  .market-catalog .catalog-grid .market-card h3 { margin: 10px 0 8px; font-size: 14px; }
-  .market-catalog .catalog-grid .market-card-bottom { padding-top: 8px; }
-  .market-catalog .catalog-grid .market-card-bottom > div { width: 100%; }
-  .market-catalog .catalog-grid .market-card-bottom strong { max-width: 100%; padding: 5px 7px; font-size: 13px; overflow-wrap: anywhere; }
-  .market-catalog .catalog-grid .market-card-bottom small { margin-top: 6px; font-size: 12px; overflow-wrap: anywhere; }
-  .market-catalog .catalog-grid .market-photo-empty { gap: 6px; font-size: 12px; }
-  .market-catalog .catalog-grid .catalog-skeleton { padding: 6px; }
-  .market-catalog .catalog-grid .catalog-skeleton > span { height: 12px; margin: 12px 4px; }
+  :is(.market-catalog, .public-profile) .catalog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  :is(.market-catalog, .public-profile) .catalog-grid .market-card { padding: 6px; }
+  :is(.market-catalog, .public-profile) .catalog-grid .market-card-content { min-width: 0; padding: 10px 6px 6px; }
+  :is(.market-catalog, .public-profile) .catalog-grid .market-card-kicker { min-width: 0; }
+  :is(.market-catalog, .public-profile) .catalog-grid .market-card-kicker > span:first-child { padding: 4px 8px; }
+  :is(.market-catalog, .public-profile) .catalog-grid .market-card-kicker > span:last-child,
+  :is(.market-catalog, .public-profile) .catalog-grid .market-card-description,
+  :is(.market-catalog, .public-profile) .catalog-grid .market-card-condition,
+  :is(.market-catalog, .public-profile) .catalog-grid .market-card-arrow { display: none; }
+  :is(.market-catalog, .public-profile) .catalog-grid .market-card h3 { margin: 10px 0 8px; font-size: 14px; }
+  :is(.market-catalog, .public-profile) .catalog-grid .market-card-bottom { padding-top: 8px; }
+  :is(.market-catalog, .public-profile) .catalog-grid .market-card-bottom > div { width: 100%; }
+  :is(.market-catalog, .public-profile) .catalog-grid .market-card-bottom strong { max-width: 100%; padding: 5px 7px; font-size: 13px; overflow-wrap: anywhere; }
+  :is(.market-catalog, .public-profile) .catalog-grid .market-card-bottom small { margin-top: 6px; font-size: 12px; overflow-wrap: anywhere; }
+  :is(.market-catalog, .public-profile) .catalog-grid .market-photo-empty { gap: 6px; font-size: 12px; }
+  :is(.market-catalog, .public-profile) .catalog-grid .catalog-skeleton { padding: 6px; }
+  :is(.market-catalog, .public-profile) .catalog-grid .catalog-skeleton > span { height: 12px; margin: 12px 4px; }
   .catalog-panel-bottom { align-items: stretch; flex-direction: column; gap: 16px; }
   .catalog-empty { padding: 40px 20px; }
   .catalog-empty h3 { font-size: 22px; }

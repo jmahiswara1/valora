@@ -1,3 +1,4 @@
+import { expireOffers } from '../notifications/events.js';
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../../infrastructure/database.service.js';
 import { MediaService } from "../media/service.js";
@@ -154,7 +155,7 @@ export class OperationsService {
         await tx.item.update({ where: { id: item.id }, data: { currentOwnerId: item.fromUserId, purchaseYear: null, originalPriceIdr: null, functionSummary: null, completenessSummary: null, issueSummary: null, itemRevision: { increment: 1 }, version: { increment: 1 } } });
         const listings = await tx.listing.findMany({ where: { itemId: item.id, status: { notIn: ['CLOSED', 'WITHDRAWN'] } }, select: { id: true } });
         await tx.listing.updateMany({ where: { id: { in: listings.map((l) => l.id) } }, data: { status: 'WITHDRAWN', closedAt: new Date(), publishedAt: null, version: { increment: 1 } } });
-        await tx.offer.updateMany({ where: { status: { in: ['PENDING', 'COUNTERED'] }, OR: [{ exchangeItemId: item.id }, { listingId: { in: listings.map((l) => l.id) } }] }, data: { status: 'EXPIRED', endReason: 'OWNERSHIP_CORRECTED', version: { increment: 1 } } });
+        await expireOffers(tx, { status: { in: ['PENDING', 'COUNTERED'] }, OR: [{ exchangeItemId: item.id }, { listingId: { in: listings.map((l) => l.id) } }] }, 'OWNERSHIP_CORRECTED');
         const original = await tx.passportEvent.findUnique({ where: { eventKey: 'transfer:' + row.id + ':' + item.id } });
         await event(tx, item.id, 'CORRECTION', 'TRANSACTION', row.id, new Date(), { kind: 'OWNERSHIP_REVERSED' }, input.caseId, 'ADMIN_AUTHORIZED', original?.id);
       }
@@ -225,7 +226,7 @@ export class OperationsService {
       }
       const listings = await tx.listing.findMany({ where: { itemId: source.itemId, status: { in: ['ACTIVE', 'PENDING_REVIEW'] } }, select: { id: true } });
       await tx.listing.updateMany({ where: { id: { in: listings.map((l) => l.id) } }, data: { status: 'PAUSED', publishedAt: null, version: { increment: 1 } } });
-      await tx.offer.updateMany({ where: { status: { in: ['PENDING', 'COUNTERED'] }, OR: [{ exchangeItemId: source.itemId }, { listingId: { in: listings.map((l) => l.id) } }] }, data: { status: 'EXPIRED', endReason: 'SOURCE_CORRECTED', version: { increment: 1 } } });
+      await expireOffers(tx, { status: { in: ['PENDING', 'COUNTERED'] }, OR: [{ exchangeItemId: source.itemId }, { listingId: { in: listings.map((l) => l.id) } }] }, 'SOURCE_CORRECTED');
       await audit(tx, adminId, 'CORRECTION', input.caseId, 'SOURCE_' + (input.valid ? 'RESTORED' : 'INVALIDATED'), input.reason, undefined, { kind, id });
       return { id, valid: input.valid, version: source.version + 1 };
     });
@@ -253,7 +254,7 @@ export class OperationsService {
         await tx.session.updateMany({ where: { userId: id, revokedAt: null }, data: { revokedAt: new Date() } });
         await closeForAccount(tx, id, 'ACCOUNT_SUSPENDED');
         await tx.listing.updateMany({ where: { ownerId: id, status: { in: ['ACTIVE', 'PENDING_REVIEW'] } }, data: { status: 'SUSPENDED', publishedAt: null, version: { increment: 1 } } });
-        await tx.offer.updateMany({ where: { status: { in: ['PENDING', 'COUNTERED'] }, OR: [{ bidderId: id }, { listing: { ownerId: id } }] }, data: { status: 'EXPIRED', endReason: 'ACCOUNT_SUSPENDED', version: { increment: 1 } } });
+        await expireOffers(tx, { status: { in: ['PENDING', 'COUNTERED'] }, OR: [{ bidderId: id }, { listing: { ownerId: id } }] }, 'ACCOUNT_SUSPENDED');
       }
       await audit(tx, adminId, 'USER', id, suspend ? 'SUSPEND_USER' : 'RELEASE_USER', input.reason, { status: row.status }, { status });
       return { id, status, version: row.version + 1 };

@@ -1,3 +1,4 @@
+import { activeListingDto } from './shared.js';
 import { AppException } from '../../shared/http.js';
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../../infrastructure/database.service.js';
@@ -73,7 +74,7 @@ export class MarketService {
           : [{ createdAt: 'desc' }, { id: 'desc' }];
     const rows = await this.db.listing.findMany({ where, orderBy, take: limit + 1, include: listingInclude });
     const page = rows.slice(0, limit);
-    const data: PublicListingDto[] = page.flatMap((row) => row.currentRevision ? [{ id: row.id, type: row.type, status: 'ACTIVE' as const, version: row.version, owner: { displayName: row.owner.displayName, city: { id: row.currentRevision.city.id, code: row.currentRevision.city.code, name: row.currentRevision.city.name, provinceName: row.currentRevision.city.provinceName } }, revision: revisionDto(row.currentRevision, row.id, true), publishedAt: row.publishedAt?.toISOString() ?? null }] : []);
+    const data: PublicListingDto[] = page.flatMap((row) => row.currentRevision ? [{ id: row.id, type: row.type, status: 'ACTIVE' as const, version: row.version, owner: { id: row.ownerId, displayName: row.owner.displayName, city: { id: row.currentRevision.city.id, code: row.currentRevision.city.code, name: row.currentRevision.city.name, provinceName: row.currentRevision.city.provinceName } }, revision: revisionDto(row.currentRevision, row.id, true), publishedAt: row.publishedAt?.toISOString() ?? null }] : []);
     const last = page.at(-1);
     const nextCursor = rows.length > limit && last ? encode({ sort, id: last.id, createdAt: last.createdAt.toISOString(), ...(sort.startsWith('price_') ? { price: Number(last.currentRevision?.askingPriceIdr ?? 0n) } : {}), ...(sort === 'score_desc' ? { score: last.currentRevision?.score ?? null } : {}) }) : null;
     return { data, meta: { nextCursor } };
@@ -85,7 +86,7 @@ export class MarketService {
     if (!row || !row.currentRevision) throw new AppException(404, 'NOT_FOUND', 'Listing tidak ditemukan.');
     if (row.status === 'RESERVED') return { id: row.id, type: row.type, status: 'RESERVED' };
     if (row.status !== 'ACTIVE') throw new AppException(404, 'NOT_FOUND', 'Listing tidak ditemukan.');
-    return { id: row.id, type: row.type, status: 'ACTIVE', version: row.version, owner: { displayName: row.owner.displayName, city: { id: row.currentRevision.city.id, code: row.currentRevision.city.code, name: row.currentRevision.city.name, provinceName: row.currentRevision.city.provinceName } }, revision: revisionDto(row.currentRevision, row.id, true), publishedAt: row.publishedAt?.toISOString() ?? null };
+    return activeListingDto(row);
   }
 
   async publicPhoto(listingId: string, mediaId: string, response: Response): Promise<void> {

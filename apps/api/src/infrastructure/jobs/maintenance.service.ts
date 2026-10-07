@@ -16,7 +16,6 @@ export class MaintenanceService implements OnModuleInit, OnModuleDestroy {
 
   async run(): Promise<void> { await exclusiveJob('maintenance', () => this.runUnlocked()); }
   private async runUnlocked(): Promise<void> {
-    await this.transactions.reminders();
     await this.media.cleanupOrphans();
     await this.retention.purge();
     await this.db.verificationToken.deleteMany({ where: { expiresAt: { lt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } } });

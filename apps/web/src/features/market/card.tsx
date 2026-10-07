@@ -5,14 +5,15 @@ import { ArrowUpRight } from 'lucide-react';
 import type { ActiveListing } from './shared';
 import { listingMoney, listingTypeLabel, listingConditionLabel } from './labels';
 import { ListingPhoto } from './photo';
+import { FavoriteButton } from '../favorites/button';
 
-export function MarketCard({ listing }: { listing: ActiveListing }) {
+export function MarketCard({ listing, onFavoriteRemoved, onFavoriteError }: { listing: ActiveListing; onFavoriteRemoved?: () => void; onFavoriteError?: (message: string) => void }) {
   const revision = listing.revision;
   const price = listing.type === 'RESELL'
     ? revision.askingPriceIdr === null ? 'Harga belum tersedia' : listingMoney(revision.askingPriceIdr)
     : listing.type === 'DONATE' ? 'Tanpa biaya' : 'Tukar barang';
 
-  return <Link href={`/market/${listing.id}`} className="market-card">
+  return <article className="market-card"><Link href={`/market/${listing.id}`} className="market-card-link">
     <div className="market-card-image"><ListingPhoto listing={listing} /></div>
     <div className="market-card-content">
       <div className="market-card-kicker"><span>{listingTypeLabel[listing.type]}</span><span>{revision.categoryName}</span></div>
@@ -23,5 +24,5 @@ export function MarketCard({ listing }: { listing: ActiveListing }) {
         <span className="market-card-arrow" aria-hidden="true"><ArrowUpRight size={18} /></span>
       </div>
     </div>
-  </Link>;
+  </Link><FavoriteButton listingId={listing.id} title={revision.title} onRemoved={onFavoriteRemoved} onFailure={onFavoriteError} /></article>;
 }

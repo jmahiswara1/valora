@@ -31,9 +31,9 @@ async function contextFor(browser, account, viewport) {
 async function logoutFrom(page) { const menu = page.getByRole('button', { name: /^(Buka menu|Buka navigasi akun)$/ }); if (await menu.isVisible()) await menu.click(); await page.getByRole('button', { name: 'Keluar', exact: true }).filter({ visible: true }).first().click(); }
 async function fits(page) { expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true); }
 
-test('Matriks seluruh 47 halaman: Guest, User, Admin, email belum terverifikasi dan koneksi sesi gagal', async ({ browser }, info) => {
+test('Matriks seluruh halaman: Guest, User, Admin, email belum terverifikasi dan koneksi sesi gagal', async ({ browser }, info) => {
   test.setTimeout(600000);
-  const routes = await inventory(); expect(routes).toHaveLength(47); const records = [];
+  const routes = await inventory(); expect(routes).toHaveLength(50); const records = [];
   const user = await actor(); const admin = await actor('ADMIN'); const unverified = await actor('USER', false); const expired = await actor(); const restricted = await actor();
   for (const [role, account] of [['Guest', null], ['User', user.account], ['Admin', admin.account], ['Unverified', unverified.account], ['Unavailable', user.account], ['Revoked', user.account], ['Expired', expired.account], ['Suspended', restricted.account], ['Closed', restricted.account]]) {
     if (role === 'Revoked') await db.session.updateMany({ where: { userId: user.user.id }, data: { revokedAt: new Date() } });

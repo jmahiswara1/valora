@@ -1,3 +1,4 @@
+import { expireOffers } from '../notifications/events.js';
 import { validId, idempotent, json } from '../../shared/transactions.js';
 import { AppException } from '../../shared/http.js';
 import { Injectable } from '@nestjs/common';
@@ -68,7 +69,7 @@ export class AdminStage5Service {
     const items = await tx.item.findMany({ where: { categoryCode: base.categoryCode, subcategoryCode: base.subcategoryCode, reservedByTransactionId: null }, select: { id: true } });
     const ids = items.map((i) => i.id); const listings = await tx.listing.findMany({ where: { itemId: { in: ids }, status: { in: ['ACTIVE', 'PENDING_REVIEW'] } }, select: { id: true } });
     await tx.listing.updateMany({ where: { id: { in: listings.map((l) => l.id) } }, data: { status: 'PAUSED', publishedAt: null, version: { increment: 1 } } });
-    await tx.offer.updateMany({ where: { status: { in: ['PENDING', 'COUNTERED'] }, OR: [{ listingId: { in: listings.map((l) => l.id) } }, { exchangeItemId: { in: ids } }] }, data: { status: 'EXPIRED', endReason: 'RUBRIC_PUBLISHED', version: { increment: 1 } } });
+    await expireOffers(tx, { status: { in: ['PENDING', 'COUNTERED'] }, OR: [{ listingId: { in: listings.map((l) => l.id) } }, { exchangeItemId: { in: ids } }] }, 'RUBRIC_PUBLISHED');
     await audit(tx, adminId, 'RUBRIC_DRAFT', id, 'PUBLISH_RUBRIC', input.reason, undefined, { versionId: published.id, fixtures }); return rubricDto(published);
   }); }
   async category(adminId: string, code: string, input: z.infer<typeof categoryAdminSchema>, key?: string) { return idempotent(this.db, adminId, 'category:' + code, key, input, async (tx) => { const row = await tx.category.findUnique({ where: { code } }); if (!row || row.updatedAt.toISOString() !== input.expectedUpdatedAt) throw new AppException(409, 'STATE_CONFLICT', 'Kategori sudah berubah.'); const updated = await tx.category.update({ where: { code }, data: { name: input.name, active: input.active } }); await audit(tx, adminId, 'CATEGORY', adminId, 'UPDATE_CATEGORY', input.reason, { code, active: row.active }, { active: input.active, name: input.name }); return updated; }); }

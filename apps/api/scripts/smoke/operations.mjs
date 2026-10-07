@@ -48,7 +48,7 @@ let rollbackTrigger = false;
 try {
   const doc = await (await fetch(base + '/api/docs-json')).json();
   for (const route of ['/passport/{id}', '/impact/public', '/admin/impact/corrections', '/admin/rubrics/drafts/{id}/publish', '/admin/retention/holds', '/assessments/{id}/explain']) assert(doc.paths['/api/v1' + route]);
-  assert.equal(doc.info.version, '1.7.0');
+  assert.equal(doc.info.version, '1.9.0');
   assert.equal((await a.account.request('/admin/dashboard')).status, 403);
   const privateItem = await createItem(a.account, 'books', 'Barang privat belum pernah dipublikasikan');
   assert.equal((await guest.request(`/passport/${privateItem.item.id}`)).status, 404);

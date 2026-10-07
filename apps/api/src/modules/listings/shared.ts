@@ -29,3 +29,11 @@ export function revisionDto(row: RevisionRow, listingId: string, publicMedia = f
 }
 
 export type MarketFilters = { q?: string; category?: string; type?: string; cityId?: string; condition?: string; minPriceIdr?: string; maxPriceIdr?: string; sort?: string; cursor?: string; limit?: string };
+
+// Favorites and the public detail share the same current projection.
+export function activeListingDto(row: Prisma.ListingGetPayload<{ include: typeof listingInclude }>): Extract<import('@valora/contracts').PublicListingDto, { status: 'ACTIVE' }> {
+  const revision = row.currentRevision!;
+  return { id: row.id, type: row.type, status: 'ACTIVE', version: row.version,
+    owner: { id: row.ownerId, displayName: row.owner.displayName, city: { id: revision.city.id, code: revision.city.code, name: revision.city.name, provinceName: revision.city.provinceName } },
+    revision: revisionDto(revision, row.id, true), publishedAt: row.publishedAt?.toISOString() ?? null };
+}

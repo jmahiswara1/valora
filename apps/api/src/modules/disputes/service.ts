@@ -1,5 +1,6 @@
 import type { Prisma } from '../../generated/prisma/client.js';
 import type { EvidenceDto, TransactionSnapshot, MediaTicketInput, EvidenceInput, ResolveDisputeInput } from '@valora/contracts';
+import { notifyTransaction } from '../notifications/events.js';
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../../infrastructure/database.service.js';
 import { MediaService } from "../media/service.js";
@@ -29,6 +30,7 @@ export class DisputesService {
       const record = await tx.disputeCase.create({ data: { transactionId, openedById: actorId, assignedAdminId: actorId, reason: input.reason, status: 'IN_REVIEW' } });
       await tx.caseEvidence.create({ data: { caseId: record.id, submittedById: actorId, note: 'Tindak lanjut admin atas target serah terima terlewati: ' + input.reason } });
       await tx.transaction.update({ where: { id: transactionId }, data: { status: 'DISPUTED', version: { increment: 1 } } });
+      await notifyTransaction(tx, row, 'DISPUTE_OPENED', `dispute:${record.id}:opened`);
       await tx.adminAction.create({ data: { adminId: actorId, targetType: 'DISPUTE', targetId: record.id, action: 'OPEN_OVERDUE_CASE', reason: input.reason } });
       return { caseId: record.id };
     });
@@ -133,6 +135,7 @@ export class DisputesService {
         const status = confirmations ? 'ONE_SIDE_CONFIRMED' : 'AWAITING_HANDOVER';
         const continued = await tx.transaction.update({ where: { id: transactionId }, data: { status, version: { increment: 1 } } });
         if (confirmations === requiredConfirmations(row).length) await this.transactions.complete(tx, continued, 'USER_CONFIRMED');
+        else await notifyTransaction(tx, row, 'DISPUTE_CONTINUED', `dispute:${record.id}:continued`);
       }
       await tx.disputeCase.update({ where: { id: input.caseId }, data: { status: 'RESOLVED', resolution: input.decision, resolutionReason: input.reason, resolvedAt: new Date(), version: { increment: 1 } } });
       await tx.adminAction.create({ data: { adminId: actorId, targetType: 'DISPUTE', targetId: input.caseId, action: input.decision, reason: input.reason, beforeState: json({ transactionId, status: row.status }), afterState: json({ evidenceIds: input.evidenceIds, decision: input.decision }) } });

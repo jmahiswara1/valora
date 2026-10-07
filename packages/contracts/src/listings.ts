@@ -52,7 +52,7 @@ export interface ListingDto { id: string; itemId: string; type: typeof listingTy
 
 export interface ListingRevisionDto { id: string; itemId: string; revisionNo: number; assessmentId: string; itemRevision: number; title: string; description: string; categoryCode: string; categoryName: string; subcategoryCode: string | null; media: (MediaDto & { url?: string })[]; city: CityDto; condition: number; score: number | null; scoreLabel: string | null; ruleVersion: string; conditionDisclosure: string; askingPriceIdr: number | null; exchangePreference: string | null; recipientNote: string | null; handoverMethods: typeof handoverMethods[number][]; createdAt: string }
 
-export type PublicListingDto = { id: string; type: typeof listingTypes[number]; status: 'ACTIVE'; version: number; owner: { displayName: string; city: CityDto }; revision: ListingRevisionDto; publishedAt: string | null } | { id: string; type: typeof listingTypes[number]; status: 'RESERVED' };
+export type PublicListingDto = { id: string; type: typeof listingTypes[number]; status: 'ACTIVE'; version: number; owner: { id: string; displayName: string; city: CityDto }; revision: ListingRevisionDto; publishedAt: string | null } | { id: string; type: typeof listingTypes[number]; status: 'RESERVED' };
 
 export interface ModerationQueueDto { revisionId: string; listingId: string; listingType: typeof listingTypes[number]; title: string; ownerName: string; cityName: string; specialReview: boolean; riskFlags: string[]; submittedAt: string; revisionNo: number; version: number }
 

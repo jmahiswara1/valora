@@ -1,3 +1,4 @@
+import { notifyTransaction } from '../modules/notifications/events.js';
 import { requestContext } from './request-context.js';
 import { authorizeReplay, requireRecentAuthentication } from './actions.js';
 import { createHash } from 'node:crypto';
@@ -116,6 +117,7 @@ export async function closeForAccount(tx: Prisma.TransactionClient, userId: stri
       const dispute = await tx.disputeCase.create({ data: { transactionId: row.id, openedById: userId, reason: cause + ': akun peserta tidak aktif saat transaksi masih berjalan.' } });
       await tx.caseEvidence.create({ data: { caseId: dispute.id, submittedById: userId, note: 'Permintaan penutupan akun tercatat oleh sistem. Transaksi memerlukan putusan admin.' } });
       await tx.transaction.update({ where: { id: row.id }, data: { status: 'DISPUTED', version: { increment: 1 } } });
+      await notifyTransaction(tx, row, 'DISPUTE_OPENED', `dispute:${dispute.id}:opened`, userId);
     } else {
       await tx.caseEvidence.create({ data: { caseId: existing.id, submittedById: userId, note: cause + ': status akun peserta dicatat oleh sistem saat kasus masih terbuka.' } });
     }

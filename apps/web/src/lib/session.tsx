@@ -1,4 +1,5 @@
 'use client';
+import { NotificationFeedback } from '@/features/notifications/feedback';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { usePathname } from 'next/navigation';
@@ -72,7 +73,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     return () => { clearInterval(timer); channel.current?.close(); window.removeEventListener('storage', onStorage); window.removeEventListener('focus', check); window.removeEventListener('online', check); window.removeEventListener('pageshow', onPageShow); window.removeEventListener('valora-auth-error', onApiError); document.removeEventListener('visibilitychange', check); };
   }, [clear, refresh]);
   const value = useMemo(() => ({ state, session, verifiedPath, logoutBusy, refresh, logout, changed }), [state, session, verifiedPath, logoutBusy, refresh, logout, changed]);
-  return <Context.Provider value={value}><CacheScope key={generation}>{children}<ReauthenticationDialog /></CacheScope></Context.Provider>;
+  return <Context.Provider value={value}><CacheScope key={generation}>{children}<NotificationFeedback /><ReauthenticationDialog /></CacheScope></Context.Provider>;
 }
 export function useSession() { const value = useContext(Context); if (!value) throw new Error('SessionProvider missing'); return value; }
 export function useMe() {

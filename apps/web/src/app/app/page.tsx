@@ -1,36 +1,28 @@
 'use client';
 
 import Link from 'next/link';
-import { Bell, Check, ChevronRight, Handshake, MessageCircle, Plus } from 'lucide-react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import type { ConversationDto, ItemDto, NotificationDto, OfferDto } from '@valora/contracts';
-import { useRef, useState } from 'react';
+import { ChevronRight, Handshake, MessageCircle, Plus } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import type { ConversationDto, ItemDto, OfferDto } from '@valora/contracts';
 import { api, apiEnvelope } from '@/lib/api';
 import { useMe } from '@/lib/session';
 import { ItemCard } from '@/features/items/card';
 import { AccountError } from '@/features/account/error';
 import { AccountHeading } from '@/features/account/heading';
 import { AccountSkeleton } from '@/features/account/skeleton';
-import { Button, Notice } from "@/components/ui/primitives";
+import { DashboardNotifications } from '@/features/notifications/dashboard';
 
 export default function Dashboard() {
-  const me = useMe(); const cache = useQueryClient(); const [readError, setReadError] = useState(''); const [reading, setReading] = useState<string | null>(null); const readPending = useRef(false);
+  const me = useMe();
   const items = useQuery({ queryKey: ['items', 'recent'], queryFn: () => apiEnvelope<ItemDto[]>('/items?limit=4') });
-  const reminders = useQuery({ queryKey: ['notifications'], queryFn: () => api<NotificationDto[]>('/notifications'), refetchInterval: 30000 });
   const offers = useQuery({ queryKey: ['offers', 'mine'], queryFn: () => api<OfferDto[]>('/offers/mine'), refetchInterval: 30000 });
   const messages = useQuery({ queryKey: ['conversations'], queryFn: () => api<ConversationDto[]>('/conversations'), refetchInterval: 10000 });
-  const unread = reminders.data?.filter((row) => !row.readAt) ?? [];
   const responses = offers.data?.filter((row) => ['PENDING', 'COUNTERED'].includes(row.status) && row.currentRevision?.respondsById === me.data?.id && new Date(row.expiresAt).getTime() > offers.dataUpdatedAt) ?? [];
   const unreadMessages = messages.data?.filter((row) => row.unreadCount > 0) ?? [];
-  async function markRead(id: string) { if (readPending.current) return; readPending.current = true; setReading(id); setReadError(''); try { await api(`/notifications/${id}/read`, { method: 'POST' }); await cache.invalidateQueries({ queryKey: ['notifications'] }); } catch { setReadError('Pengingat belum ditandai dibaca. Coba lagi.'); } finally { setReading(null); readPending.current = false; } }
   return <>
     <AccountHeading title={`Halo, ${me.data?.displayName ?? 'kamu'}.`} description="Lihat yang perlu ditindaklanjuti, lalu lanjutkan cerita barangmu." actions={<Link className="button button-primary" href="/app/barang/baru"><Plus size={17} aria-hidden="true" />Tambah barang</Link>} />
     <div className="account-activity-grid">
-      <section className="account-activity" aria-labelledby="dashboard-reminders"><div className="account-activity-heading"><h2 id="dashboard-reminders">Pengingat transaksi</h2><Bell size={19} aria-hidden="true" /></div>
-        {readError && <Notice kind="error">{readError}</Notice>}
-        {reminders.isPending ? <AccountSkeleton /> : reminders.isError ? <AccountError retry={() => reminders.refetch()}>Pengingat gagal dimuat.</AccountError> : unread.length ? <ul>{unread.slice(0, 3).map((row) => <li key={row.id}><Link href={`/app/transaksi/${row.payload.transactionId}`}><strong>{row.payload.title}</strong><small>{row.payload.day ? `Pengingat hari ke-${row.payload.day}` : 'Periksa serah terima dan konfirmasi'}</small></Link><Button variant="quiet" size="small" className="account-read" aria-label={`Tandai pengingat ${row.payload.title} dibaca`} disabled={Boolean(reading)} onClick={() => markRead(row.id)}><Check size={17} /></Button></li>)}</ul> : <p>Belum ada pengingat baru. Perkembangan serah terima akan muncul di sini.</p>}
-        <Link className="account-activity-footer" href="/app/transaksi">Lihat transaksi <ChevronRight size={15} aria-hidden="true" /></Link>
-      </section>
+      <DashboardNotifications />
       <section className="account-activity" aria-labelledby="dashboard-offers"><div className="account-activity-heading"><h2 id="dashboard-offers">Perlu tanggapan</h2><Handshake size={19} aria-hidden="true" /></div>
         {offers.isPending ? <AccountSkeleton /> : offers.isError ? <AccountError retry={() => offers.refetch()}>Penawaran gagal dimuat.</AccountError> : responses.length ? <ul>{responses.slice(0, 3).map((row) => <li key={row.id}><Link href="/app/penawaran"><strong>{row.listing.title}</strong><small>{row.status === 'COUNTERED' ? 'Ada penawaran balik' : 'Menunggu responsmu'} · sampai {new Date(row.expiresAt).toLocaleDateString('id-ID')}</small></Link></li>)}</ul> : <p>Semua tanggapan sudah beres. Penawaran yang menunggu responsmu akan tampil di sini.</p>}
         <Link className="account-activity-footer" href="/app/penawaran">Lihat penawaran <ChevronRight size={15} aria-hidden="true" /></Link>

@@ -42,7 +42,7 @@ async function bootstrap(): Promise<void> {
   app.useGlobalInterceptors(new EnvelopeInterceptor());
 
   if (config.appEnv === 'local') {
-    const swaggerConfig = new DocumentBuilder().setTitle('Valora API').setDescription('Kontrak API tahap 1–6 Valora').setVersion('1.7.0').build();
+    const swaggerConfig = new DocumentBuilder().setTitle('Valora API').setDescription('Kontrak API Valora termasuk Favorit dan pusat notifikasi.').setVersion('1.9.0').build();
     const document = completeOpenApi(SwaggerModule.createDocument(app, swaggerConfig));
     SwaggerModule.setup('api/docs', app, document);
   }

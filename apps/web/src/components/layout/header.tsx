@@ -1,10 +1,11 @@
 'use client';
 
+import { NotificationBell } from '@/features/notifications/bell';
 import { useSession } from '@/lib/session';
 import { useState, useRef, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Bell, ShoppingCart, CircleUserRound, LayoutDashboard, LogOut, X, Menu } from 'lucide-react';
+import { ShoppingCart, CircleUserRound, Heart, LayoutDashboard, LogOut, X, Menu } from 'lucide-react';
 
 export function SiteHeader({ appearance = 'classic' }: { appearance?: 'classic' | 'renewed' } = {}) {
   const session = useSession(); const signedIn = session.state === 'AUTHENTICATED';
@@ -50,9 +51,10 @@ export function SiteHeader({ appearance = 'classic' }: { appearance?: 'classic' 
       </nav>
       <nav className="header-icon-nav" aria-label="Akun dan aktivitas">
         {signedIn && <>
-          <Link className="header-icon-link header-activity-link" href={accountHref('/app')} prefetch={false} aria-label="Pengingat transaksi" title="Pengingat transaksi" onClick={() => setOpen(false)}><Bell size={19} strokeWidth={1.6} aria-hidden="true" /></Link>
+          <NotificationBell onOpen={() => { setOpen(false); setAccountMenuOpen(false); }} />
           <Link className="header-icon-link header-activity-link" href={accountHref('/app/penawaran')} prefetch={false} aria-label="Penawaran saya" title="Penawaran saya" onClick={() => setOpen(false)}><ShoppingCart size={19} strokeWidth={1.6} aria-hidden="true" /></Link>
         </>}
+        <Link className="header-icon-link header-favorite-link" href={accountHref('/app/favorit')} prefetch={false} aria-label="Favorit" title="Favorit" aria-current={active('/app/favorit')} onClick={() => { setOpen(false); setAccountMenuOpen(false); }}><Heart size={19} strokeWidth={1.6} aria-hidden="true" /></Link>
         <div className="header-account" ref={accountMenu}>
           <button ref={accountButton} className="header-icon-link header-account-trigger" type="button" aria-label="Menu akun" title="Menu akun" aria-expanded={accountMenuOpen} aria-controls="header-account-menu" onClick={() => { setOpen(false); setAccountMenuOpen((value) => !value); }}><CircleUserRound size={19} strokeWidth={1.6} aria-hidden="true" /></button>
           <div id="header-account-menu" className="header-account-popover" role="group" aria-label="Menu akun" hidden={!accountMenuOpen}>

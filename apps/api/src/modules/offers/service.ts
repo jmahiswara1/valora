@@ -1,3 +1,4 @@
+import { expireOffers, notify } from '../notifications/events.js';
 import type { Prisma } from '../../generated/prisma/client.js';
 import { createHash } from 'node:crypto';
 import { type OfferDto, type TransactionItemSnapshot, type ListingOfferInput, uuidSchema, type OfferCounterInput } from '@valora/contracts';
@@ -106,6 +107,7 @@ export class OffersService {
         exchangeItemId, exchangeSnapshot: exchangeSnapshot ? json(exchangeSnapshot) : undefined, clientRequestId: input.clientRequestId, requestHash, expiresAt,
         revisions: { create: { revisionNo: 1, priceIdr: price === null ? null : BigInt(price), message: input.message ?? null, proposedById: userId, respondsById: listing.ownerId, expiresAt } },
       }, include: offerInclude });
+      await notify(tx, 'OFFER_RECEIVED', `offer:${offer.id}:created`, [listing.ownerId], { offerId: offer.id, title: listing.currentRevision.title });
       return offerDto(offer);
     });
   }
@@ -114,8 +116,10 @@ export class OffersService {
     const rows = await this.db.offer.findMany({ where: { OR: [{ bidderId: userId }, { listing: { ownerId: userId } }] }, include: offerInclude, orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }], take: 100 });
     const now = new Date();
     const expired = rows.filter((row) => ['PENDING', 'COUNTERED'].includes(row.status) && row.expiresAt <= now);
-    if (expired.length) await this.db.offer.updateMany({ where: { id: { in: expired.map((row) => row.id) }, status: { in: ['PENDING', 'COUNTERED'] }, expiresAt: { lte: now } }, data: { status: 'EXPIRED', endReason: 'TIMEOUT', version: { increment: 1 } } });
-    return rows.map((row) => expired.some((entry) => entry.id === row.id) ? { ...offerDto(row), status: 'EXPIRED' as const, endReason: 'TIMEOUT' } : offerDto(row));
+    if (!expired.length) return rows.map(offerDto);
+    await serial(this.db, tx => expireOffers(tx, { id: { in: expired.map(row => row.id) }, expiresAt: { lte: now } }, 'TIMEOUT'));
+    const fresh = await this.db.offer.findMany({ where: { id: { in: rows.map(row => row.id) } }, include: offerInclude, orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }] });
+    return fresh.map(offerDto);
   }
 
   async get(userId: string, id: string): Promise<OfferDto> {
@@ -123,8 +127,8 @@ export class OffersService {
     const row = await this.db.offer.findUnique({ where: { id }, include: offerInclude });
     if (!row || (row.bidderId !== userId && row.listing.ownerId !== userId)) throw new AppException(404, 'NOT_FOUND', 'Penawaran tidak ditemukan.');
     if (['PENDING', 'COUNTERED'].includes(row.status) && row.expiresAt <= new Date()) {
-      await this.db.offer.updateMany({ where: { id, status: { in: ['PENDING', 'COUNTERED'] }, expiresAt: { lte: new Date() } }, data: { status: 'EXPIRED', endReason: 'TIMEOUT', version: { increment: 1 } } });
-      return { ...offerDto(row), status: 'EXPIRED', endReason: 'TIMEOUT' };
+      await serial(this.db, tx => expireOffers(tx, { id, expiresAt: { lte: new Date() } }, 'TIMEOUT'));
+      return offerDto(await this.db.offer.findUniqueOrThrow({ where: { id }, include: offerInclude }));
     }
     return offerDto(row);
   }
@@ -149,6 +153,7 @@ export class OffersService {
       const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
       await tx.offerRevision.create({ data: { offerId: id, revisionNo: row.currentRevisionNo + 1, priceIdr: BigInt(input.priceIdr), message: input.message ?? null, proposedById: userId, respondsById: previous.proposedById, expiresAt } });
       await tx.offer.update({ where: { id }, data: { status: 'COUNTERED', currentRevisionNo: { increment: 1 }, expiresAt, endReason: null, version: { increment: 1 } } });
+      await notify(tx, 'OFFER_COUNTERED', `offer:${id}:revision:${row.currentRevisionNo + 1}`, [previous.proposedById], { offerId: id, title: row.listingRevision.title });
       return tx.offer.findUniqueOrThrow({ where: { id }, include: offerInclude });
     });
     return offerDto(updated);
@@ -176,6 +181,7 @@ export class OffersService {
       if (!['PENDING', 'COUNTERED'].includes(row.status) || row.version !== expectedVersion) throw new AppException(409, 'STATE_CONFLICT', 'Penawaran sudah berubah atau berakhir.');
       if (row.expiresAt <= new Date()) throw new AppException(410, 'OFFER_EXPIRED', 'Masa penawaran sudah berakhir.');
       await tx.offer.update({ where: { id }, data: { status: result, endReason: result, version: { increment: 1 } } });
+      await notify(tx, result === 'REJECTED' ? 'OFFER_REJECTED' : 'OFFER_WITHDRAWN', `offer:${id}:${result}:${row.version + 1}`, [row.bidderId, row.listing.ownerId], { offerId: id, title: row.listingRevision.title }, userId);
       return tx.offer.findUniqueOrThrow({ where: { id }, include: offerInclude });
     });
     return offerDto(updated);

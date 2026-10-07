@@ -1,3 +1,4 @@
+import { expireOffers } from '../notifications/events.js';
 import type { Prisma } from '../../generated/prisma/client.js';
 import { type ListingDto, type ListingSaveInput, uuidSchema, type ListingPatchInput } from '@valora/contracts';
 import { Injectable } from '@nestjs/common';
@@ -112,7 +113,7 @@ export class ListingService {
       if ((listing.status === 'ACTIVE' || listing.status === 'PAUSED') && !sameSnapshot && input.assessmentId === previous.assessmentId) throw new AppException(422, 'STALE_ASSESSMENT', 'Perubahan Listing memerlukan penilaian baru.');
       if (listing.status === 'ACTIVE') {
         await tx.listing.update({ where: { id }, data: { status: 'PAUSED', publishedAt: null, version: { increment: 1 } } });
-        await tx.offer.updateMany({ where: { listingId: id, status: { in: ['PENDING', 'COUNTERED'] } }, data: { status: 'EXPIRED', endReason: 'LISTING_REVISED', version: { increment: 1 } } });
+        await expireOffers(tx, { listingId: id, status: { in: ['PENDING', 'COUNTERED'] } }, 'LISTING_REVISED');
       }
       if (listing.status === 'PENDING_REVIEW' || listing.status === 'REJECTED') await tx.listing.update({ where: { id }, data: { status: 'DRAFT', version: { increment: 1 } } });
       const nextNo = (await tx.listingRevision.aggregate({ where: { listingId: id }, _max: { revisionNo: true } }))._max.revisionNo ?? 0;
@@ -156,7 +157,7 @@ export class ListingService {
       if (!listing) throw new AppException(404, 'NOT_FOUND', 'Listing tidak ditemukan.');
       if (listing.version !== expectedVersion || !['DRAFT', 'PENDING_REVIEW', 'ACTIVE', 'PAUSED', 'REJECTED'].includes(listing.status)) throw new AppException(409, 'STATE_CONFLICT', 'Listing tidak dapat ditarik pada status ini.');
       await tx.listing.update({ where: { id }, data: { status: 'WITHDRAWN', publishedAt: null, closedAt: new Date(), version: { increment: 1 } } });
-      await tx.offer.updateMany({ where: { listingId: id, status: { in: ['PENDING', 'COUNTERED'] } }, data: { status: 'EXPIRED', endReason: 'LISTING_WITHDRAWN', version: { increment: 1 } } });
+      await expireOffers(tx, { listingId: id, status: { in: ['PENDING', 'COUNTERED'] } }, 'LISTING_WITHDRAWN');
     });
     return this.getOwner(userId, id);
   }

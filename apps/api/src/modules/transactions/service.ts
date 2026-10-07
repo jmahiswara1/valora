@@ -1,7 +1,8 @@
+import { expireOffers, notify, notifyTransaction } from '../notifications/events.js';
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../../infrastructure/database.service.js';
 import type { OfferAcceptInput, TransactionItemSnapshot, TransactionDto, ConfirmationInput, TransactionSnapshot } from '@valora/contracts';
-import { validId, idempotent, lockRows, eligible, json, lockTransaction, participant, mutable, requiredConfirmations, activeTransactionStatuses } from '../../shared/transactions.js';
+import { validId, idempotent, lockRows, eligible, json, lockTransaction, participant, mutable, requiredConfirmations, activeTransactionStatuses, serial } from '../../shared/transactions.js';
 import { AppException } from '../../shared/http.js';
 import type { Transaction, Prisma } from '../../generated/prisma/client.js';
 import { transactionDto, paging } from './helpers.js';
@@ -54,6 +55,7 @@ export class TransactionsService {
       await tx.offer.update({ where: { id: offerId }, data: { status: 'ACCEPTED', version: { increment: 1 } } });
       const [participantAId, participantBId] = [listing.ownerId, offer.bidderId].sort();
       await tx.conversation.upsert({ where: { listingId_participantAId_participantBId: { listingId: listing.id, participantAId, participantBId } }, update: {}, create: { listingId: listing.id, participantAId, participantBId } });
+      await notifyTransaction(tx, row, 'TRANSACTION_STARTED', `transaction:${row.id}:started`);
       return transactionDto(tx, row);
     });
   }
@@ -81,10 +83,13 @@ export class TransactionsService {
       const row = await lockTransaction(tx, id); participant(row, actorId); mutable(row, input.expectedVersion);
       if (row.status === 'DISPUTED') throw new AppException(409, 'STATE_CONFLICT', 'Konfirmasi ditahan selama sengketa.');
       if (!requiredConfirmations(row).some((c) => c.actorId === actorId && c.itemId === input.itemId && c.kind === input.kind)) throw new AppException(403, 'FORBIDDEN', 'Konfirmasi ini bukan tindakanmu pada barang tersebut.');
-      await tx.handoverConfirmation.upsert({ where: { transactionId_actorId_itemId_kind: { transactionId: id, actorId, itemId: input.itemId, kind: input.kind } }, update: {}, create: { transactionId: id, actorId, itemId: input.itemId, kind: input.kind, idempotencyKey: requestKey } });
+      const confirmation = await tx.handoverConfirmation.upsert({ where: { transactionId_actorId_itemId_kind: { transactionId: id, actorId, itemId: input.itemId, kind: input.kind } }, update: {}, create: { transactionId: id, actorId, itemId: input.itemId, kind: input.kind, idempotencyKey: requestKey } });
       const count = await tx.handoverConfirmation.count({ where: { transactionId: id } });
       if (count === requiredConfirmations(row).length) await this.complete(tx, row, 'USER_CONFIRMED');
-      else await tx.transaction.update({ where: { id }, data: { status: 'ONE_SIDE_CONFIRMED', version: { increment: 1 } } });
+      else {
+        await tx.transaction.update({ where: { id }, data: { status: 'ONE_SIDE_CONFIRMED', version: { increment: 1 } } });
+        await notifyTransaction(tx, row, 'HANDOVER_CONFIRMED', `confirmation:${confirmation.id}`, actorId);
+      }
       return transactionDto(tx, await tx.transaction.findUniqueOrThrow({ where: { id } }));
     });
   }
@@ -106,13 +111,14 @@ export class TransactionsService {
       }
       const oldListings = await tx.listing.findMany({ where: { itemId: item.id, id: { not: row.listingId }, status: { notIn: ['CLOSED', 'WITHDRAWN'] } }, select: { id: true } });
       await tx.listing.updateMany({ where: { id: { in: oldListings.map((l) => l.id) } }, data: { status: 'WITHDRAWN', publishedAt: null, closedAt: now, version: { increment: 1 } } });
-      await tx.offer.updateMany({ where: { status: { in: ['PENDING', 'COUNTERED'] }, OR: [{ exchangeItemId: item.id }, { listingId: { in: [row.listingId, ...oldListings.map((l) => l.id)] } }] }, data: { status: 'EXPIRED', endReason: 'OWNERSHIP_TRANSFERRED', version: { increment: 1 } } });
+      await expireOffers(tx, { status: { in: ['PENDING', 'COUNTERED'] }, OR: [{ exchangeItemId: item.id }, { listingId: { in: [row.listingId, ...oldListings.map((l) => l.id)] } }] }, 'OWNERSHIP_TRANSFERRED');
     }
     for (const userId of [null, row.sellerOrDonorId, row.buyerOrRecipientId]) await this.impact(tx, row.id, 'COMPLETED_TRANSFERS', 1n, 'COUNT', now, userId);
     if (row.type === 'RESELL' && row.finalPriceIdr !== null) for (const userId of [null, row.sellerOrDonorId]) await this.impact(tx, row.id, 'CONFIRMED_SALE_VALUE', row.finalPriceIdr, 'IDR', now, userId);
     await tx.listing.update({ where: { id: row.listingId }, data: { status: 'CLOSED', closedAt: now, publishedAt: null, version: { increment: 1 } } });
     await tx.cancellationRequest.updateMany({ where: { transactionId: row.id, status: 'PENDING' }, data: { status: 'REJECTED', endReason: 'TRANSACTION_COMPLETED', respondedAt: now } });
     await tx.transaction.update({ where: { id: row.id }, data: { status: 'COMPLETED', completedAt: now, resolutionOrigin: origin, version: { increment: 1 } } });
+    await notifyTransaction(tx, row, 'TRANSACTION_COMPLETED', `transaction:${row.id}:completed`);
   }
 
   private async impact(tx: Prisma.TransactionClient, sourceId: string, metric: string, delta: bigint, unit: string, occurredAt: Date, attributedUserId: string | null, itemId: string | null = null) {
@@ -123,7 +129,8 @@ export class TransactionsService {
     return idempotent(this.db, actorId, 'cancel-request:' + id, key, input, async (tx) => {
       const row = await lockTransaction(tx, id); participant(row, actorId); mutable(row, input.expectedVersion);
       if (row.status === 'DISPUTED' || await tx.cancellationRequest.findFirst({ where: { transactionId: id, status: 'PENDING' } })) throw new AppException(409, 'STATE_CONFLICT', 'Permintaan batal atau sengketa sudah terbuka.');
-      await tx.cancellationRequest.create({ data: { transactionId: id, requestedById: actorId, reason: input.reason } });
+      const request = await tx.cancellationRequest.create({ data: { transactionId: id, requestedById: actorId, reason: input.reason } });
+      await notifyTransaction(tx, row, 'CANCELLATION_REQUESTED', `cancellation:${request.id}:requested`, actorId);
       await tx.transaction.update({ where: { id }, data: { version: { increment: 1 } } });
       return transactionDto(tx, await tx.transaction.findUniqueOrThrow({ where: { id } }));
     });
@@ -138,7 +145,10 @@ export class TransactionsService {
       if (request.status !== 'PENDING' || row.status === 'DISPUTED') throw new AppException(409, 'STATE_CONFLICT', 'Permintaan tidak dapat dijawab.');
       await tx.cancellationRequest.update({ where: { id: requestId }, data: { status: input.accept ? 'ACCEPTED' : 'REJECTED', respondedById: actorId, respondedAt: new Date(), endReason: input.accept ? 'BOTH_PARTIES_AGREED' : 'OTHER_PARTY_REJECTED' } });
       if (input.accept) await this.cancel(tx, row);
-      else await tx.transaction.update({ where: { id }, data: { version: { increment: 1 } } });
+      else {
+        await tx.transaction.update({ where: { id }, data: { version: { increment: 1 } } });
+        await notifyTransaction(tx, row, 'CANCELLATION_REJECTED', `cancellation:${request.id}:rejected`, actorId);
+      }
       return transactionDto(tx, await tx.transaction.findUniqueOrThrow({ where: { id } }));
     });
   }
@@ -164,6 +174,7 @@ export class TransactionsService {
     await tx.listing.update({ where: { id: row.listingId }, data: { status, publishedAt: status === 'ACTIVE' ? now : null, version: { increment: 1 } } });
     await tx.cancellationRequest.updateMany({ where: { transactionId: row.id, status: 'PENDING' }, data: { status: 'ACCEPTED', endReason: 'ADMIN_CANCELLED', respondedAt: now } });
     await tx.transaction.update({ where: { id: row.id }, data: { status: 'CANCELLED', cancelledAt: now, version: { increment: 1 } } });
+    await notifyTransaction(tx, row, 'TRANSACTION_CANCELLED', `transaction:${row.id}:cancelled`);
   }
 
   async dispute(actorId: string, id: string, input: { expectedVersion: number; reason: string }, key?: string) {
@@ -172,6 +183,7 @@ export class TransactionsService {
       if (row.status === 'DISPUTED') throw new AppException(409, 'STATE_CONFLICT', 'Sengketa sudah terbuka.');
       const dispute = await tx.disputeCase.create({ data: { transactionId: id, openedById: actorId, reason: input.reason } });
       await tx.caseEvidence.create({ data: { caseId: dispute.id, submittedById: actorId, note: input.reason } });
+      await notifyTransaction(tx, row, 'DISPUTE_OPENED', `dispute:${dispute.id}:opened`, actorId);
       await tx.transaction.update({ where: { id }, data: { status: 'DISPUTED', version: { increment: 1 } } });
       return transactionDto(tx, await tx.transaction.findUniqueOrThrow({ where: { id } }));
     });
@@ -179,14 +191,15 @@ export class TransactionsService {
 
   async reminders(now = new Date()): Promise<void> {
     const rows = await this.db.transaction.findMany({ where: { status: { in: [...activeTransactionStatuses] } } });
-    for (const row of rows) {
+    for (const ref of rows) await serial(this.db, async tx => {
+      const row = await tx.transaction.findUniqueOrThrow({ where: { id: ref.id } });
+      if (!activeTransactionStatuses.includes(row.status as typeof activeTransactionStatuses[number])) return;
       const age = now.getTime() - row.acceptedAt.getTime();
       const title = (row.snapshot as unknown as TransactionSnapshot).items[0].title;
-      for (const milestone of [7, 12]) if (age >= milestone * day) for (const userId of [row.sellerOrDonorId, row.buyerOrRecipientId]) {
-        const eventKey = 'handover:' + row.id + ':' + milestone + ':' + userId;
-        await this.db.inAppNotification.upsert({ where: { eventKey }, update: {}, create: { userId, eventKey, type: 'HANDOVER_REMINDER', payload: json({ transactionId: row.id, title, day: milestone }) } });
+      for (const milestone of [7, 12]) if (row.status !== 'DISPUTED' && age >= milestone * day) for (const userId of [row.sellerOrDonorId, row.buyerOrRecipientId]) {
+        await notify(tx, 'HANDOVER_REMINDER', 'handover:' + row.id + ':' + milestone, [userId], { transactionId: row.id, title, day: milestone });
       }
-      if (now > row.targetHandoverAt) await this.db.transaction.updateMany({ where: { id: row.id, status: { in: [...activeTransactionStatuses] }, overdueAt: null }, data: { overdueAt: now } });
-    }
+      if (now > row.targetHandoverAt) await tx.transaction.updateMany({ where: { id: row.id, status: { in: [...activeTransactionStatuses] }, overdueAt: null }, data: { overdueAt: now } });
+    });
   }
 }

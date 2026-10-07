@@ -1,3 +1,4 @@
+import { expireOffers } from '../notifications/events.js';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { Controller, UseGuards, Post, Req, Param, Body, Headers } from '@nestjs/common';
 import { SessionGuard, AdminGuard } from '../auth/guards.js';
@@ -24,7 +25,7 @@ export class ListingAdminController {
       if (!listing || !report || report.targetType !== 'LISTING' || report.targetId !== id || !['OPEN', 'IN_REVIEW'].includes(report.status)) throw new AppException(404, 'NOT_FOUND', 'Laporan tidak ditemukan.');
       if (listing.version !== input.expectedVersion || listing.status !== 'ACTIVE') throw new AppException(409, 'STATE_CONFLICT', 'Listing tidak dapat ditangguhkan saat ini.');
       await tx.listing.update({ where: { id }, data: { status: 'SUSPENDED', publishedAt: null, version: { increment: 1 } } });
-      await tx.offer.updateMany({ where: { listingId: id, status: { in: ['PENDING', 'COUNTERED'] } }, data: { status: 'EXPIRED', endReason: 'LISTING_SUSPENDED', version: { increment: 1 } } });
+      await expireOffers(tx, { listingId: id, status: { in: ['PENDING', 'COUNTERED'] } }, 'LISTING_SUSPENDED');
       await tx.adminAction.create({ data: { adminId: request.actor!.id, reportId: report.id, targetType: 'LISTING', targetId: id, action: 'LISTING_SUSPENDED', reason: input.reason, beforeState: { status: listing.status }, afterState: { status: 'SUSPENDED' } } });
       await tx.report.update({ where: { id: report.id }, data: { status: 'IN_REVIEW', version: { increment: 1 }, assignedAdminId: request.actor!.id } });
       return { id, status: 'SUSPENDED' as const };

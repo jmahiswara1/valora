@@ -7,7 +7,7 @@ import type { CategoryDto, PublicListingDto } from '@valora/contracts';
 import { Notice, Button } from "../../components/ui/primitives";
 import Link from 'next/link';
 import { ArrowUpRight, Search, ArrowRight } from 'lucide-react';
-import { MarketCard } from './card';
+import { MarketGrid } from './grid';
 
 export function LandingMarket() {
   const [category, setCategory] = useState('');
@@ -35,7 +35,7 @@ export function LandingMarket() {
     <div className="preview-results" aria-busy={listings.isPending}>
       {listings.isPending ? <div className="preview-loading" role="status" aria-label="Memuat barang dari Market">
         <div className="preview-grid" aria-hidden="true">{Array.from({ length: 6 }, (_, index) => <div className="preview-skeleton" key={index}><div /><span /><span /></div>)}</div>
-      </div> : listings.isError ? <Notice kind="error">Barang dari Market belum dapat dimuat. <Button variant="quiet" size="small" onClick={() => listings.refetch()}>Coba lagi</Button></Notice> : activeListings.length ? <div className="preview-grid">{activeListings.map((listing) => <MarketCard listing={listing} key={listing.id} />)}</div> : <div className="preview-empty" role="status">
+      </div> : listings.isError ? <Notice kind="error">Barang dari Market belum dapat dimuat. <Button variant="quiet" size="small" onClick={() => listings.refetch()}>Coba lagi</Button></Notice> : activeListings.length ? <MarketGrid listings={activeListings} className="preview-grid" /> : <div className="preview-empty" role="status">
         <Search size={28} strokeWidth={1.5} aria-hidden="true" />
         <h3>Belum ada barang di pilihan ini.</h3>
         <p>Coba kategori lain atau jelajahi seluruh Market.</p>

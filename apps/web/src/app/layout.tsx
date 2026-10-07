@@ -10,6 +10,8 @@ import "../styles/information.css";
 import "../styles/market.css";
 import "../styles/listing-detail.css";
 import "../styles/select.css";
+import "../styles/favorites.css";
+import "../styles/notifications.css";
 import { Providers } from '@/components/layout/providers';
 
 export const metadata: Metadata = {

@@ -62,9 +62,16 @@ import { ListingConversationsController } from "./modules/conversations/listings
 import { ReportsController } from './modules/conversations/reports.controller.js';
 import { ProfilePhotoService } from './modules/profile/photo.service.js';
 import { ProfilePhotosController } from './modules/profile/photo.controller.js';
+import { FavoritesController } from './modules/favorites/controller.js';
+import { FavoritesService } from './modules/favorites/service.js';
+
+import { NotificationCenterController } from './modules/notifications/controller.js';
+import { NotificationService } from './modules/notifications/service.js';
+import { NotificationJobs } from './infrastructure/jobs/notifications.service.js';
+
 
 @Module({
-  controllers: [PublicPassportController, ImpactController, OperationsController, CorrectionController, AdminStage5Controller, EconomicReferenceController, RetentionController, ExplainerController, TransactionsController, MyTransactionsController, OfferAcceptanceController, NotificationsController, CasesController, DisputesAdminController, AuthController, MeController, ProfilePhotosController, CatalogController, AdminFoundationController, ItemsController, MediaController, RubricController, ItemAssessmentsController, AssessmentsController, ItemRepairsController, RepairsController, MarketController, ItemListingsController, ListingsController, ListingModerationController, ListingAdminController, ListingOffersController, OffersController, ListingConversationsController, ConversationsController, BlocksController, ReportsController, AdminReportsController],
-  providers: [LedgerService, PassportImpactService, OperationsService, AdminStage5Service, RetentionService, ExplainerService, TransactionsService, DisputesService, DatabaseService, MailService, StorageService, SessionGuard, AdminGuard, AuthService, CatalogService, MediaService, ItemsService, AssessmentsService, RepairsService, ListingService, MarketService, OffersService, ConversationEvents, ConversationsService, MaintenanceService, ProfilePhotoService],
+  controllers: [NotificationCenterController, FavoritesController, PublicPassportController, ImpactController, OperationsController, CorrectionController, AdminStage5Controller, EconomicReferenceController, RetentionController, ExplainerController, TransactionsController, MyTransactionsController, OfferAcceptanceController, NotificationsController, CasesController, DisputesAdminController, AuthController, MeController, ProfilePhotosController, CatalogController, AdminFoundationController, ItemsController, MediaController, RubricController, ItemAssessmentsController, AssessmentsController, ItemRepairsController, RepairsController, MarketController, ItemListingsController, ListingsController, ListingModerationController, ListingAdminController, ListingOffersController, OffersController, ListingConversationsController, ConversationsController, BlocksController, ReportsController, AdminReportsController],
+  providers: [NotificationService, NotificationJobs, FavoritesService, LedgerService, PassportImpactService, OperationsService, AdminStage5Service, RetentionService, ExplainerService, TransactionsService, DisputesService, DatabaseService, MailService, StorageService, SessionGuard, AdminGuard, AuthService, CatalogService, MediaService, ItemsService, AssessmentsService, RepairsService, ListingService, MarketService, OffersService, ConversationEvents, ConversationsService, MaintenanceService, ProfilePhotoService],
 })
 export class AppModule {}

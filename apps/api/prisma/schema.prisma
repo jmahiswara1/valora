@@ -188,6 +188,7 @@ model User {
   transactionsReceived Transaction[] @relation("TransactionRecipient")
   notifications InAppNotification[]
   profilePhoto ProfilePhoto?
+  favorites Favorite[]
   openedCorrections CorrectionCase[] @relation("CorrectionOpenedBy")
   assignedCorrections CorrectionCase[] @relation("CorrectionAssignedTo")
 
@@ -443,6 +444,7 @@ model Listing {
   revisions         ListingRevision[] @relation("ListingRevisions")
   offers            Offer[]
   conversations     Conversation[]
+  favorites         Favorite[]
   transactions Transaction[]
   version           Int               @default(1)
   publishedAt       DateTime?
@@ -452,6 +454,21 @@ model Listing {
 
   @@index([status, updatedAt, id])
   @@index([ownerId, status, updatedAt])
+}
+
+
+
+model Favorite {
+  userId     String   @db.Uuid
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listingId  String   @db.Uuid
+  listing    Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  savedTitle String   @db.VarChar(120)
+  createdAt  DateTime @default(now())
+
+  @@id([userId, listingId])
+  @@index([userId, createdAt, listingId])
+  @@index([listingId])
 }
 
 model ListingRevision {
@@ -748,6 +765,7 @@ model InAppNotification {
   createdAt DateTime @default(now())
   readAt DateTime?
   @@index([userId, createdAt, id])
+  @@index([userId, readAt, createdAt, id])
 }
 
 model OfferRevision {
@@ -806,6 +824,7 @@ model Message {
   @@unique([conversationId, sequence])
   @@index([conversationId, sentAt, id])
 }
+
 
 model UserBlock {
   id        String    @id @default(uuid()) @db.Uuid

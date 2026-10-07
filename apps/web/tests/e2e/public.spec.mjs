@@ -26,6 +26,11 @@ function listing(type, index, category = 'electronics', options = {}) {
 async function mockPublic(page) {
   const state = { categoryError: false, marketError: false, empty: false, customListings: null, selectedCategory: 'electronics', requests: [] };
   await page.route('**/api/v1/auth/session', route => route.fulfill({ json: { data: session() } }));
+  await page.route(/\/api\/v1\/me\/favorites\/status(?:\?|$)/, route => {
+    const ids = new URL(route.request().url()).searchParams.get('listingIds')?.split(',') ?? [];
+    return route.fulfill({ json: { data: ids.map(listingId => ({ listingId, isFavorite: false })) } });
+  });
+  await page.route('**/api/v1/me/notifications/summary', route => route.fulfill({ json: { data: { unreadCount: 0, recent: [] } } }));
   await page.route('**/api/v1/categories', route => route.fulfill(state.categoryError ? { status: 503, json: { error: { code: 'DEPENDENCY_UNAVAILABLE', message: 'Kategori sementara tidak tersedia.' } } } : { json: { data: categories } }));
   await page.route(/\/api\/v1\/market(?:\?|$)/, route => {
     const url = new URL(route.request().url());
@@ -112,6 +117,7 @@ test('dropdown kategori memvalidasi form dan menampilkan pilihan panjang tanpa o
   await mockPublic(page);
   await page.route('**/api/v1/auth/session', route => route.fulfill({ json: { data: session(true) } }));
   const longLabel = 'Elektronik dan peralatan rumah tangga dengan nama kategori yang cukup panjang untuk dibaca pada layar kecil';
+  await page.route('**/api/v1/me/notifications/summary', route => route.fulfill({ json: { data: { unreadCount: 0, recent: [] } } }));
   await page.route('**/api/v1/categories', route => route.fulfill({ json: { data: [{ code: 'electronics', name: longLabel, subcategories: [] }] } }));
   await page.goto('/app/barang/baru');
   const control = page.getByRole('combobox', { name: 'Kategori', exact: true });

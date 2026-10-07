@@ -10,7 +10,7 @@ import { listingMoney } from './labels';
 import Image from 'next/image';
 import { ArrowUpRight, Search, ChevronDown, SlidersHorizontal, X } from 'lucide-react';
 import { Input, Button, Field, Notice } from "../../components/ui/primitives";
-import { MarketCard } from './card';
+import { MarketGrid } from './grid';
 
 type Filters = Record<string, string>;
 
@@ -157,7 +157,7 @@ export function MarketPage({ initialCategory = '' }: { initialCategory?: string 
 
       {listings.isPending ? <div className="catalog-grid" aria-hidden="true">{Array.from({ length: 6 }, (_, index) => <div className="catalog-skeleton" key={index}><div /><span /><span /><span /></div>)}</div>
         : listings.isError && !listings.data ? <Notice kind="error">Market gagal dimuat. <button type="button" className="link-button" onClick={() => listings.refetch()}>Coba lagi</button></Notice>
-        : rows.length > 0 ? <><div className="catalog-grid" aria-busy={listings.isFetching}>{rows.map(row => row.status === 'ACTIVE' ? <MarketCard listing={row} key={row.id} /> : null)}</div>
+        : rows.length > 0 ? <><MarketGrid listings={rows} busy={listings.isFetching} />
           {listings.isFetchNextPageError && <div className="catalog-pagination-error"><Notice kind="error">Barang berikutnya gagal dimuat. Barang yang sudah tampil tetap tersedia.</Notice></div>}
           {listings.hasNextPage && <div className="catalog-load-more"><Button variant="secondary" disabled={listings.isFetchingNextPage} onClick={() => listings.fetchNextPage()}>{listings.isFetchingNextPage ? 'Memuat…' : listings.isFetchNextPageError ? 'Coba muat lagi' : 'Muat lebih banyak'}<ChevronDown size={17} aria-hidden="true" /></Button></div>}</>
           : <div className="catalog-empty"><Search size={28} strokeWidth={1.4} aria-hidden="true" /><h3>Belum ada barang yang cocok.</h3><p>Coba kata kunci lain atau hapus filter untuk melihat lebih banyak barang.</p><Button variant="secondary" onClick={reset}>Reset filter</Button></div>}

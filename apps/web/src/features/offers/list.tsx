@@ -25,7 +25,7 @@ function OfferCard({ offer, userId }: { offer: OfferDto; userId: string }) {
   const isBidder = offer.bidderId === userId;
   const isResponder = offer.currentRevision?.respondsById === userId;
   const open = ['PENDING', 'COUNTERED'].includes(offer.status);
-  const action = useMutation({ mutationFn: (input: { path: string; body: unknown }) => api<OfferDto>(input.path, { method: 'POST', body: input.body }), onSuccess: async () => { setError(''); setNotice('Status penawaran diperbarui.'); setCounterOpen(false); await cache.invalidateQueries({ queryKey: ['offers', 'mine'] }); }, onError: (cause) => { setError(cause instanceof Error ? cause.message : 'Perubahan belum tersimpan.'); void cache.invalidateQueries({ queryKey: ['offers', 'mine'] }); }, onSettled: () => { responding.current = false; } });
+  const action = useMutation({ mutationFn: (input: { path: string; body: unknown }) => api<OfferDto>(input.path, { method: 'POST', body: input.body }), onSuccess: async () => { setError(''); setNotice('Status penawaran diperbarui.'); setCounterOpen(false); await cache.invalidateQueries({ queryKey: ['offers'] }); }, onError: (cause) => { setError(cause instanceof Error ? cause.message : 'Perubahan belum tersimpan.'); void cache.invalidateQueries({ queryKey: ['offers'] }); }, onSettled: () => { responding.current = false; } });
   function decide(kind: 'reject' | 'withdraw') { if (responding.current || acceptAction.pending) return; responding.current = true; action.mutate({ path: `/offers/${offer.id}/${kind}`, body: { expectedVersion: offer.version } }); }
   function counter(event: React.FormEvent<HTMLFormElement>) { event.preventDefault(); if (responding.current || acceptAction.pending) return; responding.current = true; action.mutate({ path: `/offers/${offer.id}/counter`, body: { expectedVersion: offer.version, priceIdr: Number(price), ...(message.trim() ? { message: message.trim() } : {}) } }); }
   return <article className="offer-card"><div className="offer-card-head"><div><span className="eyebrow">{isBidder ? 'PENAWARAN SAYA' : 'DITERIMA'} · {offer.listing.type}</span><h2><Link href={`/market/${offer.listingId}`}>{offer.listing.title}</Link></h2></div><span className="badge">{offerStatus[offer.status]}</span></div>
@@ -44,4 +44,12 @@ export function OffersPage() {
   const me = useMe();
   const offers = useQuery({ queryKey: ['offers', 'mine'], queryFn: () => api<OfferDto[]>('/offers/mine') });
   return <><div className="app-heading"><div><span className="eyebrow">AKUN / MARKET</span><h1>Penawaran</h1><p>Harga dan pesan disimpan pada revisi Offer, terpisah dari chat.</p></div></div>{offers.isPending ? <AccountSkeleton /> : offers.isError ? <AccountError retry={() => offers.refetch()}>Penawaran gagal dimuat.</AccountError> : offers.data.length && me.data ? <div className="offer-list">{offers.data.map((offer) => <OfferCard key={offer.id} offer={offer} userId={me.data!.id} />)}</div> : <div className="empty-state"><h3>Belum ada penawaran.</h3><p>Penawaran yang kamu kirim atau terima akan tercatat di sini.</p><Link className="button button-secondary" href="/market">Lihat Market</Link></div>}</>;
+}
+
+export function OfferDetail({ id }: { id: string }) {
+  const me = useMe();
+  const offer = useQuery({ queryKey: ['offers', 'detail', id], queryFn: () => api<OfferDto>(`/offers/${id}`), refetchOnWindowFocus: true });
+  return <><div className="app-heading"><div><span className="eyebrow">AKUN / MARKET</span><h1>Detail penawaran</h1><p>Periksa usulan dan tanggapi penawaran yang terkait.</p></div><Link href="/app/penawaran" className="button button-secondary">Semua penawaran</Link></div>
+    {offer.isPending ? <AccountSkeleton /> : offer.isError ? <AccountError retry={() => offer.refetch()}>Penawaran tidak tersedia atau tidak dapat diakses oleh akun ini.</AccountError> : me.data && <OfferCard offer={offer.data} userId={me.data.id} />}
+  </>;
 }

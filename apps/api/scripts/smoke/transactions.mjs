@@ -213,6 +213,15 @@ try {
   await maintenance.purgeClosedAccounts(); assert.equal((await db.user.findUniqueOrThrow({ where: { id: closed.id } })).anonymizedAt, null);
   assert.equal((await db.item.findUniqueOrThrow({ where: { id: closedListing.item.id } })).reservedByTransactionId, closedTx.id);
 
+  // Notification coverage shares these real transaction/admin flows.
+  for (const [transactionId, type, count] of [
+    [saleTx.id, 'TRANSACTION_STARTED', 2], [saleTx.id, 'HANDOVER_CONFIRMED', 1], [saleTx.id, 'TRANSACTION_COMPLETED', 2],
+    [exchangeTx.id, 'TRANSACTION_COMPLETED', 2], [disputedTx.id, 'DISPUTE_OPENED', 1], [disputedTx.id, 'TRANSACTION_CANCELLED', 2],
+    [authorized.id, 'TRANSACTION_COMPLETED', 2], [continued.id, 'DISPUTE_CONTINUED', 2], [overdueTx.id, 'DISPUTE_OPENED', 2],
+    [closedTx.id, 'DISPUTE_OPENED', 1],
+  ]) assert.equal(await db.inAppNotification.count({ where: { type, payload: { path: ['transactionId'], equals: transactionId } } }), count, type + ':' + transactionId);
+  assert.equal(await db.inAppNotification.count({ where: { userId: closed.id } }), 0);
+
   await writeFile(resolve(process.cwd(), '../../.local/stage4-test-fixtures.json'), JSON.stringify({ sale: saleTx.id, donation: donateTx.id, exchange: exchangeTx.id, continued: continued.id, disputed: closedTx.id, cases: { resolved: caseId, active: closedTx.disputes[0].id }, credentialsFile: '.local/demo-credentials.json' }, null, 2));
   console.log('Tahap 4 smoke lulus: tiga jalur, counteraccept, konkurensi Item/Exchange, rollback terinjeksi, idempotensi, privasi owner/bukti, semua putusan admin, pengingat, overdue, dan retensi akun aktif.');
 } finally {
