@@ -1,7 +1,7 @@
 'use client';
 
 import { NotificationBell } from '@/features/notifications/bell';
-import { LayoutDashboard, Bell, Heart, Package, Leaf, Store, Handshake, ReceiptText, MessageCircle, Menu, X, Settings, ShieldCheck, LogOut, ChevronRight, ArrowUpRight, ChevronDown } from 'lucide-react';
+import { Search, LayoutDashboard, Bell, Heart, Package, Leaf, Store, Handshake, ReceiptText, MessageCircle, Menu, X, Settings, ShieldCheck, LogOut, ChevronRight, ArrowUpRight, ChevronDown } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useSession, useMe } from '@/lib/session';
@@ -18,6 +18,7 @@ const sections = [
   ] },
   { label: 'Aktivitas Market', entries: [
     { href: '/app/favorit', label: 'Favorit', Icon: Heart },
+    { href: '/app/pencarian', label: 'Pencarian tersimpan', Icon: Search },
     { href: '/app/listings', label: 'Listing saya', Icon: Store },
     { href: '/app/penawaran', label: 'Penawaran', Icon: Handshake },
     { href: '/app/transaksi', label: 'Transaksi', Icon: ReceiptText },

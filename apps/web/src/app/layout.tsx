@@ -12,6 +12,8 @@ import "../styles/listing-detail.css";
 import "../styles/select.css";
 import "../styles/favorites.css";
 import "../styles/notifications.css";
+import "../styles/passport.css";
+import "../styles/searches.css";
 import { Providers } from '@/components/layout/providers';
 
 export const metadata: Metadata = {

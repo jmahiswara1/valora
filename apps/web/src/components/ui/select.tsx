@@ -36,6 +36,7 @@ export function Select({ children, className, id, value, defaultValue, disabled,
   const selectedValue = String(value ?? localValue);
   const selected = options.find(option => option.value === selectedValue) ?? options[0];
   const [open, setOpen] = useState(false);
+  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
   const [active, setActive] = useState(-1);
   const [invalid, setInvalid] = useState(false);
   const [placement, setPlacement] = useState({ left: 0, top: 0, width: 0, maxHeight: 320 });
@@ -94,6 +95,8 @@ export function Select({ children, className, id, value, defaultValue, disabled,
   function show(index = options.findIndex(option => option.value === selected?.value && !option.disabled)) {
     setActive(index >= 0 ? index : options.findIndex(option => !option.disabled));
     search.current = { text: '', time: 0 };
+    // Options must stay inside the native dialog's top layer when it is open.
+    setPortalTarget(trigger.current?.closest('dialog') ?? document.body);
     setOpen(true);
   }
 
@@ -151,7 +154,7 @@ export function Select({ children, className, id, value, defaultValue, disabled,
       <span className="select-value">{selected?.label ?? 'Tidak ada pilihan'}</span><ChevronDown className="select-chevron" size={18} aria-hidden="true" />
     </button>
     {invalid && <p className="field-error" id={`${controlId}-validation`} role="alert">Pilih salah satu opsi untuk melanjutkan.</p>}
-    {expanded && createPortal(<div ref={list} id={listId} role="listbox" aria-label={props['aria-label']} aria-labelledby={props['aria-labelledby'] ?? controlId} className="select-options" style={{ ...placement, visibility: placement.width ? 'visible' : 'hidden' }} onPointerDown={event => event.preventDefault()}>
+    {expanded && portalTarget && createPortal(<div ref={list} id={listId} role="listbox" aria-label={props['aria-label']} aria-labelledby={props['aria-labelledby'] ?? controlId} className="select-options" style={{ ...placement, visibility: placement.width ? 'visible' : 'hidden' }} onPointerDown={event => event.preventDefault()}>
       {options.length ? options.map((option, index) => <div key={`${option.value}-${index}`}>
         {option.group && option.group !== options[index - 1]?.group && <div className="select-group">{option.group}</div>}
         <div id={`${listId}-${index}`} role="option" aria-selected={option.value === selected?.value} aria-disabled={option.disabled || undefined} data-index={index} data-active={active === index || undefined}
@@ -159,6 +162,6 @@ export function Select({ children, className, id, value, defaultValue, disabled,
           <span>{option.label}</span>{option.value === selected?.value && <Check size={17} aria-hidden="true" />}
         </div>
       </div>) : <p className="select-empty">Tidak ada pilihan tersedia.</p>}
-    </div>, document.body)}
+    </div>, portalTarget)}
   </div>;
 }

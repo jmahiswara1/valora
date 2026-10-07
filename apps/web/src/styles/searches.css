@@ -1,0 +1,47 @@
+.saved-search-save { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 12px 0 20px; }
+.saved-search-save > span { font-size: 13px; color: var(--muted); max-width: 60ch; }
+.saved-search-dialog { position: fixed; inset: 0; margin: auto; width: min(500px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 28px; overflow-y: auto; overscroll-behavior: contain; border: 0; border-radius: 20px; background: var(--white); color: var(--forest); }
+.saved-search-dialog::backdrop { background: rgb(15 34 22 / 40%); }
+.saved-search-dialog-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.saved-search-dialog-heading h2 { margin: 5px 0 0; font-size: 26px; line-height: 1.3; letter-spacing: -.03em; }
+.saved-search-dialog .saved-search-dialog-heading > .button { width: 44px; height: 44px; min-height: 44px; padding: 0; flex-shrink: 0; }
+.saved-search-dialog > p { color: var(--muted); font-size: 14px; margin: 14px 0 20px; }
+.saved-search-dialog .input { min-width: 0; width: 100%; font-size: 16px; }
+.saved-search-dialog .form-stack, .saved-search-dialog .field { min-width: 0; grid-template-columns: minmax(0, 1fr); }
+.saved-search-criteria { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0 0 20px; }
+.saved-search-criteria li { max-width: 100%; padding: 5px 10px; border-radius: 10px; background: var(--cream); color: var(--forest); font-size: 12px; overflow-wrap: anywhere; }
+.saved-search-check { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 8px 0; cursor: pointer; font-size: 14px; }
+.saved-search-check input { width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--forest); }
+.saved-search-help, .saved-search-note { color: var(--muted); font-size: 13px; }
+.saved-search-help { margin: 0; }
+.saved-search-note { margin: 0 0 24px; }
+.saved-search-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.saved-search-feedback { padding: 12px 16px; border-radius: 12px; background: var(--sage); margin-bottom: 20px; font-size: 14px; }
+.saved-search-list { padding: 0; margin: 0; list-style: none; }
+.saved-search-list > li { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 28px 0; border-bottom: 1px solid var(--line); }
+.saved-search-list > li:first-child { padding-top: 8px; }
+.saved-search-row-content { min-width: 0; flex: 1; }
+.saved-search-row-content h2 { font-size: 20px; letter-spacing: -.025em; margin: 0 0 14px; overflow-wrap: anywhere; }
+.saved-search-row-content .saved-search-criteria { margin-bottom: 12px; }
+.saved-search-status { display: flex; align-items: center; gap: 7px; margin: 0; color: var(--muted); font-size: 12px; }
+.saved-search-row-actions { display: flex; align-items: center; flex-shrink: 0; gap: 4px; }
+.saved-search-page .saved-search-row-actions > button.button { min-width: 44px; width: 44px; height: 44px; padding: 0; }
+.saved-search-row-actions > a { margin-right: 8px; white-space: nowrap; }
+.saved-search-row-actions > button[aria-pressed="true"] { color: var(--green); }
+.saved-search-empty { padding: 56px 24px; text-align: center; background: var(--cream); border-radius: 20px; }
+.saved-search-empty h2 { margin: 20px 0 12px; font-size: 24px; }
+.saved-search-empty p { margin-bottom: 24px; color: var(--muted); font-size: 14px; }
+.saved-search-page :focus-visible, .saved-search-dialog :focus-visible { outline: 3px solid var(--green); outline-offset: 3px; }
+@media (max-width: 760px) {
+  .saved-search-list > li { align-items: flex-start; flex-direction: column; gap: 18px; }
+  .saved-search-row-actions { flex-wrap: wrap; width: 100%; }
+  .saved-search-row-actions > a { flex: 1; }
+}
+@media (max-width: 480px) {
+  .saved-search-dialog { padding: 20px; }
+  .saved-search-dialog-heading h2 { font-size: 22px; }
+  .saved-search-dialog .saved-search-actions > button { flex: 1; }
+  .saved-search-save > span { flex-basis: 100%; }
+}
+
+.saved-search-row-actions > .button > svg { width: 18px; height: 18px; flex-shrink: 0; }

@@ -12,25 +12,47 @@ import { ArrowUpRight, Search, ChevronDown, SlidersHorizontal, X } from 'lucide-
 import { Input, Button, Field, Notice } from "../../components/ui/primitives";
 import { MarketGrid } from './grid';
 
+import { useSearchParams } from 'next/navigation';
+import { parseMarketSearch, marketSearchUrl } from '@valora/contracts';
+import { SaveSearchButton } from '@/features/searches/save';
+import { useSearchLabels } from '@/features/searches/criteria';
+
 type Filters = Record<string, string>;
 
 const types = [['', 'Semua'], ['RESELL', 'Jual kembali'], ['EXCHANGE', 'Tukar'], ['DONATE', 'Donasi']] as const;
 
 const conditions: Record<string, string> = { EXCELLENT: 'Sangat baik', GOOD: 'Baik', NEEDS_ATTENTION: 'Perlu perhatian' };
 
-export function MarketPage({ initialCategory = '' }: { initialCategory?: string }) {
-  const [filters, setFilters] = useState<Filters>(initialCategory ? { category: initialCategory } : {});
-  const [q, setQ] = useState('');
+export function MarketPage() {
+  const params = useSearchParams(), urlKey = params.toString();
+  const parsed = parseMarketSearch(new URLSearchParams(urlKey));
+  const searchQuery = parsed.success ? parsed.data : { sort: 'newest' as const };
+  const filters: Filters = Object.fromEntries(Object.entries(searchQuery).map(([key, value]) => [key, String(value)]));
+  const { cityLabel } = useSearchLabels(searchQuery);
+  const [observedUrl, setObservedUrl] = useState(urlKey);
+  function setFilters(action: Filters | ((old: Filters) => Filters)) {
+    const next = typeof action === 'function' ? action(filters) : action;
+    const result = parseMarketSearch(new URLSearchParams(next));
+    if (result.success) { const url = marketSearchUrl(result.data, result.data.sort); if (url !== '/market' + (urlKey ? '?' + urlKey : '')) window.history.pushState(null, '', url); }
+  }
+  const [q, setQ] = useState(filters.q ?? '');
   const [panelOpen, setPanelOpen] = useState(false);
-  const [condition, setCondition] = useState('');
+  const [condition, setCondition] = useState(filters.condition ?? '');
   const [cityQuery, setCityQuery] = useState('');
-  const [cityId, setCityId] = useState('');
+  const [cityId, setCityId] = useState(filters.cityId ?? '');
   const [appliedCity, setAppliedCity] = useState('');
   const [cityOpen, setCityOpen] = useState(false);
-  const [minPrice, setMinPrice] = useState('');
-  const [maxPrice, setMaxPrice] = useState('');
+  const [minPrice, setMinPrice] = useState(filters.minPriceIdr ?? '');
+  const [maxPrice, setMaxPrice] = useState(filters.maxPriceIdr ?? '');
   const [cityError, setCityError] = useState('');
   const [priceError, setPriceError] = useState('');
+  // URL navigation restores drafts; typing alone keeps the applied search intact.
+  if (observedUrl !== urlKey) {
+    setObservedUrl(urlKey); setQ(filters.q ?? ''); setCondition(filters.condition ?? '');
+    setCityId(filters.cityId ?? ''); setCityQuery(''); setAppliedCity(''); setCityOpen(false);
+    setMinPrice(filters.minPriceIdr ?? ''); setMaxPrice(filters.maxPriceIdr ?? '');
+    setCityError(''); setPriceError('');
+  }
   const cityInput = useRef<HTMLInputElement>(null);
   const cityList = useRef<HTMLDivElement>(null);
   const minInput = useRef<HTMLInputElement>(null);
@@ -45,7 +67,7 @@ export function MarketPage({ initialCategory = '' }: { initialCategory?: string 
   const listings = useInfiniteQuery({
     queryKey: ['market', 'catalog', filters], initialPageParam: undefined as string | undefined,
     queryFn: ({ pageParam }) => apiEnvelope<PublicListingDto[]>(`/market?${queryString}${pageParam ? `&cursor=${encodeURIComponent(pageParam)}` : ''}`),
-    getNextPageParam: page => page.meta?.nextCursor ?? undefined,
+    getNextPageParam: page => page.meta?.nextCursor ?? undefined, enabled: parsed.success,
   });
   const rows = listings.data?.pages.flatMap(page => page.data).filter(row => row.status === 'ACTIVE') ?? [];
   const priceEnabled = !filters.type || filters.type === 'RESELL';
@@ -98,7 +120,7 @@ export function MarketPage({ initialCategory = '' }: { initialCategory?: string 
   const chipLabels: Record<string, string> = {
     q: `Pencarian: ${filters.q}`, category: categories.data?.find(entry => entry.code === filters.category)?.name ?? filters.category,
     type: types.find(([value]) => value === filters.type)?.[1] ?? '', condition: conditions[filters.condition],
-    cityId: appliedCity, minPriceIdr: `Min. ${listingMoney(Number(filters.minPriceIdr))}`, maxPriceIdr: `Maks. ${listingMoney(Number(filters.maxPriceIdr))}`,
+    cityId: cityLabel || appliedCity || 'Kota tersimpan', minPriceIdr: `Min. ${listingMoney(Number(filters.minPriceIdr))}`, maxPriceIdr: `Maks. ${listingMoney(Number(filters.maxPriceIdr))}`,
   };
   const chips = Object.entries(filters).filter(([key, value]) => key !== 'sort' && value);
 
@@ -131,12 +153,14 @@ export function MarketPage({ initialCategory = '' }: { initialCategory?: string 
         <div className="catalog-controls"><label className="catalog-sort" htmlFor="market-sort"><span>Urutkan</span><Select id="market-sort" value={filters.sort ?? 'newest'} onChange={event => setFilters(old => ({ ...old, sort: event.target.value }))}><option value="newest">Terbaru</option><option value="score_desc">Kondisi terbaik</option>{filters.type === 'RESELL' && <><option value="price_asc">Harga terendah</option><option value="price_desc">Harga tertinggi</option></>}</Select></label>
           <Button variant="secondary" className="catalog-filter-toggle" aria-expanded={panelOpen} aria-controls="market-extra-filters" onClick={() => setPanelOpen(!panelOpen)}><SlidersHorizontal size={17} aria-hidden="true" /> Filter{extraCount > 0 && <span className="catalog-filter-count">{extraCount}</span>}</Button></div>
       </div>
+      <SaveSearchButton query={searchQuery} valid={parsed.success} />
+      {!parsed.success && <Notice kind="error">Parameter pencarian tidak valid. <button type="button" className="link-button" onClick={reset}>Reset filter</button></Notice>}
       <form id="market-extra-filters" className="catalog-filter-panel" hidden={!panelOpen} onSubmit={applyExtras}>
         <div className="catalog-extra-grid">
           <Field label="Kondisi" htmlFor="market-condition"><Select className="select" id="market-condition" value={condition} onChange={event => setCondition(event.target.value)}><option value="">Semua kondisi</option>{Object.entries(conditions).map(([value, label]) => <option value={value} key={value}>{label}</option>)}</Select></Field>
           <div className="catalog-city" onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) setCityOpen(false); }}>
             <Field label="Kabupaten/kota" htmlFor="market-city" hint="Ketik minimal dua huruf, lalu pilih kota." error={cityError}>
-              <Input ref={cityInput} id="market-city" value={cityQuery} autoComplete="off" placeholder="Cari kota" role="combobox" aria-autocomplete="list" aria-expanded={cityExpanded} aria-controls={cityExpanded ? 'market-city-options' : undefined} aria-describedby={`market-city-hint${cityError ? ' market-city-error' : ''}`} aria-invalid={cityError ? true : undefined} onFocus={() => setCityOpen(true)} onChange={event => { setCityQuery(event.target.value); setCityId(''); setCityOpen(true); setCityError(''); }} onKeyDown={event => {
+              <Input ref={cityInput} id="market-city" value={cityQuery || (cityId ? cityLabel : '')} autoComplete="off" placeholder="Cari kota" role="combobox" aria-autocomplete="list" aria-expanded={cityExpanded} aria-controls={cityExpanded ? 'market-city-options' : undefined} aria-describedby={`market-city-hint${cityError ? ' market-city-error' : ''}`} aria-invalid={cityError ? true : undefined} onFocus={() => setCityOpen(true)} onChange={event => { setCityQuery(event.target.value); setCityId(''); setCityOpen(true); setCityError(''); }} onKeyDown={event => {
                 if (event.key === 'Escape') { setCityOpen(false); event.stopPropagation(); }
                 if (event.key === 'ArrowDown' && cities.data?.length) { event.preventDefault(); setCityOpen(true); requestAnimationFrame(() => cityList.current?.querySelector<HTMLButtonElement>('button')?.focus()); }
               }} />
@@ -155,7 +179,7 @@ export function MarketPage({ initialCategory = '' }: { initialCategory?: string 
       </form>
       {(chips.length > 0 || filters.sort && filters.sort !== 'newest') && <div className="catalog-active-filters" role="group" aria-label="Filter aktif">{chips.map(([key]) => <button type="button" className="catalog-filter-chip" key={key} onClick={() => removeFilter(key)} aria-label={`Hapus filter ${chipLabels[key]}`}>{chipLabels[key]}<X size={14} aria-hidden="true" /></button>)}<button type="button" className="catalog-reset link-button" onClick={reset}>Reset filter</button></div>}
 
-      {listings.isPending ? <div className="catalog-grid" aria-hidden="true">{Array.from({ length: 6 }, (_, index) => <div className="catalog-skeleton" key={index}><div /><span /><span /><span /></div>)}</div>
+      {!parsed.success ? null : listings.isPending ? <div className="catalog-grid" aria-hidden="true">{Array.from({ length: 6 }, (_, index) => <div className="catalog-skeleton" key={index}><div /><span /><span /><span /></div>)}</div>
         : listings.isError && !listings.data ? <Notice kind="error">Market gagal dimuat. <button type="button" className="link-button" onClick={() => listings.refetch()}>Coba lagi</button></Notice>
         : rows.length > 0 ? <><MarketGrid listings={rows} busy={listings.isFetching} />
           {listings.isFetchNextPageError && <div className="catalog-pagination-error"><Notice kind="error">Barang berikutnya gagal dimuat. Barang yang sudah tampil tetap tersedia.</Notice></div>}

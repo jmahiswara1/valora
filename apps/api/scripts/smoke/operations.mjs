@@ -48,13 +48,17 @@ let rollbackTrigger = false;
 try {
   const doc = await (await fetch(base + '/api/docs-json')).json();
   for (const route of ['/passport/{id}', '/impact/public', '/admin/impact/corrections', '/admin/rubrics/drafts/{id}/publish', '/admin/retention/holds', '/assessments/{id}/explain']) assert(doc.paths['/api/v1' + route]);
-  assert.equal(doc.info.version, '1.9.0');
+  assert.equal(doc.info.version, '1.11.0');
+  assert.deepEqual(doc.components.schemas.Passport.properties.share.properties.access.enum, ['PUBLIC', 'LIMITED', 'UNAVAILABLE']);
+  assert(doc.components.schemas.Passport.required.includes('share'));
   assert.equal((await a.account.request('/admin/dashboard')).status, 403);
   const privateItem = await createItem(a.account, 'books', 'Barang privat belum pernah dipublikasikan');
   assert.equal((await guest.request(`/passport/${privateItem.item.id}`)).status, 404);
   assert.equal((await c.account.request(`/items/${privateItem.item.id}/passport`)).status, 404);
   assert.equal((await admin.request(`/items/${privateItem.item.id}/passport`)).status, 404);
-  assert((await get(a.account, `/items/${privateItem.item.id}/passport`)).timeline.some((e) => e.type === 'REGISTERED'));
+  const draftPassport = await get(a.account, `/items/${privateItem.item.id}/passport`);
+  assert(draftPassport.timeline.some((e) => e.type === 'REGISTERED'));
+  assert.deepEqual(draftPassport.share, { url: new URL('/passport/' + privateItem.item.id, new URL(process.env.APP_BASE_URL ?? 'http://localhost:3000').origin).href, access: 'UNAVAILABLE' });
 
   // A ledger failure rolls back the assessment and repair source plus Item changes.
   await db.$executeRawUnsafe(`CREATE OR REPLACE FUNCTION stage5_test_ledger_failure() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'Injected Stage 5 ledger failure'; END; $$`);
@@ -72,6 +76,11 @@ try {
   await db.$executeRawUnsafe('DROP FUNCTION stage5_test_ledger_failure()'); rollbackTrigger = false;
 
   const sale = await published();
+  const activeShare = (await get(guest, `/passport/${sale.item.id}`)).share;
+  assert.equal(activeShare.access, 'PUBLIC');
+  assert.equal(new URL(activeShare.url).pathname, '/passport/' + sale.item.id);
+  assert.equal(new URL(activeShare.url).search, '');
+  assert.equal(new URL(activeShare.url).hash, '');
   const publicTitle = sale.item.title;
   const item = check(await a.account.request(`/items/${sale.item.id}`, { method: 'PATCH', body: { expectedVersion: sale.item.version, title: 'PRIVATE TITLE NEVER PUBLISHED' } }), 200, 'Ubah judul privat');
   assert.equal((await get(guest, `/passport/${item.id}`)).title, publicTitle);
@@ -83,11 +92,17 @@ try {
   // The latest assessment must be published again before accepting a new agreement.
   const oldListing = await get(a.account, `/listings/${sale.listing.id}`);
   check(await a.account.request(`/listings/${sale.listing.id}/withdraw`, { method: 'POST', body: { expectedVersion: oldListing.version } }), 201, 'Tarik Listing sebelum penilaian terbaru dipublikasikan');
+  assert.equal((await get(a.account, `/items/${item.id}/passport`)).share.access, 'UNAVAILABLE');
+  assert.equal((await guest.request(`/passport/${item.id}`)).status, 404);
   const freshItem = await get(a.account, `/items/${item.id}`);
   const renewed = await createListing(a.account, freshItem, secondAssessment, seed.cityId, 'RESELL', publicTitle);
   sale.listing = await approve(admin, renewed);
-  let saleTx = await complete(await accepted(sale));
+  const reservedTx = await accepted(sale);
+  assert.deepEqual((await get(guest, `/passport/${item.id}`)).share, activeShare);
+  let saleTx = await complete(reservedTx);
   const publicPassport = await get(guest, `/passport/${item.id}`); const ownerPassport = await get(b.account, `/items/${item.id}/passport`);
+  assert.deepEqual(publicPassport.share, activeShare);
+  assert.deepEqual(ownerPassport.share, activeShare);
   for (const result of [publicPassport, ownerPassport]) {
     const value = JSON.stringify(result); for (const secret of ['SECRET REPAIR NOTES', '123456', 'passwordHash', 'answersSnapshot', 'fromUserId', 'toUserId']) assert(!value.includes(secret), secret);
   }
@@ -125,8 +140,10 @@ try {
     const current = await db.item.findUniqueOrThrow({ where: { id: item.id } });
     check(await mutate(admin, `/admin/passport/${item.id}/visibility`, { scopeType: 'CORRECTION', caseId: caseRow.id, expectedVersion: current.passportVersion, visibility, reason: 'Pembatasan sesuai peninjauan kasus terkait.' }), 201, 'Visibilitas ' + visibility);
     const response = await guest.request(`/passport/${item.id}`);
-    if (visibility === 'HIDDEN') assert.equal(response.status, 404); else { const projection = check(response, 200, 'Proyeksi Passport'); if (visibility === 'LIMITED') assert.equal(projection.timeline.length, 0); }
-    assert((await get(b.account, `/items/${item.id}/passport`)).timeline.length > 0);
+    if (visibility === 'HIDDEN') assert.equal(response.status, 404); else { const projection = check(response, 200, 'Proyeksi Passport'); assert.deepEqual(projection.share, { url: activeShare.url, access: visibility }); if (visibility === 'LIMITED') { assert.equal(projection.timeline.length, 0); assert.equal(projection.title, null); assert.deepEqual(projection.media, []); } }
+    const currentOwnerPassport = await get(b.account, `/items/${item.id}/passport`);
+    assert(currentOwnerPassport.timeline.length > 0);
+    assert.deepEqual(currentOwnerPassport.share, { url: activeShare.url, access: visibility === 'HIDDEN' ? 'UNAVAILABLE' : visibility });
   }
   const adjusted = check(await mutate(admin, '/admin/impact/corrections', { caseId: caseRow.id, expectedVersion: saleTx.version, metric: 'CONFIRMED_SALE_VALUE', value: '325000', reason: 'Harga disepakati sebenarnya tiga ratus dua puluh lima ribu.' }), 201, 'Koreksi nilai'); saleTx.version = adjusted.version;
   assert.equal(await net('CONFIRMED_SALE_VALUE', saleTx.id), 325000n);
@@ -196,7 +213,7 @@ try {
   const rubric = await get(admin, '/categories/books/rubric'); const draft = check(await mutate(admin, '/admin/rubrics/drafts', { baseVersionId: rubric.id, reason: 'Meninjau pertanyaan kategori tanpa mengubah formula.' }), 201, 'Draft rubrik');
   const invalidConfig = structuredClone(rubric.questions); invalidConfig[0].choices[0].value = 1;
   assert.equal((await mutate(admin, `/admin/rubrics/drafts/${draft.id}`, { expectedVersion: draft.version, reason: 'Nilai score-v1 tidak boleh diubah sembarangan.', questions: invalidConfig, safetyQuestions: rubric.safetyQuestions, contextPrompt: rubric.contextPrompt })).status, 422);
-  const updated = check(await mutate(admin, `/admin/rubrics/drafts/${draft.id}`, { expectedVersion: draft.version, reason: 'Perjelas pertanyaan tanpa perubahan formula.', questions: rubric.questions.map((q, index) => index === 0 ? { ...q, prompt: q.prompt + ' menurut kondisi terkini' } : q), safetyQuestions: rubric.safetyQuestions, contextPrompt: rubric.contextPrompt }), 201, 'Edit draft');
+  const updated = check(await mutate(admin, `/admin/rubrics/drafts/${draft.id}`, { expectedVersion: draft.version, reason: 'Perjelas pertanyaan tanpa perubahan formula.', questions: rubric.questions.map((q, index) => index === 0 ? { ...q, prompt: q.prompt.slice(0, 460) + ' menurut kondisi terkini' } : q), safetyQuestions: rubric.safetyQuestions, contextPrompt: rubric.contextPrompt }), 201, 'Edit draft');
   const fixtures = await get(admin, `/admin/rubrics/drafts/${draft.id}/tests`); assert(fixtures.passed); assert.equal(fixtures.tests.length, 7);
   const activeBooks = await published('DONATE', a, 'books'); const reservedBooks = await published('DONATE', a, 'books'); const preservedTx = await accepted(reservedBooks);
   const publishKey = randomUUID(); const publishBody = { expectedVersion: updated.version, reason: 'Publikasi fixture telah lulus dan siap berlaku.' };

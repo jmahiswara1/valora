@@ -154,7 +154,7 @@ const repeatedMessage = check(await bidder.request(`/conversations/${conversatio
 assert.equal(repeatedMessage.id, message.id);
 const ownerConversations = check(await owner.request('/conversations'), 200, 'Daftar percakapan pemilik');
 assert.equal(ownerConversations.find((entry) => entry.id === conversation.id).unreadCount, 1);
-check(await owner.request(`/conversations/${conversation.id}/read`, { method: 'POST' }), 201, 'Tandai pesan dibaca');
+check(await owner.request(`/conversations/${conversation.id}/read`, { method: 'POST', body: { throughSequence: message.sequence } }), 201, 'Tandai pesan dibaca');
 assert.equal(check(await owner.request('/conversations/unread-count'), 200, 'Unread count').count, unreadBefore);
 check(await admin.request(`/conversations/${conversation.id}/messages`), 404, 'Histori pesan privat');
 const report = check(await owner.request('/reports', { method: 'POST', body: { targetType: 'MESSAGE', targetId: message.id, reasonCode: 'PERSONAL_DATA', details: 'Pesan meminta data pribadi yang tidak diperlukan.' } }), 201, 'Laporkan pesan');

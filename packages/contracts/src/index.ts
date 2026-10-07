@@ -16,7 +16,7 @@ export { messageCreateSchema, conversationMessagesQuerySchema, blockUserSchema }
 export { reportCreateSchema, reportReviewSchema, correctionOpenSchema, correctionEvidenceSchema, ownershipCorrectionSchema, impactCorrectionSchema, sourceCorrectionSchema, passportRestrictionSchema, retentionHoldSchema } from './operations.js';
 export { categoryAdminSchema } from './catalog.js';
 export { economicReferenceCreateSchema, rubricDraftSchema, rubricDraftUpdateSchema } from './admin.js';
-export type { PassportTimelineEntry, PassportDto } from './passport.js';
+export type { PassportTimelineEntry, PassportDto, PassportShareDto } from './passport.js';
 export type { ImpactDto } from './impact.js';
 export type { ListingSaveInput, ListingPatchInput, ModerationDecisionInput, ListingAdminActionInput, ListingAdminReleaseInput, ListingDto, ListingRevisionDto, PublicListingDto, ModerationQueueDto, ModerationDetailDto } from './listings.js';
 export type { ListingOfferInput, OfferCounterInput, OfferRevisionDto, OfferDto, OfferAcceptInput } from './offers.js';
@@ -33,3 +33,6 @@ export { actionOperationNames, actionStatusSchema, actionOperationFor } from './
 export type { ActionStatusDto } from './actions.js';
 export { favoritesQuerySchema, favoriteStatusQuerySchema } from './favorites.js';
 export type { FavoritesQuery, FavoriteStatusDto, FavoriteDto } from './favorites.js';
+
+export { marketSearchSchema, marketSearchQuerySchema, marketSearchKeys, marketSorts, parseMarketSearch, marketSearchKey, marketSearchUrl, savedSearchCreateSchema, savedSearchUpdateSchema } from './searches.js';
+export type { MarketSearchFilters, MarketSearchQuery, SavedSearchDto, SavedSearchCreateInput, SavedSearchUpdateInput } from './searches.js';

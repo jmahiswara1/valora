@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../../infrastructure/database.service.js';
 import { StorageService } from '../../infrastructure/storage.service.js';
+import { config } from '../../infrastructure/config.js';
 import type { PassportDto, PassportTimelineEntry, ImpactDto, TransactionSnapshot } from '@valora/contracts';
 import { validId, serial } from '../../shared/transactions.js';
 import { AppException } from '../../shared/http.js';
@@ -21,8 +22,12 @@ export class PassportImpactService {
       if (!item || (ownerId && (item.currentOwnerId !== ownerId || item.archivedAt))) throw new AppException(404, 'NOT_FOUND', 'Passport tidak ditemukan.');
       const completed = await tx.transaction.findFirst({ where: { status: 'COMPLETED', OR: [{ itemId: id }, { offeredItemId: id }] } });
       const visibleListing = await tx.listing.findFirst({ where: { itemId: id, status: { in: ['ACTIVE', 'RESERVED'] } } });
-      if (!ownerId && ((!completed && !visibleListing) || item.passportVisibility === 'HIDDEN')) throw new AppException(404, 'NOT_FOUND', 'Passport tidak ditemukan.');
-      const result: PassportDto = { itemId: id, categoryCode: item.categoryCode, visibility: item.passportVisibility, version: item.passportVersion, projection: ownerId ? 'OWNER' : 'PUBLIC', title: null, description: null, media: [], timeline: [] };
+      const access = (!completed && !visibleListing) || item.passportVisibility === 'HIDDEN' ? 'UNAVAILABLE' : item.passportVisibility === 'LIMITED' ? 'LIMITED' : 'PUBLIC';
+      if (!ownerId && access === 'UNAVAILABLE') throw new AppException(404, 'NOT_FOUND', 'Passport tidak ditemukan.');
+      const base = new URL(config.appBaseUrl);
+      if (!['http:', 'https:'].includes(base.protocol)) throw new Error('APP_BASE_URL harus memakai HTTP atau HTTPS.');
+      const share = { url: new URL('/passport/' + item.id, base.origin).href, access } as const;
+      const result: PassportDto = { itemId: id, categoryCode: item.categoryCode, visibility: item.passportVisibility, version: item.passportVersion, projection: ownerId ? 'OWNER' : 'PUBLIC', title: null, description: null, media: [], timeline: [], share };
       if (!ownerId && item.passportVisibility === 'LIMITED') return result;
       const published = await tx.listingRevision.findFirst({ where: { itemId: id, reviews: { some: { decision: 'APPROVE' } } }, orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], include: { media: { include: { media: true }, orderBy: { orderIndex: 'asc' } } } });
       // No transaction exchange snapshot is copied into the public projection.

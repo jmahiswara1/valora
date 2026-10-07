@@ -33,7 +33,7 @@ async function fits(page) { expect(await page.evaluate(() => document.documentEl
 
 test('Matriks seluruh halaman: Guest, User, Admin, email belum terverifikasi dan koneksi sesi gagal', async ({ browser }, info) => {
   test.setTimeout(600000);
-  const routes = await inventory(); expect(routes).toHaveLength(50); const records = [];
+  const routes = await inventory(); expect(routes).toHaveLength(51); const records = [];
   const user = await actor(); const admin = await actor('ADMIN'); const unverified = await actor('USER', false); const expired = await actor(); const restricted = await actor();
   for (const [role, account] of [['Guest', null], ['User', user.account], ['Admin', admin.account], ['Unverified', unverified.account], ['Unavailable', user.account], ['Revoked', user.account], ['Expired', expired.account], ['Suspended', restricted.account], ['Closed', restricted.account]]) {
     if (role === 'Revoked') await db.session.updateMany({ where: { userId: user.user.id }, data: { revokedAt: new Date() } });

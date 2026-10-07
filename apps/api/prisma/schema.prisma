@@ -189,6 +189,7 @@ model User {
   notifications InAppNotification[]
   profilePhoto ProfilePhoto?
   favorites Favorite[]
+  savedSearches SavedSearch[]
   openedCorrections CorrectionCase[] @relation("CorrectionOpenedBy")
   assignedCorrections CorrectionCase[] @relation("CorrectionAssignedTo")
 
@@ -448,6 +449,8 @@ model Listing {
   transactions Transaction[]
   version           Int               @default(1)
   publishedAt       DateTime?
+  firstPublishedAt  DateTime?
+  searchPublication SearchPublication?
   closedAt          DateTime?
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
@@ -456,7 +459,34 @@ model Listing {
   @@index([ownerId, status, updatedAt])
 }
 
+model SavedSearch {
+  id String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name String @db.VarChar(80)
+  filters Json
+  fingerprint String @db.Char(64)
+  sort String @default("newest") @db.VarChar(20)
+  alertsEnabled Boolean @default(true)
+  alertsSince DateTime @default(now())
+  alertsAfterPublication Int @default(0)
+  version Int @default(1)
+  createdAt DateTime @default(now())
+  @@unique([userId, fingerprint])
+  @@index([userId, createdAt, id])
+  @@index([alertsEnabled, alertsAfterPublication, id])
+}
 
+model SearchPublication {
+  listingId String @id @db.Uuid
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  sequence Int @unique @default(autoincrement())
+  revisionId String @db.Uuid
+  publishedAt DateTime
+  afterSearchId String? @db.Uuid
+  processedAt DateTime?
+  @@index([processedAt, sequence])
+}
 
 model Favorite {
   userId     String   @db.Uuid

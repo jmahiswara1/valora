@@ -1,12 +1,13 @@
-import { activeListingDto } from './shared.js';
 import { AppException } from '../../shared/http.js';
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../../infrastructure/database.service.js';
 import { StorageService } from '../../infrastructure/storage.service.js';
-import { uuidSchema, type PublicListingDto } from '@valora/contracts';
+import { uuidSchema, marketSearchQuerySchema, type PublicListingDto } from '@valora/contracts';
 import type { Prisma } from '../../generated/prisma/client.js';
 import type { Response } from 'express';
-import { type MarketFilters, listingInclude, revisionDto } from './shared.js';
+import { type MarketFilters, listingInclude, revisionDto, activeListingDto } from './shared.js';
+
+import { marketWhere } from './search.js';
 
 const encode = (value: object) => Buffer.from(JSON.stringify(value)).toString('base64url');
 
@@ -28,30 +29,13 @@ export class MarketService {
   constructor(private readonly db: DatabaseService, private readonly storage: StorageService) {}
 
   async list(filters: MarketFilters) {
-    const q = filters.q?.trim().slice(0, 100);
-    const sort = filters.sort ?? 'newest';
-    if (!['newest', 'price_asc', 'price_desc', 'score_desc'].includes(sort)) throw new AppException(400, 'INVALID_INPUT', 'Urutan Market tidak dikenal.');
-    if ((sort === 'price_asc' || sort === 'price_desc') && filters.type !== 'RESELL') throw new AppException(400, 'INVALID_INPUT', 'Urutan harga hanya tersedia untuk Resell.');
-    if (filters.type && !['RESELL', 'EXCHANGE', 'DONATE'].includes(filters.type)) throw new AppException(400, 'INVALID_INPUT', 'Jenis Listing tidak dikenal.');
-    if (filters.condition && !['EXCELLENT', 'GOOD', 'NEEDS_ATTENTION'].includes(filters.condition)) throw new AppException(400, 'INVALID_INPUT', 'Filter kondisi tidak dikenal.');
+    const parsed = marketSearchQuerySchema.safeParse(Object.fromEntries(Object.entries(filters).filter(([, value]) => value !== undefined && value !== '')));
+    if (!parsed.success) throw new AppException(400, 'INVALID_INPUT', parsed.error.issues[0]?.message ?? 'Filter Market tidak valid.');
+    const { sort } = parsed.data;
     const limit = pageLimit(filters.limit);
-    const min = filters.minPriceIdr === undefined ? undefined : Number(filters.minPriceIdr);
-    const max = filters.maxPriceIdr === undefined ? undefined : Number(filters.maxPriceIdr);
-    if ((min !== undefined && (!Number.isSafeInteger(min) || min < 0)) || (max !== undefined && (!Number.isSafeInteger(max) || max < 0)) || (min !== undefined && max !== undefined && min > max)) throw new AppException(400, 'INVALID_INPUT', 'Rentang harga tidak valid.');
-    if ((min !== undefined || max !== undefined) && filters.type && filters.type !== 'RESELL') throw new AppException(400, 'INVALID_INPUT', 'Filter harga hanya berlaku untuk Resell.');
     const cursor = filters.cursor ? decode<MarketCursor>(filters.cursor) : null;
     if (cursor && (cursor.sort !== sort || !uuidSchema.safeParse(cursor.id).success || Number.isNaN(Date.parse(cursor.createdAt)))) throw new AppException(400, 'INVALID_INPUT', 'Cursor tidak sesuai dengan urutan Market.');
-    let where: Prisma.ListingWhereInput = {
-      status: 'ACTIVE', ...(filters.type ? { type: filters.type as 'RESELL' | 'EXCHANGE' | 'DONATE' } : {}),
-      currentRevision: {
-        is: {
-          ...(filters.category ? { categoryCode: filters.category } : {}), ...(filters.cityId ? { cityId: filters.cityId } : {}),
-          ...(min !== undefined || max !== undefined ? { askingPriceIdr: { ...(min !== undefined ? { gte: BigInt(min) } : {}), ...(max !== undefined ? { lte: BigInt(max) } : {}) } } : {}),
-          ...(filters.condition === 'EXCELLENT' ? { condition: { gte: 75 } } : filters.condition === 'GOOD' ? { condition: { gte: 50, lt: 75 } } : filters.condition === 'NEEDS_ATTENTION' ? { condition: { lt: 50 } } : {}),
-          ...(q ? { OR: [{ title: { contains: q, mode: 'insensitive' } }, { description: { contains: q, mode: 'insensitive' } }, { category: { name: { contains: q, mode: 'insensitive' } } }, { city: { name: { contains: q, mode: 'insensitive' } } }] } : {}),
-        },
-      },
-    };
+    let where: Prisma.ListingWhereInput = marketWhere(parsed.data);
     if (cursor) {
       const at = new Date(cursor.createdAt);
       let cursorWhere: Prisma.ListingWhereInput;

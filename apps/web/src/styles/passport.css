@@ -1,0 +1,28 @@
+.passport-qr-dialog { position: fixed; inset: 0; margin: auto; width: min(500px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 28px; overflow-y: auto; overscroll-behavior: contain; border: 0; border-radius: 20px; background: #fff; color: #1B3A28; }
+.passport-qr-dialog::backdrop { background: rgb(15 34 22 / 40%); }
+.passport-qr-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.passport-qr-heading h2 { margin: 8px 0 0; font-size: clamp(1.375rem, 5vw, 1.75rem); line-height: 1.3; letter-spacing: -.035em; }
+.passport-qr-dialog .passport-qr-heading .passport-qr-close { flex: 0 0 44px; width: 44px; height: 44px; min-height: 44px; padding: 0; border-radius: 50%; }
+.passport-qr-close svg { flex-shrink: 0; }
+.passport-qr-description { margin: 12px 0 20px; color: #5B6D60; font-size: .875rem; }
+.passport-qr-loading { padding: 80px 0; text-align: center; }
+.passport-qr-image { display: grid; place-items: center; width: min(256px, 100%); aspect-ratio: 1; margin: 0 auto; background: #fff; text-align: center; }
+.passport-qr-image img { display: block; width: 100%; height: auto; }
+.passport-qr-identity { margin: 8px 0 20px; text-align: center; font-size: .6875rem; color: #5B6D60; overflow-wrap: anywhere; }
+.passport-qr-access { padding: 14px 16px; border-radius: 12px; background: #EDF1EA; font-size: .8125rem; line-height: 1.6; margin-bottom: 20px; }
+.passport-qr-dialog .input { width: 100%; min-width: 0; min-height: 44px; font-size: 1rem; border-radius: 10px; }
+.passport-qr-local { margin-top: 12px; font-size: .75rem; color: #5B6D60; line-height: 1.6; }
+.passport-qr-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+.passport-qr-dialog .button { min-height: 44px; border-radius: 100px; gap: 8px; font-size: .8125rem; }
+.passport-qr-actions > .button { flex: 1; white-space: nowrap; }
+.passport-qr-feedback { margin: 10px 0 0; font-size: .8125rem; color: #2D5E3A; }
+.passport-qr-open { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; margin-top: 12px; font-size: .8125rem; font-weight: 600; }
+.passport-share-actions { display: flex; justify-content: flex-end; margin: -12px 0 24px; }
+.passport-qr-trigger[hidden] { display: none; }
+.passport-unavailable { margin: 24px 0; }
+@media (max-width: 430px) {
+  .passport-qr-dialog { padding: 20px; }
+  .passport-qr-image { width: min(224px, 100%); }
+  .passport-qr-actions { flex-direction: column; }
+  .passport-share-actions { justify-content: flex-start; margin-top: 0; }
+}

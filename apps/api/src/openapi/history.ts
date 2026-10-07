@@ -7,7 +7,7 @@ PassportRestrictionInput: passportRestrictionSchema
 };
 
 export const historyOutputs = {
-Passport: obj({ itemId: uuid, categoryCode: str, visibility: str, projection: str, version: num, title: nil(str), description: nil(str), media: arr(obj({ id: uuid, url: str })), timeline: arr(obj({ id: uuid, type: str, origin: str, occurredAt: date, recordedAt: date, correctionOfId: nil(uuid), summary: str, assessment: obj({ status: str, score: nil(num), label: nil(str), ruleVersion: str, historical: bool, valid: bool }), repair: obj({ summary: str, afterCondition: str, status: str, outcome: str }) }, ['id', 'type', 'origin', 'occurredAt', 'recordedAt', 'correctionOfId', 'summary'])) }),
+Passport: obj({ itemId: uuid, categoryCode: str, visibility: str, projection: str, version: num, title: nil(str), description: nil(str), media: arr(obj({ id: uuid, url: str })), timeline: arr(obj({ id: uuid, type: str, origin: str, occurredAt: date, recordedAt: date, correctionOfId: nil(uuid), summary: str, assessment: obj({ status: str, score: nil(num), label: nil(str), ruleVersion: str, historical: bool, valid: bool }), repair: obj({ summary: str, afterCondition: str, status: str, outcome: str }) }, ['id', 'type', 'origin', 'occurredAt', 'recordedAt', 'correctionOfId', 'summary'])), share: obj({ url: { type: 'string', format: 'uri' }, access: { type: 'string', enum: ['PUBLIC', 'LIMITED', 'UNAVAILABLE'] } }) }),
 Impact: obj({ from: nil(date), to: nil(date), metrics: arr(obj({ metric: str, value: nil({ type: 'string', pattern: '^-?[0-9]+$' }), unit: str })), weightCoverage: obj({ known: str, total: str }), notes: arr(str) })
 };
 

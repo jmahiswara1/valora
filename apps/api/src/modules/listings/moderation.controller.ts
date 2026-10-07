@@ -71,7 +71,10 @@ export class ListingModerationController {
       const status = input.decision === 'APPROVE' ? 'ACTIVE' : 'REJECTED';
       const review = await tx.moderationReview.create({ data: { listingRevisionId: revisionId, reviewerId: userId, decision: input.decision, reasonCode: input.reasonCode, reasonText: input.reasonText, riskFlags: input.riskFlags, rubricVersionId: revision.rubricVersionId, policyVersion: revision.policyVersion, idempotencyKey: idempotencyKey!, requestHash } });
       if (status === 'ACTIVE') await event(tx, revision.itemId, 'LISTED', 'LISTING_REVISION', revision.id, review.createdAt, { type: listing.type }, '', 'SYSTEM_RECORDED');
-      await tx.listing.update({ where: { id: listing.id }, data: { status, publishedAt: status === 'ACTIVE' ? new Date() : null, version: { increment: 1 } } });
+      const now = new Date();
+      const firstPublication = status === 'ACTIVE' && !listing.firstPublishedAt;
+      await tx.listing.update({ where: { id: listing.id }, data: { status, publishedAt: status === 'ACTIVE' ? now : null, ...(firstPublication ? { firstPublishedAt: now } : {}), version: { increment: 1 } } });
+      if (firstPublication) await tx.searchPublication.create({ data: { listingId: listing.id, revisionId, publishedAt: now } });
       await tx.adminAction.create({ data: { adminId: userId, targetType: 'LISTING', targetId: listing.id, action: `REVIEW_${input.decision}`, reason: input.reasonText, beforeState: before, afterState: { status, revisionId, reasonCode: input.reasonCode } } });
       return { reviewId: review.id, decision: review.decision, listingStatus: status };
     });

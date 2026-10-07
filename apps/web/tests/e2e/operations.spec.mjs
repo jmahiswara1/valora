@@ -11,7 +11,11 @@ async function browserAccount(browser, account, viewport) {
   return context;
 }
 async function confirm(page) { const dialog = page.getByRole('dialog'); await expect(dialog).toBeVisible(); await dialog.getByRole('checkbox').check(); await dialog.getByRole('button', { name: 'Simpan tindakan', exact: true }).click(); }
-async function fits(page) { expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true); }
+async function fits(page) {
+  const layout = await page.evaluate(() => ({ fits: document.documentElement.scrollWidth <= innerWidth,
+    overflow: [...document.body.querySelectorAll('*')].filter(node => node.getBoundingClientRect().right > innerWidth + 1).slice(-12).map(node => ({ tag: node.tagName, className: typeof node.className === 'string' ? node.className : '', right: node.getBoundingClientRect().right, text: node.textContent?.slice(0, 80) })) }));
+  expect(layout.fits, JSON.stringify(layout.overflow)).toBe(true);
+}
 
 test('Passport, Impact, penjelasan, laporan dan koreksi admin', async ({ browser }, info) => {
   const owner = await login('owner.demo@valora.local'); const member = await login('member.demo@valora.local'); const admin = await login('admin.demo@valora.local');
@@ -34,6 +38,10 @@ test('Passport, Impact, penjelasan, laporan dan koreksi admin', async ({ browser
     await ownerPage.goto('/app/impact'); await expect(ownerPage.getByRole('heading', { name: 'Kontribusi yang kamu catat.' })).toBeVisible(); await expect(ownerPage.locator('.impact-metric')).toHaveCount(5); await chooseOption(ownerPage.getByLabel('Periode laporan (Asia/Jakarta)'), '90'); await fits(ownerPage);
     await ownerPage.goto(`/app/barang/${fixture.item.id}/penilaian/${fixture.assessment.id}`); await ownerPage.getByRole('button', { name: 'Jelaskan hasil penilaian' }).click(); await expect(ownerPage.getByText('Penjelasan berbasis template', { exact: false })).toBeVisible(); await fits(ownerPage);
     await publicPage.goto(`/passport/${fixture.item.id}`); await expect(publicPage.getByRole('heading', { name: fixture.item.title, exact: true })).toBeVisible(); await expect(publicPage.getByRole('heading', { name: 'Berpindah melalui Resell · konfirmasi kedua pihak' })).toBeVisible(); await fits(publicPage); await publicPage.screenshot({ path: `../../.local/stage5-evidence/passport-${info.project.name}.png`, fullPage: true });
+    await publicPage.getByRole('button', { name: 'QR Passport', exact: true }).click();
+    await expect(publicPage.getByRole('dialog').getByLabel('Tautan Passport publik')).toHaveValue(`http://127.0.0.1:3002/passport/${fixture.item.id}`);
+    await expect(publicPage.getByRole('dialog').getByRole('img', { name: 'QR untuk membuka Passport publik barang' })).toBeVisible();
+    await publicPage.keyboard.press('Escape');
     await page.goto('/app/admin'); await expect(page.getByRole('heading', { name: 'Operasi Valora' })).toBeVisible(); await expect(page.locator('.impact-metric')).toHaveCount(5); await fits(page);
     await page.goto(`/app/admin/laporan/${report.id}`); await page.getByLabel('Alasan tindakan').fill('Mengambil laporan untuk memeriksa konteks transaksi.'); await page.getByRole('button', { name: 'Ambil penugasan', exact: true }).click(); await confirm(page); await expect(page.getByRole('dialog')).not.toBeVisible(); await page.getByRole('button', { name: 'Buka isi laporan', exact: true }).click(); await confirm(page); await expect(page.getByText('Isi privat laporan transaksi untuk peninjauan admin.', { exact: true })).toBeVisible(); await page.getByRole('button', { name: 'Selesaikan laporan', exact: true }).click(); await confirm(page); await expect(page.getByRole('dialog')).not.toBeVisible(); await fits(page);
     await page.goto(`/app/admin/koreksi/${opened.id}`); await page.getByLabel('Alasan tindakan').fill('Mengambil kasus koreksi sesuai bukti yang dilaporkan.'); await page.getByRole('button', { name: 'Ambil penugasan', exact: true }).click(); await confirm(page); await expect(page.getByRole('dialog')).not.toBeVisible(); await page.getByRole('button', { name: 'Buka bukti privat', exact: true }).click(); await confirm(page); await expect(page.getByRole('heading', { name: 'Konteks dan bukti' })).toBeVisible();
