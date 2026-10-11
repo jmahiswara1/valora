@@ -128,6 +128,6 @@ try {
   await retention.accounts(); assert.equal((await db.user.findUniqueOrThrow({ where: { id: owner.user.id } })).anonymizedAt, null, 'Laporan balasan terbuka menahan');
   await db.report.update({ where: { id: replyReport.id }, data: { status: 'RESOLVED', resolvedAt: new Date() } });
   await retention.accounts(); assert((await db.user.findUniqueOrThrow({ where: { id: owner.user.id } })).anonymizedAt); assert.equal((await db.reviewReply.findUniqueOrThrow({ where: { id: replied.reply.id } })).body, null);
-  const spec = await (await fetch(base + '/api/docs-json')).json(); assert.equal(spec.info.version, '1.15.0'); assert(spec.paths['/api/v1/profiles/{id}/reviews']); assert(spec.paths['/api/v1/admin/review-replies/{id}/visibility']);
+  const spec = await (await fetch(base + '/api/docs-json')).json(); assert.equal(spec.info.version, '1.16.0'); assert(spec.paths['/api/v1/profiles/{id}/reviews']); assert(spec.paths['/api/v1/admin/review-replies/{id}/visibility']);
   console.log('Public profiles/reviews smoke PASS: permissions, lifecycle, privacy, idempotency, moderation, photos, retention, all transaction types.');
 } finally { await db.$disconnect(); }

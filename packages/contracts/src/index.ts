@@ -40,3 +40,4 @@ export type { MarketSearchFilters, MarketSearchQuery, SavedSearchDto, SavedSearc
 export * from './reviews.js';
 
 export * from './handover.js';
+export * from './photo-analysis.js';
