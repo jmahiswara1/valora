@@ -26,14 +26,16 @@ test('real photo message, grouped notification, visible read receipt and private
     await page.goto('/app/pesan/' + conversation.id);
     const imagePath = resolve('public/images/keyboard.webp'); await page.getByLabel('Pilih foto pesan').setInputFiles([imagePath, imagePath, imagePath]); await expect(page.getByText('Siap', { exact: true })).toHaveCount(3);
     await page.getByLabel('Pesan', { exact: true }).fill('Tiga foto kondisi barang.'); await page.getByRole('button', { name: 'Kirim', exact: true }).click();
-    await expect(page.locator('.chat-message-mine').getByText('Terkirim', { exact: true })).toBeVisible();
+    await expect(page.locator('.chat-message-mine').getByRole('img', { name: 'Terkirim', exact: true })).toBeVisible();
+    await expect(page.locator('.chat-message-mine').getByRole('img', { name: 'Terkirim', exact: true })).toHaveText('');
+    await expect(page.locator('.chat-message-mine').getByRole('img', { name: 'Terkirim', exact: true }).locator('svg')).toHaveClass(/\blucide-check\b(?!-check)/);
     await expect(page.locator('.chat-message-mine img')).toHaveCount(3); await expect.poll(() => db.messageAttachment.count({ where: { message: { conversationId: conversation.id } } })).toBe(3);
     await page.getByLabel('Pesan', { exact: true }).fill('Foto tambahan bisa menyusul.'); await page.getByRole('button', { name: 'Kirim', exact: true }).click(); await expect(page.getByText('Foto tambahan bisa menyusul.', { exact: true })).toBeVisible();
     expect(await db.inAppNotification.count({ where: { conversationId: conversation.id, userId: owner.id, readAt: null } })).toBe(1);
     ownerContext = await browser.newContext({ viewport: info.project.use.viewport, baseURL: 'http://127.0.0.1:3002' }); await cookies(ownerContext, ownerAccount); const ownerPage = await ownerContext.newPage(); await ownerPage.goto('/app/notifikasi');
     await ownerPage.getByRole('button', { name: 'Pesan', exact: true }).click(); await expect(ownerPage.locator('.notification-entry')).toHaveCount(1); await ownerPage.getByRole('link', { name: /Pesan baru/ }).click();
     await expect(ownerPage.getByText('Tiga foto kondisi barang.', { exact: true })).toBeVisible(); await expect.poll(async () => { const row = await db.conversation.findUniqueOrThrow({ where: { id: conversation.id } }); return row.participantAId === owner.id ? row.readSequenceA : row.readSequenceB; }).toBe(2);
-    await expect(page.getByText('Dibaca', { exact: true })).toHaveCount(2);
+    await expect(page.getByRole('img', { name: 'Dibaca', exact: true })).toHaveCount(2);
     const trigger = ownerPage.getByRole('button', { name: 'Buka foto 1 dari 3' }); await trigger.click(); await expect(ownerPage.getByRole('dialog').locator('img')).toBeVisible(); await ownerPage.keyboard.press('Escape'); await expect(trigger).toBeFocused();
     await expect(ownerPage.getByRole('link', { name: 'Buka profil Pemilik Chat' })).toHaveAttribute('href', '/profil/' + buyer.id);
     expect(await db.inAppNotification.count({ where: { conversationId: conversation.id, userId: owner.id, readAt: null } })).toBe(0);

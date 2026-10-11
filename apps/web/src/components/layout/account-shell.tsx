@@ -80,7 +80,7 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
   if (session.state === 'UNAVAILABLE') return <div className="account-gate"><Notice kind="error">Koneksi sesi belum tersedia.</Notice><Button onClick={() => session.refresh()}>Coba lagi</Button></div>;
   if (session.state !== 'AUTHENTICATED' || session.verifiedPath !== pathname || !me.data) return <div className="account-gate" role="status">Menyiapkan akun…</div>;
   const user = me.data;
-  return <div className="account-shell">
+  return <div className={`account-shell${pathname === '/app/pesan' || pathname.startsWith('/app/pesan/') ? ' account-shell-messages' : ''}`}>
     <a className="account-skip" href="#account-main">Langsung ke konten</a>
     <aside className="account-sidebar"><Link href="/" className="wordmark">valora</Link><AccountNavigation /><div className="account-sidebar-bottom">
       <Link href="/app/profil" className="account-sidebar-person" aria-current={pathname === '/app/profil' ? 'page' : undefined}><ProfileAvatar photoUrl={user.profilePhotoUrl} displayName={user.displayName} className="account-avatar" /><div><strong>{user.displayName}</strong><span>{user.city.name}</span></div><Settings size={17} aria-hidden="true" /></Link>

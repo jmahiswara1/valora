@@ -228,42 +228,6 @@ body:has(.account-shell) .transaction-dialog .input { border-radius: 10px; font-
 .account-list-toolbar { max-width: 300px; margin-bottom: 24px; }
 .account-row-status { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 9px; }
 
-.account-message-workspace { display: grid; grid-template-columns: 285px minmax(0, 1fr); gap: 20px; }
-.account-conversation-pane { border-right: 1px solid #E2E8DF; padding-right: 18px; }
-.account-conversation-pane h2 { margin-bottom: 16px; }
-.account-conversation-pane .conversation-row { padding: 14px 8px; gap: 10px; }
-.account-conversation-pane .conversation-row-copy strong { font-size: .8125rem; }
-.account-conversation-pane .conversation-row-copy p { font-size: .8125rem; }
-.account-conversation-pane .conversation-row-copy > div { flex-wrap: wrap; }
-.account-main .conversation-list { border: 0; }
-.account-main .conversation-row { padding: 20px 14px; border-bottom: 1px solid #E2E8DF; border-radius: 10px; }
-.account-main .conversation-row[aria-current="page"] { background: #EDF1EA; }
-.account-main .conversation-row-copy { overflow: hidden; }
-.account-main .conversation-row-copy p { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.account-main .conversation-row-copy strong { font-size: .9375rem; }
-.account-main .conversation-avatar { width: 40px; height: 40px; }
-.account-main .unread-count { border-radius: 100px; background: #1B3A28; color: #fff; font-size: .75rem; min-width: 24px; }
-.account-main .chat-page { display: grid; gap: 18px; width: 100%; max-width: none; margin: 0; }
-.account-main .chat-message { flex-shrink: 0; }
-.account-main .chat-heading { margin-bottom: 0; }
-.account-main .chat-page > a.button { justify-self: start; }
-.account-main .chat-heading { border-color: #E2E8DF; gap: 16px; }
-.account-main .chat-heading h1 { font-size: 1.375rem; }
-.account-main .chat-heading .eyebrow { display: none; }
-.account-main .chat-participant p { font-size: .8125rem; }
-.account-main .chat-tools { flex-wrap: wrap; }
-.account-main .chat-messages { height: min(52dvh, 580px); min-height: 300px; overflow-y: auto; border: 0; border-radius: 14px; padding: 20px; background: #F5F3EE; scrollbar-color: #CAD4C7 transparent; scrollbar-width: thin; }
-.account-main .chat-message { max-width: min(85%, 65ch); border: 0; padding: 14px 16px; background: #fff; border-radius: 14px 14px 14px 4px; margin-bottom: 14px; }
-.account-main .chat-message-mine { background: #DDE6D8; border-radius: 14px 14px 4px 14px; }
-.account-main .chat-message p { font-size: .9375rem; white-space: pre-wrap; }
-.account-main .chat-message small { color: #4A6250; font-size: .75rem; }
-.account-main .chat-composer { display: flex; align-items: end; gap: 12px; position: sticky; bottom: 0; padding: 12px 0; background: #fff; }
-.account-main .chat-composer textarea { flex: 1; border: 1px solid #CAD4C7; border-radius: 12px; padding: 12px; font-size: 1rem; min-height: 52px; max-height: 140px; resize: vertical; }
-.account-main .chat-composer .button { width: auto; flex: 0 0 auto; }
-.account-main .chat-footnote { font-size: .8125rem; margin-top: -8px; }
-.account-chat-placeholder { display: grid; place-content: center; text-align: center; padding: 48px 24px; min-height: 380px; border-radius: 16px; background: #F5F3EE; }
-.account-chat-placeholder h2 { margin-bottom: 10px; }
-.account-chat-placeholder p { font-size: .9375rem; color: var(--muted); max-width: 42ch; }
 
 .account-profile-layout { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 24px; align-items: start; }
 .account-profile-column { display: grid; gap: 24px; }
@@ -297,8 +261,8 @@ body:has(.account-shell) .transaction-dialog .input { border-radius: 10px; font-
 @container (min-width: 480px) { .account-main .item-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @container (min-width: 760px) { .account-main .item-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @container (min-width: 1000px) { .account-main .item-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-@container (max-width: 950px) { .account-activity-grid { grid-template-columns: 1fr; gap: 12px; } .account-activity { padding: 20px; } .account-main .transaction-layout, .account-main .listing-owner-layout { grid-template-columns: 1fr; } .account-message-workspace { grid-template-columns: 240px minmax(0, 1fr); } }
-@container (max-width: 760px) { .account-main .item-detail-grid, .account-main .repair-layout, .account-profile-layout { grid-template-columns: 1fr; } .account-main .offer-list { grid-template-columns: 1fr; } .account-main .assessment-components { grid-template-columns: repeat(2, minmax(0, 1fr)); } .account-main .impact-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .account-message-workspace { display: block; } .account-message-workspace.has-thread .account-conversation-pane, .account-chat-placeholder { display: none; } .account-conversation-pane { border: 0; padding: 0; } }
+@container (max-width: 950px) { .account-activity-grid { grid-template-columns: 1fr; gap: 12px; } .account-activity { padding: 20px; } .account-main .transaction-layout, .account-main .listing-owner-layout { grid-template-columns: 1fr; } }
+@container (max-width: 760px) { .account-main .item-detail-grid, .account-main .repair-layout, .account-profile-layout { grid-template-columns: 1fr; } .account-main .offer-list { grid-template-columns: 1fr; } .account-main .assessment-components { grid-template-columns: repeat(2, minmax(0, 1fr)); } .account-main .impact-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 1023px) { .account-shell { display: block; } .account-sidebar { display: none; } .account-toolbar { height: 68px; } .account-menu-trigger { display: inline-flex; } .account-skip { left: 16px; } .account-main { padding-top: 22px; } .account-toolbar-start { gap: 12px; } }
 @media (max-width: 600px) {
   .account-toolbar { padding-inline: 12px; gap: 8px; }
@@ -325,11 +289,6 @@ body:has(.account-shell) .transaction-dialog .input { border-radius: 10px; font-
   .account-main .transaction-row > div:last-child { text-align: left; align-items: start; }
   .account-main .offer-card { padding: 20px; }
   .account-main .transaction-item { grid-template-columns: 1fr; }
-  .account-main .chat-heading > div { flex-wrap: wrap; }
-  .account-main .chat-message { max-width: 92%; }
-  .account-main .chat-messages { padding: 14px; height: 48dvh; }
-  .account-main .chat-composer { gap: 8px; }
-  .account-main .chat-composer .button { padding-inline: 15px; }
   .account-main .transaction-dialog { padding: 22px; }
 .account-recent-header { align-items: start; }
 .account-recent-header > div { flex: 1; }
