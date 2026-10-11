@@ -63,6 +63,7 @@ try {
     const users = [
       { email: 'owner.demo@valora.local', displayName: 'Nadia Demo', role: 'USER' as const },
       { email: 'member.demo@valora.local', displayName: 'Raka Demo', role: 'USER' as const },
+      { email: 'buyer.demo@valora.local', displayName: 'Buyer', role: 'USER' as const },
       { email: 'admin.demo@valora.local', displayName: 'Admin Demo', role: 'ADMIN' as const },
     ];
     for (const user of users) {
