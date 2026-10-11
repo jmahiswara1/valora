@@ -1,0 +1,26 @@
+{
+  "viewports": [
+    1440,
+    390,
+    320
+  ],
+  "overflow": false,
+  "choiceTargetMinimum": 44,
+  "manualEditsDeselect": true,
+  "manualEditWhilePendingPreserved": true,
+  "applyDoesNotSave": true,
+  "categoryPairAtomic": true,
+  "saveReusesUploadedTicket": true,
+  "detailsDoNotRequestAI": true,
+  "photoSelectionClearsResult": true,
+  "unavailableRetainsPrevious": true,
+  "cooldownDisablesRetry": true,
+  "emptyNeedsPhotosHasNoApply": true,
+  "openapiVersion": "1.16.0",
+  "liveProviderVision": true,
+  "liveEndpointCacheHit": true,
+  "automatedTestsRun": false,
+  "liveFormReady": true,
+  "finalPromptVersion": "item-photo-v2",
+  "uiReviewDisposition": "ship"
+}

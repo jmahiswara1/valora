@@ -1,7 +1,7 @@
 # Valora — Product Requirements Document
 
-**Versi:** 1.24
-**Tanggal:** 6 Oktober 2026  
+**Versi:** 1.26
+**Tanggal:** 11 Oktober 2026  
 **Status:** Karya INSYFEST 2026; arah produk disepakati, spesifikasi MVP ada di `docs/`, dan implementasi tahap 1 dicatat pada `docs/15-stage1-implementation.md`  
 **Tagline:** *Keep Things Valuable*  
 **Platform:** Web application  
@@ -367,7 +367,7 @@ Periksa desktop 1.440 px, layar lebar 1.920 px, tablet 768 px, dan ponsel 390 px
 
 Untuk penilaian lomba, alur MVP harus dapat didemonstrasikan dengan akun dan data contoh yang diberi label sebagai data demo. Status transaksi, statistik, dan metrik Impact dalam demonstrasi berasal dari data aplikasi yang dijalankan, bukan angka pemasaran yang dikarang. Paket demo dan cara akses juri dirancang dari kebutuhan karya saat ini; bila panduan lomba diberikan kemudian, keduanya dapat disesuaikan. Kesiapan menerima transaksi nyata menjadi keputusan terpisah.
 
-**Future Features:** payment gateway/escrow; integrasi pengiriman; marketplace jasa repair; notifikasi email/push; lampiran chat tambahan; gamification, badge, dan community challenge; peta; analisis foto berbantuan AI; tutorial repair AI interaktif berbasis konten terkurasi; estimasi harga dari data pembanding; pertukaran banyak Item atau pertukaran dengan tambahan uang.
+**Future Features:** payment gateway/escrow; integrasi pengiriman; marketplace jasa repair; notifikasi email/push; lampiran chat tambahan; gamification, badge, dan community challenge; peta; tutorial repair AI interaktif berbasis konten terkurasi; estimasi harga dari data pembanding; pertukaran banyak Item atau pertukaran dengan tambahan uang.
 
 **Perluasan setelah MVP:** Favorit menyimpan Listing privat di akun, menyediakan
 tombol hati dan halaman `/app/favorit`, serta mempertahankan nama saat disimpan
@@ -430,3 +430,7 @@ bukti kasus serta retensi dicatat pada [Peningkatan Chat](docs/28-chat-enhanceme
 
 
 **Perluasan koordinasi serah terima:** peserta dapat mengusulkan dan menyepakati jadwal/lokasi atau perkiraan penerimaan dengan alamat privat per penerima. Tenggat tetap 14 hari; konfirmasi formal mengunci koordinasi dan tetap menjadi dasar transfer kepemilikan. Resi manual beralasan, linimasa transaksi, pengingat 24/2 jam, akses admin lima menit serta retensi terdokumentasi pada [Koordinasi Serah Terima](docs/29-handover-coordination.md).
+
+**Perluasan AI Explainer:** penjelasan manual dari hasil penilaian terstruktur melalui gateway 9router, tanpa identitas/teks bebas. Score dan kelayakan tetap berasal dari aturan Valora. Kuota default 20/pengguna/hari dan 200/global/hari, cache 24 jam, fallback rubrik, serta ACL dan pemeriksaan state sebelum respons dicatat pada [AI Explainer](docs/30-ai-explainer.md).
+
+**Perluasan Analisis Foto AI:** bantuan manual pada formulir barang baru/edit untuk nama, kategori/subkategori, deskripsi dan kondisi/kendala visual dari 1–3 foto. Saran dipilih per kolom dan diterapkan ke formulir sebelum disimpan; fungsi, keamanan, harga dan Score tidak disimpulkan. Foto terpilih tanpa metadata serta katalog aktif dikirim ke 9router. Kuota harian dan kapasitas generasi dibagi dengan AI Explainer, cache privat 24 jam dan pemeriksaan izin/state sebelum respons; rincian pada [Analisis Foto AI](docs/31-ai-photo-analysis.md).

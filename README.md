@@ -76,6 +76,10 @@ yang boleh masuk repository. Commit pertama memakai `initial commit`; commit
 berikutnya memakai `type: short desc` tanpa scope.
 
 [Peningkatan Chat](docs/28-chat-enhancements.md) menambahkan tiga foto privat,
-tanda dibaca, pemulihan kirim dan notifikasi per percakapan. OpenAPI terkini 1.14.0.
+tanda dibaca, pemulihan kirim dan notifikasi per percakapan. OpenAPI terkini 1.16.0.
 
 [Koordinasi Serah Terima](docs/29-handover-coordination.md) menambahkan jadwal yang disepakati, alamat/lokasi privat, resi manual per barang, linimasa dan pengingat pada detail transaksi. Tenggat tetap 14 hari.
+
+[AI Explainer Penilaian](docs/30-ai-explainer.md) menjelaskan hasil penilaian melalui 9router, dengan validasi, kuota harian, cache dan fallback rubrik.
+
+[Analisis Foto Barang dengan AI](docs/31-ai-photo-analysis.md) membantu mengisi barang baru/edit dengan saran per kolom dari 1–3 foto, berbagi kuota dengan AI Explainer, dan tetap memerlukan tinjauan serta simpan manual.

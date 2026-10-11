@@ -1,0 +1,50 @@
+[
+  {
+    "name": "desktop",
+    "compact": {
+      "open": false,
+      "summary": "Lihat penjelasan lengkap",
+      "targetHeight": 44
+    },
+    "expanded": {
+      "open": true,
+      "summary": "Ringkas penjelasan"
+    },
+    "closed": false,
+    "calls": 1,
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "name": "mobile",
+    "compact": {
+      "open": false,
+      "summary": "Lihat penjelasan lengkap",
+      "targetHeight": 44
+    },
+    "expanded": {
+      "open": true,
+      "summary": "Ringkas penjelasan"
+    },
+    "closed": false,
+    "calls": 1,
+    "overflow": false,
+    "errors": []
+  },
+  {
+    "name": "narrow",
+    "compact": {
+      "open": false,
+      "summary": "Lihat penjelasan lengkap",
+      "targetHeight": 44
+    },
+    "expanded": {
+      "open": true,
+      "summary": "Ringkas penjelasan"
+    },
+    "closed": false,
+    "calls": 1,
+    "overflow": false,
+    "errors": []
+  }
+]

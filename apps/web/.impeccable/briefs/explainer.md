@@ -1,0 +1,10 @@
+# Assessment AI Explainer
+Mode: Operate. Ordinary extension of the current assessment page, with no visual-world replacement.
+Audience: authenticated assessment creator or current item owner. Task: manually ask for a plain-language explanation, read limitations and reasons for Repair/Resell/Exchange/Donate, retry when available.
+Preserve the existing white/forest/sage/cream palette, Plus Jakarta Sans, account shell, flat assessment sections and controls. No new art, motion system, hero or nested cards.
+AI never changes Score, price, eligibility or ownership. Source must visibly distinguish AI from rule template. Show loading, cooldown, daily quota reset in WIB, history, safe errors and cached output. Preserve previous output on a transient error and clear it on denied access or changed state. No automatic network call on focus/reconnect.
+Responsive targets: desktop 1440x900, mobile390x844 and narrow320x760. Readable wrapping, four action reasons, labelled native disabled buttons, live status and alert semantics.
+Implementation: apps/web/src/features/assessments/explanation.tsx and scoped additions in account.css. API shared timeout extension only for this endpoint.
+
+Disclosure refinement: keep source, summary, notices, disclaimer and retry controls visible. Native details/summary starts closed for the first result, including cached AI and rule-template output; supporting components, limitations, four action reasons and next steps expand behind “Lihat penjelasan lengkap” / “Ringkas penjelasan”. No inference or quota use on toggling. Preserve disclosure state through retries for the same assessment, reset for another id. Use a 44px sage control, native keyboard semantics, incumbent focus ring and a flat bottom divider separating explanation from system action choices. Refinement evidence lives separately in .impeccable/review/explainer-collapse/.
+Evidence: apps/web/.impeccable/review/explainer/desktop.png, mobile.png, narrow.png. Synthetic fixtures explicitly live in browser tests. Real inference verified separately with local9router, exact model ag/gemini-3.8-flash-high, structured data only.
