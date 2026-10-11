@@ -1055,6 +1055,38 @@ model ExplanationCache {
   templateVersion String @db.VarChar(30)
   output Json
   createdAt DateTime @default(now())
+  source String @default("TEMPLATE") @db.VarChar(12)
+  model String? @db.VarChar(160)
+  promptVersion String? @db.VarChar(40)
+  expiresAt DateTime?
+  @@index([expiresAt])
+}
+
+model ExplanationLease {
+  key String @id @db.VarChar(80)
+  token String @db.Uuid
+  assessmentId String @db.Uuid
+  actorId String @db.Uuid
+  expiresAt DateTime
+  @@index([expiresAt])
+}
+
+model PhotoAnalysisCache {
+  key String @id @db.VarChar(80)
+  actorId String @db.Uuid
+  output Json
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  @@index([actorId, expiresAt])
+  @@index([expiresAt])
+}
+
+model PhotoAnalysisLease {
+  key String @id @db.VarChar(80)
+  token String @db.Uuid
+  actorId String @db.Uuid
+  expiresAt DateTime
+  @@index([expiresAt])
 }
 
 model AdminAction {

@@ -60,9 +60,9 @@ export class AssessmentsService {
     };
   }
 
-  private async latestCurrentId(item: { id: string; itemRevision: number; currentOwnerId: string }, activeRubricId: string | null): Promise<string | null> {
+  private async latestCurrentId(item: { id: string; itemRevision: number; currentOwnerId: string }, activeRubricId: string | null, tx: Prisma.TransactionClient = this.db): Promise<string | null> {
     if (!activeRubricId) return null;
-    const latest = await this.db.assessment.findFirst({ where: { valid: true, itemId: item.id, itemRevision: item.itemRevision, rubricVersionId: activeRubricId, createdById: item.currentOwnerId }, orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], select: { id: true } });
+    const latest = await tx.assessment.findFirst({ where: { valid: true, itemId: item.id, itemRevision: item.itemRevision, rubricVersionId: activeRubricId, createdById: item.currentOwnerId }, orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], select: { id: true } });
     return latest?.id ?? null;
   }
 
@@ -130,12 +130,12 @@ export class AssessmentsService {
     return { data: page.map((row) => this.dto(row, currentId, row.createdById === userId)), meta: { nextCursor: rows.length > limit && page.at(-1) ? cursorEncode(page.at(-1)!.createdAt, page.at(-1)!.id) : null } };
   }
 
-  async get(userId: string, id: string): Promise<AssessmentDto> {
+  async get(userId: string, id: string, tx: Prisma.TransactionClient = this.db): Promise<AssessmentDto> {
     if (!uuidSchema.safeParse(id).success) throw new AppException(404, 'NOT_FOUND', 'Penilaian tidak ditemukan.');
-    const row = await this.db.assessment.findUnique({ where: { id }, include: { rubricVersion: true, item: true } });
+    const row = await tx.assessment.findUnique({ where: { id }, include: { rubricVersion: true, item: true } });
     if (!row || (row.createdById !== userId && row.item.currentOwnerId !== userId)) throw new AppException(404, 'NOT_FOUND', 'Penilaian tidak ditemukan.');
-    const active = await this.activeRubric(row.item.categoryCode, row.item.subcategoryCode);
-    const currentId = await this.latestCurrentId(row.item, active?.id ?? null);
+    const active = await this.activeRubric(row.item.categoryCode, row.item.subcategoryCode, tx);
+    const currentId = await this.latestCurrentId(row.item, active?.id ?? null, tx);
     return this.dto(row, currentId, row.createdById === userId);
   }
 }

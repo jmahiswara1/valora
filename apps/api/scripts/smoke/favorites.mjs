@@ -86,8 +86,8 @@ try {
   check(await viewer.account.request('/me/favorites'), 401, 'Akun ditutup kehilangan akses');
   mark.push('revocation and account closure cleanup');
   const doc = await (await fetch(base + '/api/docs-json')).json();
-  assert.equal(doc.info.version, '1.14.0');
+  assert.equal(doc.info.version, '1.15.0');
   for (const path of ['/api/v1/me/favorites', '/api/v1/me/favorites/status', '/api/v1/me/favorites/{listingId}']) assert(doc.paths[path]);
-  mark.push('OpenAPI 1.14.0');
+  mark.push('OpenAPI 1.15.0');
   console.log(JSON.stringify({ suite: 'favorites', passed: mark }));
 } finally { await db.$disconnect(); }

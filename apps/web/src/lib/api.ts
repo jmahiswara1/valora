@@ -29,7 +29,7 @@ async function csrf(): Promise<string> {
   try { return await promise; } finally { if (csrfPending?.promise === promise) csrfPending = null; }
 }
 
-type RequestOptions = { method?: string; body?: unknown; headers?: Record<string, string> };
+type RequestOptions = { method?: string; body?: unknown; headers?: Record<string, string>; timeoutMs?: number };
 
 export async function apiEnvelope<T>(path: string, options: RequestOptions = {}, retryCsrf = true): Promise<ApiSuccess<T>> {
   const generation = sessionGeneration;
@@ -51,7 +51,7 @@ export async function apiEnvelope<T>(path: string, options: RequestOptions = {},
   if (scoped && generation !== sessionGeneration) throw new ApiClientError(409, 'SESSION_CHANGED', 'Sesi sudah berubah.');
   if (scoped) inflight.add(controller);
   let response: Response; let result: ApiSuccess<T> | ApiError;
-  try { response = await fetch('/api/v1' + path, { method, body, headers, credentials: 'include', cache: 'no-store', signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15000)]) }); result = await response.json() as ApiSuccess<T> | ApiError; } finally { inflight.delete(controller); }
+  try { response = await fetch('/api/v1' + path, { method, body, headers, credentials: 'include', cache: 'no-store', signal: AbortSignal.any([controller.signal, AbortSignal.timeout(options.timeoutMs ?? 15000)]) }); result = await response.json() as ApiSuccess<T> | ApiError; } finally { inflight.delete(controller); }
   if (scoped && generation !== sessionGeneration) throw new ApiClientError(409, 'SESSION_CHANGED', 'Sesi sudah berubah.');
   if (!response.ok) {
     const error = 'error' in result ? result.error : { code: 'INTERNAL_ERROR', message: 'Permintaan gagal.' };

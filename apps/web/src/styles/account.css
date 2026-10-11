@@ -295,3 +295,24 @@ body:has(.account-shell) .transaction-dialog .input { border-radius: 10px; font-
 .account-recent-header > a { flex-shrink: 0; white-space: nowrap; }
 }
 @media (prefers-reduced-motion: reduce) { .account-shell *, .account-drawer * { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+
+/* Assessment explanations inherit the flat account surface. */
+.account-main .explanation-section { padding-bottom: 24px; border-bottom: 1px solid #E2E8DF; }
+.account-main .explanation-section + .assessment-section { border-top: 0; padding-top: 0; }
+.explanation-section > p, .explanation-section .form-stack > p, .explanation-section li { max-width: 72ch; }
+.explanation-section p { overflow-wrap: anywhere; }
+.explanation-details > summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 10px 12px; border-radius: 8px; background: #EDF1EA; color: var(--forest); cursor: pointer; font-weight: 600; list-style: none; }
+.explanation-details > summary::-webkit-details-marker { display: none; }
+.explanation-details > summary:hover { background: var(--sage); }
+.explanation-details > summary > svg { flex-shrink: 0; }
+.explanation-details .explanation-label-expanded { display: none; }
+.explanation-details[open] .explanation-label-collapsed { display: none; }
+.explanation-details[open] .explanation-label-expanded { display: inline; }
+.explanation-details[open] > summary > svg { transform: rotate(180deg); }
+.explanation-body { padding-top: 20px; }
+.explanation-source { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px 16px; }
+.explanation-actions { margin: 0; }
+.explanation-actions > div { padding: 16px 0; border-bottom: 1px solid var(--line); }
+.explanation-actions dt { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; }
+.explanation-actions dd { margin: 8px 0 0; }
+.explanation-section li { overflow-wrap: anywhere; }

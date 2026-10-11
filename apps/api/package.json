@@ -11,7 +11,7 @@
     "build": "pnpm run db:generate && tsc -p tsconfig.json",
     "typecheck": "pnpm run db:generate && tsc -p tsconfig.json --noEmit",
     "lint": "eslint src --max-warnings 0",
-    "test": "pnpm run build && vitest run src/modules/assessments/engine.test.ts && node scripts/test.mjs",
+    "test": "pnpm run build && vitest run src/modules/assessments/engine.test.ts src/modules/assessments/explainer/provider.test.ts && node scripts/test.mjs",
     "demo:stage4": "pnpm run build && node scripts/demo/transactions.mjs",
     "db:generate": "prisma generate",
     "db:format": "prisma format",

@@ -46,6 +46,14 @@ export interface ActionRecommendation { action: 'REPAIR' | 'RESELL' | 'EXCHANGE'
 
 export interface AssessmentDto { id: string; itemId: string; itemRevision: number; rubricVersionId: string; ruleVersion: string; policyVersion: string; recommendationVersion: string; rubric: RubricDto; status: 'INCOMPLETE' | 'PARTIAL_ECONOMIC' | 'COMPLETE'; condition: number | null; repairability: number | null; repairabilityReason: 'NOT_NEEDED' | null; economicValue: number | null; reusePotential: number | null; score: number | null; label: string | null; missingFields: string[]; safetyFlags: string[]; recommendations: ActionRecommendation[]; answers: AssessmentCreateInput | null; economicSources: Record<string, z.infer<typeof economicSourceSchema> & { reportedBy: string }> | null; createdAt: string; isCurrent: boolean; origin: 'USER_REPORTED' }
 
-export const explanationSchema = z.object({ source: z.literal('TEMPLATE'), templateVersion: z.string(), assessmentId: uuidSchema, historical: z.boolean(), summary: z.string().max(800), strengths: z.array(z.string().max(500)), limitations: z.array(z.string().max(500)), actions: z.array(z.object({ action: z.enum(['REPAIR', 'RESELL', 'EXCHANGE', 'DONATE']), status: z.enum(['ELIGIBLE', 'NEEDS_DATA', 'INELIGIBLE']), reasons: z.array(z.string().max(500)) })), nextSteps: z.array(z.string().max(500)) });
+export const explanationSchema = z.object({
+  source: z.enum(['AI', 'TEMPLATE']), templateVersion: z.string(), assessmentId: uuidSchema, historical: z.boolean(),
+  summary: z.string().max(800), strengths: z.array(z.string().max(500)), limitations: z.array(z.string().max(500)),
+  actions: z.array(z.object({ action: z.enum(['REPAIR', 'RESELL', 'EXCHANGE', 'DONATE']), status: z.enum(['ELIGIBLE', 'NEEDS_DATA', 'INELIGIBLE']), reasons: z.array(z.string().max(500)) })),
+  nextSteps: z.array(z.string().max(500)),
+  promptVersion: z.string().optional(), generatedAt: z.iso.datetime().optional(), expiresAt: z.iso.datetime().optional(), cached: z.boolean().optional(),
+  fallbackReason: z.enum(['DISABLED', 'NOT_CONFIGURED', 'USER_QUOTA', 'APP_QUOTA', 'BUSY', 'TIMEOUT', 'UPSTREAM_UNAVAILABLE', 'INVALID_OUTPUT']).nullable().optional(),
+  retryAt: z.iso.datetime().nullable().optional(),
+});
 
 export type ExplanationDto = z.infer<typeof explanationSchema>;

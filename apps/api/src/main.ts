@@ -42,7 +42,7 @@ async function bootstrap(): Promise<void> {
   app.useGlobalInterceptors(new EnvelopeInterceptor());
 
   if (config.appEnv === 'local') {
-    const swaggerConfig = new DocumentBuilder().setTitle('Valora API').setDescription('Kontrak API Valora termasuk Favorit, pusat notifikasi, Passport QR, pencarian tersimpan, profil publik, ulasan transaksi, foto chat dan tanda dibaca, serta koordinasi serah terima.').setVersion('1.14.0').build();
+    const swaggerConfig = new DocumentBuilder().setTitle('Valora API').setDescription('Kontrak API Valora termasuk Favorit, pusat notifikasi, Passport QR, pencarian tersimpan, profil publik, ulasan transaksi, foto chat dan tanda dibaca, koordinasi serah terima, AI Explainer penilaian.').setVersion('1.15.0').build();
     const document = completeOpenApi(SwaggerModule.createDocument(app, swaggerConfig));
     SwaggerModule.setup('api/docs', app, document);
   }

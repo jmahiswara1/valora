@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 
 const local = dotenv.parse(await readFile('.env.local'));
 if (!local.TEST_DATABASE_URL || !new URL(local.TEST_DATABASE_URL).pathname.endsWith('_test')) throw new Error('E2E membutuhkan database test.');
-const env = { ...process.env, ...local, DATABASE_URL: local.TEST_DATABASE_URL, API_PORT: '4001', WEB_ORIGIN: 'http://127.0.0.1:3002', APP_BASE_URL: 'http://127.0.0.1:3002' };
+const env = { ...process.env, ...local, DATABASE_URL: local.TEST_DATABASE_URL, AI_EXPLAINER_ENABLED: 'false', AI_PHOTO_ANALYSIS_ENABLED: 'false', API_PORT: '4001', WEB_ORIGIN: 'http://127.0.0.1:3002', APP_BASE_URL: 'http://127.0.0.1:3002' };
 const prisma = createRequire(import.meta.url).resolve('prisma/build/index.js');
 for (const args of [[prisma, 'migrate', 'deploy'], ['dist/seed.js'], ["scripts/database/reset-rate-buckets.mjs"]]) {
   const result = spawnSync(process.execPath, args, { env, stdio: 'inherit' });

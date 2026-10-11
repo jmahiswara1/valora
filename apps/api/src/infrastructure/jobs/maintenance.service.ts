@@ -24,7 +24,14 @@ export class MaintenanceService implements OnModuleInit, OnModuleDestroy {
       for (const row of rows) await tx.storageDeletion.upsert({ where: { storageKey: row.id + '.txt' }, update: {}, create: { storageKey: row.id + '.txt', kind: 'MAIL' } });
       await tx.mailOutbox.deleteMany({ where: { id: { in: rows.map((r) => r.id) } } });
     });
-    await this.db.authRateBucket.deleteMany({ where: { resetAt: { lt: new Date() } } });
+    await serial(this.db, async tx => {
+      const now = new Date();
+      await tx.authRateBucket.deleteMany({ where: { resetAt: { lt: now } } });
+      await tx.explanationCache.deleteMany({ where: { expiresAt: { lte: now } } });
+      await tx.explanationLease.deleteMany({ where: { expiresAt: { lte: now } } });
+      await tx.photoAnalysisCache.deleteMany({ where: { expiresAt: { lte: now } } });
+      await tx.photoAnalysisLease.deleteMany({ where: { expiresAt: { lte: now } } });
+    });
     await this.retention.drain();
   }
 

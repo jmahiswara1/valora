@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 
 const local = dotenv.parse(await readFile('.env.local'));
 if (!local.TEST_DATABASE_URL) throw new Error('TEST_DATABASE_URL tidak ada di apps/api/.env.local');
-const env = { ...process.env, ...local, DATABASE_URL: local.TEST_DATABASE_URL, API_PORT: '4001', VALORA_SMOKE_URL: 'http://127.0.0.1:4001' };
+const env = { ...process.env, ...local, DATABASE_URL: local.TEST_DATABASE_URL, AI_EXPLAINER_ENABLED: 'false', AI_PHOTO_ANALYSIS_ENABLED: 'false', API_PORT: '4001', VALORA_SMOKE_URL: 'http://127.0.0.1:4001' };
 const require = createRequire(import.meta.url);
 const prisma = require.resolve('prisma/build/index.js');
 
@@ -43,6 +43,7 @@ try {
   run(resolve(process.cwd(), "scripts/smoke/reviews.mjs"), []);
   run(resolve(process.cwd(), "scripts/smoke/chat.mjs"), []);
   run(resolve(process.cwd(), "scripts/smoke/handover.mjs"), []);
+  run(resolve(process.cwd(), "scripts/smoke/explainer.mjs"), []);
 } catch (error) {
   await new Promise((done) => setTimeout(done, 50));
   console.error(logs);
