@@ -1,3 +1,4 @@
+import { invalidateTutorials } from '../../shared/tutorials.js';
 import { invalidateHandover } from '../handover/lifecycle.js';
 import { expireOffers, notify, notifyTransaction } from '../notifications/events.js';
 import { Injectable } from '@nestjs/common';
@@ -132,6 +133,7 @@ export class TransactionsService {
     for (const item of snapshot.items) {
       const current = await tx.item.findUniqueOrThrow({ where: { id: item.id } });
       if (current.currentOwnerId !== item.fromUserId || current.reservedByTransactionId !== row.id || current.archivedAt || current.itemRevision !== item.itemRevision) throw new AppException(409, 'STATE_CONFLICT', 'Kepemilikan atau reservasi Item berubah.');
+      await invalidateTutorials(tx, item.id, 'OWNERSHIP_CHANGED');
       await tx.item.update({ where: { id: item.id }, data: { currentOwnerId: item.toUserId, reservedByTransactionId: null, title: item.title, description: item.description, conditionSummary: item.conditionSummary, functionSummary: null, completenessSummary: null, issueSummary: null, purchaseYear: null, originalPriceIdr: null, itemRevision: { increment: 1 }, version: { increment: 1 } } });
       await tx.mediaAsset.updateMany({ where: { id: { in: item.mediaIds }, caseId: null, repairRecordId: null }, data: { shareWithFutureOwner: true } });
       await tx.ownershipTransfer.create({ data: { transactionId: row.id, itemId: item.id, fromUserId: item.fromUserId, toUserId: item.toUserId, effectiveAt: now, origin } });

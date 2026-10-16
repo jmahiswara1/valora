@@ -1,3 +1,4 @@
+import { assertNoStartedTutorial } from '../../shared/tutorials.js';
 import { expireOffers } from '../notifications/events.js';
 import type { Prisma } from '../../generated/prisma/client.js';
 import { type ListingDto, type ListingSaveInput, uuidSchema, type ListingPatchInput } from '@valora/contracts';
@@ -133,6 +134,7 @@ export class ListingService {
       await tx.$queryRaw`SELECT id FROM "Listing" WHERE id = ${id}::uuid FOR UPDATE`;
       const listing = await tx.listing.findFirst({ where: { id, ownerId: userId }, include: { currentRevision: true, item: true } });
       if (!listing) throw new AppException(404, 'NOT_FOUND', 'Listing tidak ditemukan.');
+      await assertNoStartedTutorial(tx, listing.itemId);
       if (listing.status === 'PENDING_REVIEW' && listing.version === expectedVersion) return;
       if (listing.version !== expectedVersion) throw new AppException(409, 'STATE_CONFLICT', 'Listing berubah. Muat ulang sebelum mengirim.');
       if (!['DRAFT', 'PAUSED', 'REJECTED'].includes(listing.status) || !listing.currentRevision) throw new AppException(409, 'STATE_CONFLICT', 'Listing belum dapat diajukan.');

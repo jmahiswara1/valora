@@ -1,0 +1,109 @@
+/* Guided work uses the existing Valora account palette and controls. */
+.tutorial-page { max-width: 1280px; margin-inline: auto; }
+.tutorial-page p { max-width: 72ch; }
+.tutorial-page h2 { font-size: 1.4rem; line-height: 1.35; letter-spacing: -.025em; margin: 0 0 12px; }
+.tutorial-page h3 { font-size: 1rem; margin: 24px 0 8px; }
+.tutorial-page :is(p, li) { line-height: 1.65; }
+.tutorial-page :is(button, summary, .button, select) { min-height: 44px; }
+.tutorial-page :is(textarea, input, select) { max-width: 100%; }
+.tutorial-page fieldset { border: 0; padding: 0; margin: 0; }
+.tutorial-page legend { font-weight: 600; margin-bottom: 16px; }
+.tutorial-page .field + .field { margin-top: 18px; }
+.tutorial-page summary { cursor: pointer; padding-block: 12px; font-weight: 600; }
+.tutorial-page details > :not(summary) { margin-block: 12px; }
+.tutorial-page .account-page-heading { display: flex; justify-content: space-between; align-items: start; gap: 24px; margin-bottom: 32px; }
+.tutorial-page .account-page-heading h1 { margin-block: 16px 12px; text-wrap: balance; }
+.tutorial-page .account-page-heading > .badge { margin-top: 18px; white-space: normal; }
+.tutorial-guide-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-block: 32px; }
+.tutorial-guide-choice { padding: 26px; text-align: left; background: var(--cream); border: 1px solid transparent; border-radius: 16px; color: var(--forest); cursor: pointer; }
+.tutorial-guide-choice:hover { background: #EDF1EA; }
+.tutorial-guide-choice[aria-pressed=true] { border-color: var(--green); background: #EDF1EA; }
+.tutorial-guide-choice h2 { margin-block: 20px 10px; }
+.tutorial-guide-meta { display: flex; justify-content: space-between; gap: 16px; margin-top: 26px; font-size: .875rem; }
+.tutorial-guide-meta > span { display: inline-flex; align-items: center; gap: 8px; }
+.tutorial-guide-preview { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 40px; border-top: 1px solid var(--line); padding-top: 32px; }
+.tutorial-guide-preview .form-stack { margin-top: 28px; }
+.tutorial-resume, .tutorial-closed { display: flex; align-items: start; gap: 20px; padding: 28px; background: var(--cream); border-radius: 16px; margin-block: 24px; }
+.tutorial-resume > svg, .tutorial-closed > svg { flex-shrink: 0; }
+.tutorial-resume > div { flex: 1; }
+.tutorial-resume p, .tutorial-closed p { margin-bottom: 12px; }
+.tutorial-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-block: 24px; }
+.tutorial-session-list { border-top: 1px solid var(--line); margin-block: 24px; }
+.tutorial-session-row { display: flex; align-items: center; gap: 24px; padding: 28px 12px; border-bottom: 1px solid var(--line); text-decoration: none; }
+.tutorial-session-row:hover { background: #F8F9F6; }
+.tutorial-session-row > div { flex: 1; }
+.tutorial-session-row h2 { margin-block: 8px; }
+.tutorial-session-row p { margin: 0; font-size: .875rem; }
+.tutorial-progress { display: flex; align-items: center; justify-content: space-between; gap: 24px; font-size: .875rem; margin-block: 24px 32px; }
+.tutorial-progress progress { width: 35%; max-width: 300px; height: 6px; border: none; border-radius: 4px; overflow: hidden; accent-color: var(--green); background: var(--sage); }
+.tutorial-progress progress::-webkit-progress-bar { background: var(--sage); }
+.tutorial-progress progress::-webkit-progress-value { background: var(--green); }
+.tutorial-progress progress::-moz-progress-bar { background: var(--green); }
+.tutorial-workspace { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(300px, 1fr); gap: 40px; align-items: start; }
+.tutorial-main { min-width: 0; }
+.tutorial-preparation { padding-bottom: 28px; }
+.tutorial-preparation .form-stack { margin-block: 28px; }
+.tutorial-roadmap { border-block: 1px solid var(--line); margin-bottom: 32px; }
+.tutorial-roadmap > summary { display: flex; align-items: center; gap: 10px; }
+.tutorial-roadmap ol { list-style: none; padding: 0; }
+.tutorial-roadmap li { padding-block: 8px; }
+.tutorial-roadmap li summary { display: flex; align-items: center; gap: 12px; }
+.tutorial-roadmap li summary > span { width: 30px; height: 30px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; font-variant-numeric: tabular-nums; }
+.tutorial-roadmap li[aria-current=step] summary { color: var(--green); }
+.tutorial-roadmap li p { margin-left: 42px; }
+.tutorial-step-number { color: var(--muted); font-size: .875rem; margin-bottom: 12px; }
+.tutorial-page .tutorial-active-step h2 { font-size: clamp(1.5rem, 2.3vw, 2rem); }
+.tutorial-instruction { font-size: 1.0625rem; margin-block: 16px 24px; }
+.tutorial-figure { margin: 24px 0; }
+.tutorial-image-button { border: 0; padding: 0; width: 100%; display: block; position: relative; cursor: zoom-in; background: var(--cream); border-radius: 12px; overflow: hidden; }
+.tutorial-image-button img { display: block; width: 100%; max-height: 330px; object-fit: contain; }
+.tutorial-image-button > span { display: flex; align-items: center; gap: 6px; position: absolute; bottom: 10px; right: 10px; padding: 8px 12px; border-radius: 20px; background: #fff; color: var(--forest); font-size: .75rem; }
+.tutorial-figure figcaption { color: var(--muted); font-size: .8125rem; margin-top: 10px; }
+.tutorial-image-dialog { position: fixed; inset: 0; margin: auto; border: 0; border-radius: 16px; padding: 20px; width: min(900px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); overflow: auto; background: white; color: var(--forest); }
+.tutorial-image-dialog::backdrop { background: rgb(15 34 22 / 40%); }
+.tutorial-image-dialog > button { margin-left: auto; }
+.tutorial-image-dialog img { max-width: 100%; max-height: 70dvh; margin-inline: auto; display: block; }
+.tutorial-outcome { padding-block: 0 24px; }
+.tutorial-outcome h3 { margin-top: 20px; }
+.tutorial-session-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-block: 28px; }
+.tutorial-questions { border-top: 1px solid var(--line); }
+.tutorial-questions > details > summary { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.tutorial-questions > details > summary span { color: var(--muted); font-size: .75rem; font-weight: 500; }
+.tutorial-questions > details > summary span { display: inline-flex; align-items: center; gap: 8px; }
+.tutorial-questions > details[open] > summary .tutorial-disclosure-arrow { transform: rotate(180deg); }
+.tutorial-question-content { padding-top: 8px; }
+.tutorial-question-content > .form-stack { margin-top: 24px; }
+.tutorial-disclosure { font-size: .8125rem; color: var(--muted); }
+.tutorial-photo-selection { margin-block: 16px !important; }
+.tutorial-photo-selection label, .tutorial-stop-choice label { display: flex; align-items: start; gap: 12px; padding-block: 12px; min-height: 44px; line-height: 1.5; }
+.tutorial-photo-selection input, .tutorial-stop-choice input { margin-top: 5px; accent-color: var(--green); flex-shrink: 0; }
+.tutorial-photo-disclosure { margin-top: 24px; border-block: 1px solid var(--line); }
+.tutorial-photo-disclosure summary { display: flex; align-items: center; gap: 8px; }
+.tutorial-photos { display: grid; gap: 16px; }
+.tutorial-photos .tutorial-figure { margin-block: 12px; }
+.tutorial-turns { list-style: none; padding: 0; display: flex; flex-direction: column-reverse; }
+.tutorial-turns li { padding-block: 20px; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+.tutorial-turn-question { font-weight: 600; }
+.tutorial-sources { border-top: 1px solid var(--line); margin-top: 32px; }
+.tutorial-sources a { overflow-wrap: anywhere; text-decoration: underline; text-underline-offset: 3px; }
+.tutorial-review { max-width: 760px; border-top: 1px solid var(--line); padding-top: 28px; }
+.tutorial-review > .form-stack { margin-top: 28px; }
+.tutorial-review-kind { padding: 18px; background: var(--cream); border-radius: 12px; }
+@media (max-width: 1199px) { .tutorial-workspace { grid-template-columns: minmax(0, 1fr); gap: 32px; } .tutorial-questions { margin-top: 4px; } }
+@media (max-width: 639px) {
+  .tutorial-guide-list, .tutorial-guide-preview { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .tutorial-guide-choice { padding: 22px; }
+  .tutorial-guide-preview > .tutorial-figure { grid-row: 1; }
+  .tutorial-page .account-page-heading { flex-direction: column; gap: 12px; }
+  .tutorial-page .account-page-heading > .badge { margin-top: 0; }
+  .tutorial-resume, .tutorial-closed { flex-wrap: wrap; padding: 22px; gap: 14px; }
+  .tutorial-resume > div, .tutorial-closed > div { flex-basis: calc(100% - 50px); }
+  .tutorial-resume > .button { width: 100%; }
+  .tutorial-progress { flex-direction: column; align-items: stretch; gap: 12px; margin-block: 24px; }
+  .tutorial-progress progress { width: 100%; max-width: none; }
+  .tutorial-session-row { gap: 14px; padding-inline: 0; }
+  .tutorial-session-row > svg:first-child { display: none; }
+  .tutorial-guide-meta { flex-wrap: wrap; }
+  .tutorial-session-actions { flex-direction: column; align-items: stretch; }
+  .tutorial-review .form-grid { grid-template-columns: minmax(0, 1fr); }
+}

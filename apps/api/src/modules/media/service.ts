@@ -1,3 +1,4 @@
+import { authorizeTutorialUpload } from '../../shared/tutorials.js';
 import { Injectable, HttpStatus } from '@nestjs/common';
 import { secret } from '../../infrastructure/config.js';
 import { DatabaseService } from '../../infrastructure/database.service.js';
@@ -32,8 +33,15 @@ export class MediaService {
 
   constructor(private readonly db: DatabaseService, private readonly storage: StorageService) {}
 
-  async ticket(userId: string, input: MediaTicketInput, itemId?: string, caseId?: string, correctionCaseId?: string, conversationId?: string): Promise<{ ticketId: string; uploadUrl: string; expiresAt: string }> {
+  async ticket(userId: string, input: MediaTicketInput, itemId?: string, caseId?: string, correctionCaseId?: string, conversationId?: string, tutorialSessionId?: string): Promise<{ ticketId: string; uploadUrl: string; expiresAt: string }> {
     return serial(this.db, async (tx) => {
+    if (input.purpose === 'REPAIR_TUTORIAL') {
+      if (!tutorialSessionId || itemId || caseId || correctionCaseId || conversationId) throw new AppException(400, 'MEDIA_INVALID', 'Gunakan tiket foto dari sesi panduan.');
+      await authorizeTutorialUpload(tx, userId, tutorialSessionId);
+      const photos = await tx.repairTutorialPhoto.count({ where: { sessionId: tutorialSessionId, deletedAt: null } });
+      const pending = await tx.uploadTicket.count({ where: { tutorialSessionId, status: { in: ['ISSUED', 'UPLOADED'] }, expiresAt: { gt: new Date() } } });
+      if (photos + pending >= 12) throw new AppException(400, 'MEDIA_INVALID', 'Maksimal 12 foto per sesi, termasuk unggahan yang menunggu.');
+    }
     if (input.purpose === 'CASE_EVIDENCE' && !caseId && !correctionCaseId) throw new AppException(400, 'MEDIA_INVALID', 'Bukti kasus memerlukan tiket dari kasus terkait.');
     if (input.purpose === 'REPAIR_EVIDENCE' && !itemId) throw new AppException(400, 'MEDIA_INVALID', 'Bukti Repair harus terkait Item.');
     if (input.purpose === 'MESSAGE_ATTACHMENT') {
@@ -48,7 +56,7 @@ export class MediaService {
       if (input.purpose === 'ITEM' && item.media.length >= 8) throw new AppException(400, 'MEDIA_INVALID', 'Maksimal delapan foto per Item.');
     }
     const created = await tx.uploadTicket.create({ data: {
-      userId, itemId, caseId, correctionCaseId, conversationId, purpose: input.purpose, fileName: input.fileName, declaredMime: input.mime, declaredBytes: input.bytes,
+      userId, itemId, caseId, correctionCaseId, conversationId, tutorialSessionId, purpose: input.purpose, fileName: input.fileName, declaredMime: input.mime, declaredBytes: input.bytes,
       expiresAt: new Date(Date.now() + 15 * 60 * 1000),
     } });
     return { ticketId: created.id, uploadUrl: '/api/v1/media/uploads/' + created.id, expiresAt: created.expiresAt.toISOString() };
@@ -77,6 +85,10 @@ export class MediaService {
     const dimensions = await sharp(processed).metadata();
     await this.storage.write(storageKey, processed);
     const changed = await serial(this.db, async (tx) => {
+      if (ticket.purpose === 'REPAIR_TUTORIAL') {
+        if (!ticket.tutorialSessionId) throw new AppException(400, 'MEDIA_INVALID', 'Foto tidak terikat sesi.');
+        await authorizeTutorialUpload(tx, userId, ticket.tutorialSessionId);
+      }
       if (ticket.purpose === 'MESSAGE_ATTACHMENT') {
         if (!ticket.conversationId) throw new AppException(400, 'MEDIA_INVALID', 'Tiket foto tidak terikat percakapan.');
         await authorizeConversationUpload(tx, userId, ticket.conversationId);

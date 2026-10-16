@@ -1,3 +1,4 @@
+import { invalidateTutorials } from '../../shared/tutorials.js';
 import { attachmentDto } from '../conversations/message.js';
 import { expireOffers } from '../notifications/events.js';
 import { Injectable } from '@nestjs/common';
@@ -153,7 +154,8 @@ export class OperationsService {
         return { case: caseMeta(updated), reversed: false };
       }
       for (const item of items) {
-        await tx.item.update({ where: { id: item.id }, data: { currentOwnerId: item.fromUserId, purchaseYear: null, originalPriceIdr: null, functionSummary: null, completenessSummary: null, issueSummary: null, itemRevision: { increment: 1 }, version: { increment: 1 } } });
+        await invalidateTutorials(tx, item.id, 'OWNERSHIP_CORRECTED');
+      await tx.item.update({ where: { id: item.id }, data: { currentOwnerId: item.fromUserId, purchaseYear: null, originalPriceIdr: null, functionSummary: null, completenessSummary: null, issueSummary: null, itemRevision: { increment: 1 }, version: { increment: 1 } } });
         const listings = await tx.listing.findMany({ where: { itemId: item.id, status: { notIn: ['CLOSED', 'WITHDRAWN'] } }, select: { id: true } });
         await tx.listing.updateMany({ where: { id: { in: listings.map((l) => l.id) } }, data: { status: 'WITHDRAWN', closedAt: new Date(), publishedAt: null, version: { increment: 1 } } });
         await expireOffers(tx, { status: { in: ['PENDING', 'COUNTERED'] }, OR: [{ exchangeItemId: item.id }, { listingId: { in: listings.map((l) => l.id) } }] }, 'OWNERSHIP_CORRECTED');

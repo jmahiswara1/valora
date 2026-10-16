@@ -9,7 +9,7 @@ RepairVoidInput: repairVoidSchema
 };
 
 export const repairsOutputs = {
-Repair: object({ id: uuid, itemId: uuid, createdById: uuid, performedAt: date, actionSummary: text, privateNotes: nullable(text), costIdr: nullable(integer), costKind: nullable(text), outcome: text, afterCondition: text, status: text, shareSummaryPublic: { type: 'boolean' }, shareDetailsWithFutureOwner: { type: 'boolean' }, evidence: array(ref('Media')), voidReason: nullable(text), version: integer, createdAt: date, origin: text }, ['id', 'itemId', 'performedAt', 'actionSummary', 'outcome', 'afterCondition', 'status', 'shareSummaryPublic', 'evidence', 'version', 'createdAt', 'origin'])
+Repair: object({ activityKind: { type: 'string', enum: ['REPAIR', 'MAINTENANCE'] }, tutorialSessionId: nullable(uuid), id: uuid, itemId: uuid, createdById: uuid, performedAt: date, actionSummary: text, privateNotes: nullable(text), costIdr: nullable(integer), costKind: nullable(text), outcome: text, afterCondition: text, status: text, shareSummaryPublic: { type: 'boolean' }, shareDetailsWithFutureOwner: { type: 'boolean' }, evidence: array(ref('Media')), voidReason: nullable(text), version: integer, createdAt: date, origin: text }, ['activityKind', 'id', 'itemId', 'performedAt', 'actionSummary', 'outcome', 'afterCondition', 'status', 'shareSummaryPublic', 'evidence', 'version', 'createdAt', 'origin'])
 };
 
 export const repairsRoutes: Route[] = [

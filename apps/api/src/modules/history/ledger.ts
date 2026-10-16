@@ -27,13 +27,13 @@ export async function assessmentEvents(tx: Prisma.TransactionClient, row: Assess
 }
 
 export async function repairEvents(tx: Prisma.TransactionClient, row: RepairRecord) {
-  await event(tx, row.itemId, 'REPAIR_RECORDED', 'REPAIR', row.id, row.performedAt);
-  await contribution(tx, 'REPAIR', row.id, row.itemId, row.createdById, 'REPAIRS_RECORDED', row.performedAt);
+  await event(tx, row.itemId, row.activityKind === 'MAINTENANCE' ? 'MAINTENANCE_RECORDED' : 'REPAIR_RECORDED', 'REPAIR', row.id, row.performedAt);
+  if (row.activityKind === 'REPAIR') await contribution(tx, 'REPAIR', row.id, row.itemId, row.createdById, 'REPAIRS_RECORDED', row.performedAt);
 }
 
 export async function repairAdjustment(tx: Prisma.TransactionClient, row: RepairRecord, version: number, delta: bigint, reason: string, recordedAt = new Date(), origin = 'USER_REPORTED') {
   const original = await tx.impactEvent.findFirst({ where: { sourceType: 'REPAIR', sourceId: row.id, correctionOfId: null, attributedUserId: null } });
-  await contribution(tx, 'REPAIR', row.id, row.itemId, row.createdById, 'REPAIRS_RECORDED', original?.occurredAt ?? row.performedAt, delta, 'v' + version, original?.id, reason);
-  const originalPassport = await tx.passportEvent.findUnique({ where: { eventKey: ['REPAIR_RECORDED', row.id, row.itemId, ''].join(':') } });
+  if (row.activityKind === 'REPAIR') await contribution(tx, 'REPAIR', row.id, row.itemId, row.createdById, 'REPAIRS_RECORDED', original?.occurredAt ?? row.performedAt, delta, 'v' + version, original?.id, reason);
+  const originalPassport = await tx.passportEvent.findUnique({ where: { eventKey: [row.activityKind === 'MAINTENANCE' ? 'MAINTENANCE_RECORDED' : 'REPAIR_RECORDED', row.id, row.itemId, ''].join(':') } });
   await event(tx, row.itemId, 'CORRECTION', 'REPAIR', row.id, recordedAt, { kind: delta < 0n ? 'VOID' : 'RESTORED' }, 'v' + version, origin, originalPassport?.id);
 }

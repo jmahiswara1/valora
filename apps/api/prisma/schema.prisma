@@ -43,6 +43,7 @@ enum MediaVisibility {
 }
 
 enum UploadPurpose {
+  REPAIR_TUTORIAL
   ITEM
   REPAIR_EVIDENCE
   CASE_EVIDENCE
@@ -53,6 +54,22 @@ enum AssessmentStatus {
   INCOMPLETE
   PARTIAL_ECONOMIC
   COMPLETE
+}
+
+enum RepairActivityKind {
+  REPAIR
+  MAINTENANCE
+}
+
+enum RepairTutorialState {
+  PREFLIGHT
+  IN_PROGRESS
+  PAUSED
+  BLOCKED
+  REVIEW
+  RECORDED
+  STOPPED
+  INVALIDATED
 }
 
 enum RepairStatus {
@@ -150,6 +167,7 @@ model Category {
 }
 
 model User {
+  tutorialSessions RepairTutorialSession[]
   profilePhotoPublic Boolean @default(false)
   reviewsWritten Review[] @relation("ReviewAuthor")
   reviewsReceived Review[] @relation("ReviewSubject")
@@ -245,6 +263,7 @@ model VerificationToken {
 }
 
 model Item {
+  tutorialSessions RepairTutorialSession[]
   id                      String            @id @default(uuid()) @db.Uuid
   currentOwnerId          String            @db.Uuid
   currentOwner            User              @relation(fields: [currentOwnerId], references: [id])
@@ -287,6 +306,8 @@ model Item {
 }
 
 model UploadTicket {
+  tutorialSessionId String? @db.Uuid
+  tutorialSession RepairTutorialSession? @relation(fields: [tutorialSessionId], references: [id], onDelete: Restrict)
   id            String        @id @default(uuid()) @db.Uuid
   userId        String        @db.Uuid
   user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -400,6 +421,9 @@ model Assessment {
 }
 
 model RepairRecord {
+  activityKind RepairActivityKind @default(REPAIR)
+  tutorialSessionId String? @unique @db.Uuid
+  tutorialSession RepairTutorialSession? @relation(fields: [tutorialSessionId], references: [id], onDelete: Restrict)
   id                          String             @id @default(uuid()) @db.Uuid
   itemId                      String             @db.Uuid
   item                        Item               @relation(fields: [itemId], references: [id])
@@ -1245,4 +1269,84 @@ model HandoverEvent {
   itemId String? @db.Uuid
   occurredAt DateTime @default(now())
   @@index([transactionId, occurredAt, id])
+}
+
+model RepairTutorialSession {
+  id String @id @default(uuid()) @db.Uuid
+  createdById String @db.Uuid
+  createdBy User @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  itemId String @db.Uuid
+  item Item @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  guideId String @db.VarChar(80)
+  guideVersion Int
+  guideHash String @db.Char(64)
+  guideSnapshot Json
+  itemContext Json
+  sourceItemRevision Int
+  assessmentId String? @db.Uuid
+  problem String @default("") @db.VarChar(1500)
+  preflight Json @default("{}")
+  progress Json @default("[]")
+  performedActions Json @default("[]")
+  draft Json @default("{}")
+  state RepairTutorialState @default(PREFLIGHT)
+  reason String? @db.VarChar(160)
+  version Int @default(1)
+  startedAt DateTime?
+  closedAt DateTime?
+  purgedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  interactions RepairTutorialInteraction[]
+  photos RepairTutorialPhoto[]
+  uploadTickets UploadTicket[]
+  record RepairRecord?
+  @@index([createdById, createdAt, id])
+  @@index([closedAt, purgedAt])
+}
+model RepairTutorialInteraction {
+  id String @id @default(uuid()) @db.Uuid
+  sessionId String @db.Uuid
+  session RepairTutorialSession @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  createdById String @db.Uuid
+  requestId String @db.Uuid
+  requestHash String @db.Char(64)
+  contextHash String @db.Char(64)
+  stepId String @db.VarChar(80)
+  question String @db.VarChar(1000)
+  photoIds Json @default("[]")
+  status String @default("PENDING") @db.VarChar(20)
+  reply Json?
+  model String? @db.VarChar(160)
+  promptVersion String? @db.VarChar(80)
+  failureReason String? @db.VarChar(80)
+  createdAt DateTime @default(now())
+  answeredAt DateTime?
+  @@unique([createdById, requestId])
+  @@index([sessionId, createdAt, id])
+}
+model RepairTutorialPhoto {
+  id String @id @default(uuid()) @db.Uuid
+  sessionId String @db.Uuid
+  session RepairTutorialSession @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  createdById String @db.Uuid
+  storageKey String @unique @db.VarChar(180)
+  stepId String @db.VarChar(80)
+  mime String @db.VarChar(40)
+  bytes Int
+  width Int
+  height Int
+  hash String @db.Char(64)
+  deletedAt DateTime?
+  createdAt DateTime @default(now())
+  @@index([sessionId, deletedAt])
+}
+model RepairTutorialAiLease {
+  key String @id @db.VarChar(80)
+  token String @db.Uuid
+  actorId String @db.Uuid
+  sessionId String @db.Uuid
+  interactionId String @db.Uuid
+  expiresAt DateTime
+  @@index([expiresAt])
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { NotificationBell } from '@/features/notifications/bell';
-import { Search, LayoutDashboard, Bell, Heart, Package, Leaf, Store, Handshake, ReceiptText, MessageCircle, Menu, X, Settings, ShieldCheck, LogOut, ChevronRight, ArrowUpRight, ChevronDown } from 'lucide-react';
+import { Search, BookOpen, LayoutDashboard, Bell, Heart, Package, Leaf, Store, Handshake, ReceiptText, MessageCircle, Menu, X, Settings, ShieldCheck, LogOut, ChevronRight, ArrowUpRight, ChevronDown } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useSession, useMe } from '@/lib/session';
@@ -14,6 +14,7 @@ const sections = [
     { href: '/app', label: 'Ringkasan', Icon: LayoutDashboard },
     { href: '/app/notifikasi', label: 'Notifikasi', Icon: Bell },
     { href: '/app/barang', label: 'Barang saya', Icon: Package },
+    { href: '/app/panduan', label: 'Panduan saya', Icon: BookOpen },
     { href: '/app/impact', label: 'Impact saya', Icon: Leaf },
   ] },
   { label: 'Aktivitas Market', entries: [
@@ -26,7 +27,7 @@ const sections = [
   ] },
 ];
 
-const routeNames: Record<string, string> = { baru: 'Tambah barang', edit: 'Edit barang', passport: 'Passport', penilaian: 'Penilaian', perbaikan: 'Perawatan', new: 'Buat Listing', profil: 'Profil saya', koreksi: 'Peninjauan koreksi' };
+const routeNames: Record<string, string> = { baru: 'Tambah barang', edit: 'Edit barang', passport: 'Passport', penilaian: 'Penilaian', perbaikan: 'Perawatan & perbaikan', panduan: 'Panduan', new: 'Buat Listing', profil: 'Profil saya', koreksi: 'Peninjauan koreksi' };
 
 const navigationEntries = sections.flatMap((section) => section.entries);
 

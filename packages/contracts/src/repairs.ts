@@ -3,6 +3,7 @@ import { uuidSchema } from './common.js';
 import type { MediaDto } from './media.js';
 
 const repairFieldsSchema = z.object({
+  activityKind: z.enum(['REPAIR', 'MAINTENANCE']).default('REPAIR'),
   expectedItemVersion: z.number().int().positive(),
   performedAt: z.iso.datetime(),
   actionSummary: z.string().trim().min(5).max(1500),
@@ -18,7 +19,7 @@ const repairFieldsSchema = z.object({
 
 export const repairCreateSchema = repairFieldsSchema.refine((value) => (value.costIdr == null) === (value.costKind == null), { message: 'Jenis biaya wajib bila nominal diisi', path: ['costKind'] });
 
-export const repairCorrectionSchema = repairFieldsSchema.omit({ expectedItemVersion: true, evidenceTicketIds: true }).partial().extend({ expectedVersion: z.number().int().positive(), reason: z.string().trim().min(5).max(500) });
+export const repairCorrectionSchema = repairFieldsSchema.omit({ expectedItemVersion: true, evidenceTicketIds: true, activityKind: true }).partial().extend({ expectedVersion: z.number().int().positive(), reason: z.string().trim().min(5).max(500) });
 
 export const repairVoidSchema = z.object({ expectedVersion: z.number().int().positive(), reason: z.string().trim().min(5).max(500) });
 
@@ -28,4 +29,4 @@ export type RepairCorrectionInput = z.infer<typeof repairCorrectionSchema>;
 
 export type RepairVoidInput = z.infer<typeof repairVoidSchema>;
 
-export interface RepairDto { id: string; itemId: string; createdById?: string; performedAt: string; actionSummary: string; privateNotes?: string | null; costIdr?: number | null; costKind?: 'ACTUAL' | 'ESTIMATE' | null; outcome: 'SUCCEEDED' | 'UNSUCCESSFUL'; afterCondition: string; status: 'VALID' | 'VOID'; shareSummaryPublic: boolean; shareDetailsWithFutureOwner?: boolean; evidence: MediaDto[]; voidReason?: string | null; version: number; createdAt: string; origin: 'USER_REPORTED' }
+export interface RepairDto { activityKind: 'REPAIR' | 'MAINTENANCE'; tutorialSessionId?: string | null; id: string; itemId: string; createdById?: string; performedAt: string; actionSummary: string; privateNotes?: string | null; costIdr?: number | null; costKind?: 'ACTUAL' | 'ESTIMATE' | null; outcome: 'SUCCEEDED' | 'UNSUCCESSFUL'; afterCondition: string; status: 'VALID' | 'VOID'; shareSummaryPublic: boolean; shareDetailsWithFutureOwner?: boolean; evidence: MediaDto[]; voidReason?: string | null; version: number; createdAt: string; origin: 'USER_REPORTED' }

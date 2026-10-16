@@ -1,3 +1,4 @@
+import { assertNoStartedTutorial } from './tutorials.js';
 import { notifyTransaction } from '../modules/notifications/events.js';
 import { requestContext } from './request-context.js';
 import { authorizeReplay, requireRecentAuthentication } from './actions.js';
@@ -88,6 +89,7 @@ export async function idempotent<T>(db: DatabaseService, actorId: string, operat
 export async function eligible(tx: Prisma.TransactionClient, itemId: string, ownerId: string, type: 'RESELL' | 'EXCHANGE' | 'DONATE', assessmentId?: string) {
   const item = await tx.item.findUnique({ where: { id: itemId } });
   if (!item || item.currentOwnerId !== ownerId || item.archivedAt) throw new AppException(409, 'STATE_CONFLICT', 'Kepemilikan Item sudah berubah.');
+  await assertNoStartedTutorial(tx, itemId);
   const category = await tx.category.findUnique({ where: { code: item.categoryCode } });
   const subcategory = item.subcategoryCode ? await tx.category.findUnique({ where: { code: item.subcategoryCode } }) : null;
   if (!category?.active || (item.subcategoryCode && !subcategory?.active)) throw new AppException(422, 'ACTION_INELIGIBLE', 'Kategori dinonaktifkan.');

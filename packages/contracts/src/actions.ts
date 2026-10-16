@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { uuidSchema } from './common.js';
 
 // Stage 6: recovery operation names are shared by API and browser.
-export const actionOperationNames = ['handover-propose', 'handover-respond', 'handover-withdraw', 'shipment-update', 'accept', 'confirm', 'cash-confirm', 'cancel-request', 'cancel-respond', 'dispute', 'overdue-case', 'evidence', 'case-claim', 'case-access', 'resolve', 'correction-open', 'correction-claim', 'operations-grant', 'correction-evidence', 'correction-close', 'ownership-correction', 'impact-adjust', 'source-correction', 'passport-visibility', 'user-status', 'report-claim', 'report-resolve', 'admin-listing', 'retention-hold', 'retention-release', 'rubric-draft', 'rubric-edit', 'rubric-publish', 'category', 'reference-status', 'economic-reference', 'repair-correct', 'repair-void', 'moderation', 'review-create', 'review-reply', 'review-visibility'] as const;
+export const actionOperationNames = ['tutorial-create', 'tutorial-action', 'tutorial-record', 'handover-propose', 'handover-respond', 'handover-withdraw', 'shipment-update', 'accept', 'confirm', 'cash-confirm', 'cancel-request', 'cancel-respond', 'dispute', 'overdue-case', 'evidence', 'case-claim', 'case-access', 'resolve', 'correction-open', 'correction-claim', 'operations-grant', 'correction-evidence', 'correction-close', 'ownership-correction', 'impact-adjust', 'source-correction', 'passport-visibility', 'user-status', 'report-claim', 'report-resolve', 'admin-listing', 'retention-hold', 'retention-release', 'rubric-draft', 'rubric-edit', 'rubric-publish', 'category', 'reference-status', 'economic-reference', 'repair-correct', 'repair-void', 'moderation', 'review-create', 'review-reply', 'review-visibility'] as const;
 
 export const actionStatusSchema = z.object({ operation: z.string().min(1).max(180).refine((s) => actionOperationNames.some((name) => s === name || s.startsWith(name + ':'))), key: uuidSchema });
 
@@ -11,6 +11,8 @@ export type ActionStatusDto = { status: 'COMMITTED' | 'PURGED' | 'NOT_FOUND'; co
 export function actionOperationFor(path: string, payload: unknown): string {
   const input = (payload ?? {}) as Record<string, string>;
   const rules: [RegExp, (m: RegExpMatchArray) => string][] = [
+    [/^\/items\/([^/]+)\/repair-tutorial-sessions$/, m => 'tutorial-create:' + m[1]],
+    [/^\/repair-tutorial-sessions\/([^/]+)\/(actions|record)$/, m => (m[2] === 'record' ? 'tutorial-record:' : 'tutorial-action:') + m[1]],
     [/^\/transactions\/([^/]+)\/handover\/proposals$/, m => 'handover-propose:' + m[1]],
     [/^\/transactions\/([^/]+)\/handover\/proposals\/([^/]+)\/(respond|withdraw)$/, m => 'handover-' + m[3] + ':' + m[1] + ':' + m[2]],
     [/^\/transactions\/([^/]+)\/handover\/shipments\/([^/]+)$/, m => 'shipment-update:' + m[1] + ':' + m[2]],

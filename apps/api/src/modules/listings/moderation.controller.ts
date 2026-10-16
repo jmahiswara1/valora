@@ -1,3 +1,4 @@
+import { assertNoStartedTutorial } from '../../shared/tutorials.js';
 import { createHash } from 'node:crypto';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { Controller, UseGuards, Get, Param, Post, Req, Body, Headers } from '@nestjs/common';
@@ -54,6 +55,7 @@ export class ListingModerationController {
       const listing = await tx.listing.findUniqueOrThrow({ where: { id: revision.listingId }, include: { item: true } });
       if (listing.version !== input.expectedVersion || listing.status !== 'PENDING_REVIEW' || listing.currentRevisionId !== revisionId || revision.itemRevision !== listing.item.itemRevision || listing.item.currentOwnerId !== listing.ownerId) throw new AppException(409, 'STATE_CONFLICT', 'Revisi tidak lagi menjadi pengajuan terkini.');
       if (input.decision === 'APPROVE') {
+        await assertNoStartedTutorial(tx, listing.itemId);
         if (await tx.listing.findFirst({ where: { itemId: listing.itemId, id: { not: listing.id }, status: { in: ['ACTIVE', 'RESERVED'] } }, select: { id: true } })) throw new AppException(409, 'STATE_CONFLICT', 'Item ini sudah memiliki Listing aktif.');
         const flags = safetyFlags(revision.assessment);
         const action = listing.type === 'RESELL' ? 'RESELL' : listing.type;

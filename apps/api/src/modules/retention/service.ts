@@ -1,3 +1,4 @@
+import { purgeTutorialPrivate } from '../tutorials/purge.js';
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../../infrastructure/database.service.js';
 import { StorageService } from '../../infrastructure/storage.service.js';
@@ -62,6 +63,7 @@ export class RetentionService {
       await lockRows(tx, 'User', [account.id]);
       const fresh = await tx.user.findUniqueOrThrow({ where: { id: account.id } });
       if (fresh.anonymizedAt || fresh.status !== 'CLOSED' || await this.blockedAccount(tx, account.id, now)) return 0;
+      await purgeTutorialPrivate(tx, (await tx.repairTutorialSession.findMany({ where: { createdById: account.id, purgedAt: null }, select: { id: true } })).map(s => s.id), now, true);
       const assets = await tx.mediaAsset.findMany({ where: { OR: [{ item: { currentOwnerId: account.id, reservedByTransactionId: null, transfers: { none: {} } } }, { uploadedById: account.id, repairRecordId: { not: null }, shareWithFutureOwner: false }], caseId: null, deletedAt: null } });
       for (const asset of assets) { await tx.mediaAsset.update({ where: { id: asset.id }, data: { deletedAt: now } }); await queueDeletion(tx, asset.storageKey, now); }
       await tx.item.updateMany({ where: { currentOwnerId: account.id, reservedByTransactionId: null, transfers: { none: {} } }, data: { archivedAt: now, title: erased, description: erased, functionSummary: null, conditionSummary: null, completenessSummary: null, issueSummary: null, purchaseYear: null, originalPriceIdr: null } });

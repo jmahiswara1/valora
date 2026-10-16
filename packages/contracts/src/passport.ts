@@ -1,6 +1,6 @@
 
 
-export interface PassportTimelineEntry { id: string; type: string; origin: string; occurredAt: string; recordedAt: string; correctionOfId: string | null; summary: string; assessment?: { status: string; score: number | null; label: string | null; ruleVersion: string; historical: boolean; valid: boolean }; repair?: { summary: string; afterCondition: string; status: string; outcome: string } }
+export interface PassportTimelineEntry { id: string; type: string; origin: string; occurredAt: string; recordedAt: string; correctionOfId: string | null; summary: string; assessment?: { status: string; score: number | null; label: string | null; ruleVersion: string; historical: boolean; valid: boolean }; repair?: { activityKind?: 'REPAIR' | 'MAINTENANCE'; summary: string; afterCondition: string; status: string; outcome: string } }
 
 export interface PassportShareDto { url: string; access: 'PUBLIC' | 'LIMITED' | 'UNAVAILABLE' }
 

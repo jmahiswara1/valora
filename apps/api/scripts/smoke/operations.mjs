@@ -48,7 +48,7 @@ let rollbackTrigger = false;
 try {
   const doc = await (await fetch(base + '/api/docs-json')).json();
   for (const route of ['/passport/{id}', '/impact/public', '/admin/impact/corrections', '/admin/rubrics/drafts/{id}/publish', '/admin/retention/holds', '/assessments/{id}/explain']) assert(doc.paths['/api/v1' + route]);
-  assert.equal(doc.info.version, '1.17.0');
+  assert.equal(doc.info.version, '1.18.0');
   assert.deepEqual(doc.components.schemas.Passport.properties.share.properties.access.enum, ['PUBLIC', 'LIMITED', 'UNAVAILABLE']);
   assert(doc.components.schemas.Passport.required.includes('share'));
   assert.equal((await a.account.request('/admin/dashboard')).status, 403);

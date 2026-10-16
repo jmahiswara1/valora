@@ -1,3 +1,4 @@
+import { TutorialRetentionService } from '../../modules/tutorials/retention.js';
 import { exclusiveJob } from './lock.js';
 import { serial } from '../../shared/transactions.js';
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
@@ -10,7 +11,7 @@ import { TransactionsService } from "../../modules/transactions/service.js";
 export class MaintenanceService implements OnModuleInit, OnModuleDestroy {
   private timer?: NodeJS.Timeout;
 
-  constructor(private readonly db: DatabaseService, private readonly media: MediaService, private readonly transactions: TransactionsService, private readonly retention: RetentionService) {}
+  constructor(private readonly db: DatabaseService, private readonly media: MediaService, private readonly transactions: TransactionsService, private readonly retention: RetentionService, private readonly tutorials: TutorialRetentionService) {}
 
   async purgeClosedAccounts(): Promise<void> { await this.retention.accounts(); await this.retention.drain(); }
 
@@ -18,6 +19,7 @@ export class MaintenanceService implements OnModuleInit, OnModuleDestroy {
   private async runUnlocked(): Promise<void> {
     await this.media.cleanupOrphans();
     await this.retention.purge();
+    await this.tutorials.run();
     await this.db.verificationToken.deleteMany({ where: { expiresAt: { lt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } } });
     await serial(this.db, async (tx) => {
       const rows = await tx.mailOutbox.findMany({ where: { sentAt: { not: null }, expiresAt: { lt: new Date() }, createdAt: { lt: new Date(Date.now() - 86400000) } }, select: { id: true } });

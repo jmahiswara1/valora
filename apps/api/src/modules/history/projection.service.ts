@@ -10,7 +10,7 @@ import type { Response } from 'express';
 import { impactMetrics } from './ledger.js';
 import { period } from './helpers.js';
 
-const labels: Record<string, string> = { REGISTERED: 'Didaftarkan di Valora', ASSESSMENT_CREATED: 'Penilaian dilaporkan pemilik', REPAIR_RECORDED: 'Perbaikan dilaporkan pemilik', LISTED: 'Listing dipublikasikan', TRANSFERRED_BY_SALE: 'Berpindah melalui Resell', TRANSFERRED_BY_EXCHANGE: 'Berpindah melalui Exchange', TRANSFERRED_BY_DONATION: 'Berpindah melalui Donate', CORRECTION: 'Riwayat dikoreksi' };
+const labels: Record<string, string> = { REGISTERED: 'Didaftarkan di Valora', ASSESSMENT_CREATED: 'Penilaian dilaporkan pemilik', REPAIR_RECORDED: 'Perbaikan dilaporkan pemilik', MAINTENANCE_RECORDED: 'Perawatan dilaporkan pemilik', LISTED: 'Listing dipublikasikan', TRANSFERRED_BY_SALE: 'Berpindah melalui Resell', TRANSFERRED_BY_EXCHANGE: 'Berpindah melalui Exchange', TRANSFERRED_BY_DONATION: 'Berpindah melalui Donate', CORRECTION: 'Riwayat dikoreksi' };
 
 @Injectable()
 export class PassportImpactService {
@@ -47,10 +47,10 @@ export class PassportImpactService {
           const active = await tx.rubricVersion.findFirst({ where: { rubricKey: assessment.rubricVersion.rubricKey, effectiveAt: { lte: new Date() } }, orderBy: [{ effectiveAt: 'desc' }, { publishedAt: 'desc' }, { id: 'desc' }] });
           entry.assessment = { status: assessment.status, score: assessment.valid ? assessment.score : null, label: assessment.valid ? assessment.label : null, ruleVersion: assessment.rubricVersion.ruleVersion, historical: !assessment.valid || assessment.createdById !== item.currentOwnerId || assessment.itemRevision !== item.itemRevision || active?.id !== assessment.rubricVersionId, valid: assessment.valid };
         }
-        if (row.sourceType === 'REPAIR' && row.eventType === 'REPAIR_RECORDED') {
+        if (row.sourceType === 'REPAIR' && ['REPAIR_RECORDED', 'MAINTENANCE_RECORDED'].includes(row.eventType)) {
           const repair = await tx.repairRecord.findUnique({ where: { id: row.sourceId } });
           if (!repair || (!ownerId && (!repair.shareSummaryPublic || repair.status !== 'VALID'))) continue;
-          entry.repair = { summary: repair.actionSummary, afterCondition: repair.afterCondition, status: repair.status, outcome: repair.outcome };
+          entry.repair = { activityKind: repair.activityKind, summary: repair.actionSummary, afterCondition: repair.afterCondition, status: repair.status, outcome: repair.outcome };
         }
         if (row.eventType.startsWith('TRANSFERRED')) entry.summary += row.origin === 'ADMIN_AUTHORIZED' ? ' · putusan admin' : ' · konfirmasi kedua pihak';
         result.timeline.push(entry);

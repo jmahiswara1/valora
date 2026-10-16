@@ -1,3 +1,4 @@
+import { invalidateTutorials } from '../../shared/tutorials.js';
 import type { Prisma } from '../../generated/prisma/client.js';
 import type { ItemDto, ItemCreateInput, ItemPatchInput } from '@valora/contracts';
 import { Injectable } from '@nestjs/common';
@@ -121,7 +122,7 @@ export class ItemsService {
       await tx.$queryRaw`SELECT id FROM "Item" WHERE id = ${id}::uuid FOR UPDATE`;
       const changed = await tx.item.updateMany({ where: { id, currentOwnerId: userId, version: input.expectedVersion, archivedAt: null, reservedByTransactionId: null }, data });
       if (changed.count !== 1) throw new AppException(409, 'STATE_CONFLICT', 'Item sudah berubah. Muat ulang sebelum menyimpan.');
-      if (materialChanged) await pauseListingsForItem(tx, id);
+      if (materialChanged) { await invalidateTutorials(tx, id); await pauseListingsForItem(tx, id); }
     });
     return this.get(userId, id);
   }
@@ -141,7 +142,7 @@ export class ItemsService {
       const changed = await tx.item.updateMany({ where: { id: itemId, currentOwnerId: userId, version: item.version, archivedAt: null, reservedByTransactionId: null }, data: { version: { increment: 1 }, itemRevision: { increment: 1 } } });
       if (changed.count !== 1) throw new AppException(409, 'STATE_CONFLICT', 'Item sudah berubah. Muat ulang sebelum mengunggah.');
       await tx.mediaAsset.create({ data: { itemId, uploadedById: userId, storageKey: ticket.storageKey, mime: ticket.actualMime, bytes: ticket.actualBytes, orderIndex: Math.max(-1, ...item.media.map((media) => media.orderIndex)) + 1, processedAt: ticket.uploadedAt ?? now } });
-      await pauseListingsForItem(tx, itemId);
+      await invalidateTutorials(tx, itemId); await pauseListingsForItem(tx, itemId);
     });
     return this.get(userId, itemId);
   }
@@ -158,6 +159,7 @@ export class ItemsService {
       const changed = await tx.item.updateMany({ where: { id: itemId, currentOwnerId: userId, version: item.version, archivedAt: null, reservedByTransactionId: null }, data: { version: { increment: 1 }, itemRevision: { increment: 1 } } });
       if (changed.count !== 1) throw new AppException(409, 'STATE_CONFLICT', 'Item sudah berubah. Muat ulang sebelum menghapus foto.');
       await tx.mediaAsset.update({ where: { id: mediaId }, data: { deletedAt: new Date(), version: { increment: 1 } } });
+      await invalidateTutorials(tx, itemId);
       await pauseListingsForItem(tx, itemId);
     });
     await this.storage.remove(asset.storageKey);

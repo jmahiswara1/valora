@@ -1,3 +1,4 @@
+import { assertNoStartedTutorial, invalidateTutorials } from '../../shared/tutorials.js';
 import type { Prisma } from '../../generated/prisma/client.js';
 import { createHash } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
@@ -30,7 +31,7 @@ export class RepairsService {
     const creator = row.createdById === viewerId;
     const shared = row.status === 'VALID' && row.shareDetailsWithFutureOwner && currentOwnerId === viewerId;
     return {
-      id: row.id, itemId: row.itemId, ...(creator ? { createdById: row.createdById } : {}), performedAt: row.performedAt.toISOString(),
+      activityKind: row.activityKind, ...(creator ? { tutorialSessionId: row.tutorialSessionId } : {}), id: row.id, itemId: row.itemId, ...(creator ? { createdById: row.createdById } : {}), performedAt: row.performedAt.toISOString(),
       actionSummary: row.actionSummary, ...(creator || shared ? { privateNotes: row.privateNotes } : {}),
       ...(creator ? { costIdr: row.costIdr === null ? null : Number(row.costIdr), costKind: row.costKind } : {}),
       outcome: row.outcome, afterCondition: row.afterCondition, status: row.status,
@@ -41,16 +42,21 @@ export class RepairsService {
   }
 
   async create(userId: string, itemId: string, input: RepairCreateInput): Promise<RepairDto> {
-    if (!uuidSchema.safeParse(itemId).success) throw new AppException(404, 'NOT_FOUND', 'Item tidak ditemukan.');
-    if (new Date(input.performedAt) > new Date()) throw new AppException(400, 'INVALID_INPUT', 'Tanggal Repair tidak boleh di masa depan.');
-    if (new Set(input.evidenceTicketIds).size !== input.evidenceTicketIds.length) throw new AppException(400, 'MEDIA_INVALID', 'Foto bukti tidak boleh berulang.');
-    return serial(this.db, async (tx) => {
+    if (!uuidSchema.safeParse(itemId).success) throw new AppException(404, 'NOT_FOUND', 'Barang tidak ditemukan.');
+    return serial(this.db, tx => this.createInTransaction(tx, userId, itemId, input));
+  }
+
+  async createInTransaction(tx: Prisma.TransactionClient, userId: string, itemId: string, input: RepairCreateInput, tutorialSessionId?: string): Promise<RepairDto> {
+    if (new Date(input.performedAt) > new Date()) throw new AppException(400, 'INVALID_INPUT', 'Tanggal tidak boleh di masa depan.');
+    if (new Set(input.evidenceTicketIds).size !== input.evidenceTicketIds.length) throw new AppException(400, 'MEDIA_INVALID', 'Foto tidak boleh berulang.');
       await lockRows(tx, 'User', [userId]);
       await tx.$queryRaw`SELECT id FROM "Item" WHERE id = ${itemId}::uuid FOR UPDATE`;
       const item = await tx.item.findFirst({ where: { id: itemId, currentOwnerId: userId, archivedAt: null } });
       if (!item) throw new AppException(404, 'NOT_FOUND', 'Item tidak ditemukan.');
       if (item.reservedByTransactionId) throw new AppException(409, 'ITEM_RESERVED', 'Item sedang dalam kesepakatan.');
       if (item.version !== input.expectedItemVersion) throw new AppException(409, 'STATE_CONFLICT', 'Item berubah. Muat ulang sebelum menyimpan Repair.');
+      await assertNoStartedTutorial(tx, itemId, tutorialSessionId);
+      await invalidateTutorials(tx, itemId, 'MANUAL_RECORD', tutorialSessionId);
       const now = new Date();
       const tickets = await tx.uploadTicket.findMany({ where: { id: { in: input.evidenceTicketIds }, userId, itemId, purpose: 'REPAIR_EVIDENCE', status: 'UPLOADED', expiresAt: { gt: now } } });
       if (tickets.length !== input.evidenceTicketIds.length || tickets.some((ticket) => !ticket.storageKey || !ticket.actualMime || !ticket.actualBytes)) throw new AppException(400, 'MEDIA_INVALID', 'Foto bukti belum berhasil diunggah.');
@@ -60,7 +66,7 @@ export class RepairsService {
       const claimed = await tx.uploadTicket.updateMany({ where: { id: { in: input.evidenceTicketIds }, userId, itemId, purpose: 'REPAIR_EVIDENCE', status: 'UPLOADED', expiresAt: { gt: now } }, data: { status: 'CONSUMED', consumedAt: now } });
       if (claimed.count !== input.evidenceTicketIds.length) throw new AppException(409, 'STATE_CONFLICT', 'Foto bukti telah dipakai.');
       const record = await tx.repairRecord.create({ data: {
-        itemId, createdById: userId, performedAt: new Date(input.performedAt), actionSummary: input.actionSummary,
+        activityKind: input.activityKind, tutorialSessionId, itemId, createdById: userId, performedAt: new Date(input.performedAt), actionSummary: input.actionSummary,
         privateNotes: input.privateNotes ?? null, costIdr: input.costIdr == null ? null : BigInt(input.costIdr),
         costKind: input.costKind ?? null, outcome: input.outcome, afterCondition: input.afterCondition,
         shareSummaryPublic: input.shareSummaryPublic, shareDetailsWithFutureOwner: input.shareDetailsWithFutureOwner,
@@ -73,7 +79,6 @@ export class RepairsService {
       if (tickets.length) await tx.uploadTicket.updateMany({ where: { id: { in: input.evidenceTicketIds } }, data: { itemId } });
       const full = await tx.repairRecord.findUniqueOrThrow({ where: { id: record.id }, include: { evidence: true } });
       return this.dto(full, userId, userId);
-    });
   }
 
   async list(userId: string, itemId: string, limitText?: string, cursorText?: string): Promise<{ data: RepairDto[]; meta: { nextCursor: string | null } }> {
@@ -133,9 +138,10 @@ export class RepairsService {
       if (input.shareDetailsWithFutureOwner !== undefined) await tx.mediaAsset.updateMany({ where: { repairRecordId: id }, data: { shareWithFutureOwner: input.shareDetailsWithFutureOwner } });
       if (input.afterCondition && input.afterCondition !== row.afterCondition && row.item.currentOwnerId === userId && row.item.conditionSummary === row.afterCondition && !row.item.reservedByTransactionId) {
         await tx.item.update({ where: { id: row.itemId }, data: { conditionSummary: input.afterCondition, version: { increment: 1 }, itemRevision: { increment: 1 } } });
+        await invalidateTutorials(tx, row.itemId, 'RECORD_CHANGED');
         await pauseListingsForItem(tx, row.itemId);
       }
-      const originalEvent = await tx.passportEvent.findUnique({ where: { eventKey: ['REPAIR_RECORDED', row.id, row.itemId, ''].join(':') } });
+      const originalEvent = await tx.passportEvent.findUnique({ where: { eventKey: [row.activityKind === 'MAINTENANCE' ? 'MAINTENANCE_RECORDED' : 'REPAIR_RECORDED', row.id, row.itemId, ''].join(':') } });
       await event(tx, row.itemId, 'CORRECTION', 'REPAIR', row.id, new Date(), { kind: 'REPAIR_UPDATED' }, 'v' + updated.version, 'USER_REPORTED', originalEvent?.id);
       const response = this.dto(updated, userId, row.item.currentOwnerId);
       await tx.repairCorrection.create({ data: { repairId: id, createdById: userId, version: updated.version, kind: 'CORRECTION', reason: input.reason, idempotencyKey, payloadHash, responseSnapshot: response as unknown as Prisma.InputJsonValue, beforeState: before as Prisma.InputJsonValue, afterState: snapshot(updated) as Prisma.InputJsonValue } });
@@ -163,6 +169,7 @@ export class RepairsService {
       const updated = await tx.repairRecord.update({ where: { id }, data: { status: 'VOID', voidReason: input.reason, version: { increment: 1 } }, include: { evidence: true } });
       if (row.item.currentOwnerId === userId && !row.item.reservedByTransactionId) {
         await tx.item.update({ where: { id: row.itemId }, data: { version: { increment: 1 }, itemRevision: { increment: 1 } } });
+        await invalidateTutorials(tx, row.itemId, 'RECORD_CHANGED');
         await pauseListingsForItem(tx, row.itemId);
       }
       await repairAdjustment(tx, row, updated.version, -1n, input.reason);

@@ -9,7 +9,8 @@ const hash = (value: string) => createHash('sha256').update(value).digest('hex')
 export async function reserveAiBudget(tx: Prisma.TransactionClient, actorId: string, limits: { userQuota: number; appQuota: number }, now: Date): Promise<{ reason: 'BUSY' | 'USER_QUOTA' | 'APP_QUOTA'; retryAt: Date } | null> {
   await tx.explanationLease.deleteMany({ where: { expiresAt: { lte: now } } });
   await tx.photoAnalysisLease.deleteMany({ where: { expiresAt: { lte: now } } });
-  const count = await tx.explanationLease.count() + await tx.photoAnalysisLease.count();
+  await tx.repairTutorialAiLease.deleteMany({ where: { expiresAt: { lte: now } } });
+  const count = await tx.explanationLease.count() + await tx.photoAnalysisLease.count() + await tx.repairTutorialAiLease.count();
   if (count >= 2) return { reason: 'BUSY', retryAt: new Date(now.getTime() + 30000) };
   const resetAt = nextWibDay(now);
   const userKey = hash('explanation:daily:user:' + actorId), appKey = hash('explanation:daily:app');
