@@ -1,9 +1,10 @@
 'use client';
 import { MarketOwnerProfile } from './owner';
 
-import { Select } from '@/components/ui/select';
+import { ExchangePicker } from '@/features/exchange/picker';
+import { CashEditor, cashDraft, cashValue } from '@/features/exchange/cash';
 
-import type { PublicListingDto, ItemDto, OfferDto, ConversationDto } from '@valora/contracts';
+import type { PublicListingDto, OfferDto, ConversationDto } from '@valora/contracts';
 import { useState, useRef } from 'react';
 import { ImageOff, ArrowUpRight, MessageCircle, Check, X, ArrowLeft, PackageCheck, MapPin } from 'lucide-react';
 import { useSession } from '@/lib/session';
@@ -44,12 +45,13 @@ function ListingActions({ listing, reload }: { listing: ActiveListing; reload: (
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [price, setPrice] = useState(listing.revision.askingPriceIdr?.toString() ?? '');
-  const [exchangeItemId, setExchangeItemId] = useState('');
+  const [exchangeItemIds, setExchangeItemIds] = useState<string[]>([]);
+  const [cash, setCash] = useState(cashDraft());
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState<'offer' | 'chat' | null>(null);
   const pending = useRef(false);
   const request = useRef<{ signature: string; id: string } | null>(null);
-  const firstField = useRef<HTMLInputElement | HTMLButtonElement | HTMLTextAreaElement>(null);
+  const firstField = useRef<HTMLInputElement | HTMLButtonElement | HTMLTextAreaElement | HTMLFieldSetElement>(null);
   const toggle = useRef<HTMLButtonElement>(null);
   const [error, setError] = useState('');
   const [errorCode, setErrorCode] = useState('');
@@ -58,7 +60,6 @@ function ListingActions({ listing, reload }: { listing: ActiveListing; reload: (
   const verificationHref = '/verifikasi-email?email=' + encodeURIComponent(session.session?.user?.email ?? '');
   const authenticated = session.state === 'AUTHENTICATED';
   const verified = authenticated && Boolean(session.session?.user?.emailVerifiedAt);
-  const items = useQuery({ queryKey: ['items', 'exchange'], queryFn: () => apiEnvelope<ItemDto[]>('/items?limit=50'), enabled: open && verified && listing.type === 'EXCHANGE', retry: false });
 
   function showForm() {
     setOpen(true);
@@ -72,10 +73,10 @@ function ListingActions({ listing, reload }: { listing: ActiveListing; reload: (
   async function sendOffer(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (pending.current || success || !verified) return;
-    if (listing.type === 'EXCHANGE' && !exchangeItemId) return;
+    if (listing.type === 'EXCHANGE' && !exchangeItemIds.length) return;
     if (listing.type === 'RESELL' && (!Number.isSafeInteger(Number(price)) || Number(price) < 1 || Number(price) > 1_000_000_000_000)) { setError('Isi nominal rupiah yang valid, minimal Rp 1.'); return; }
     pending.current = true; setBusy('offer'); setError(''); setErrorCode('');
-    const payload = { listingRevisionId: listing.revision.id, expectedListingVersion: listing.version, ...(listing.type === 'RESELL' ? { priceIdr: Number(price) } : listing.type === 'EXCHANGE' ? { exchangeItemId } : {}), ...(message.trim() ? { message: message.trim() } : {}) };
+    const payload = { listingRevisionId: listing.revision.id, expectedListingVersion: listing.version, ...(listing.type === 'RESELL' ? { priceIdr: Number(price) } : listing.type === 'EXCHANGE' ? { exchangeItemIds, cashAdjustment: cashValue(cash) } : {}), ...(message.trim() ? { message: message.trim() } : {}) };
     const signature = JSON.stringify(payload);
     if (request.current?.signature !== signature) request.current = { signature, id: crypto.randomUUID() };
     try {
@@ -106,12 +107,10 @@ function ListingActions({ listing, reload }: { listing: ActiveListing; reload: (
       <div className="detail-form-heading"><h2>{actionLabels[listing.type]}</h2><button className="detail-form-close" type="button" aria-label="Tutup formulir penawaran" disabled={Boolean(busy)} onClick={() => { setOpen(false); requestAnimationFrame(() => toggle.current?.focus()); }}><X size={18} aria-hidden="true" /></button></div>
       <fieldset disabled={Boolean(busy)}>
         {listing.type === 'RESELL' && <Field label="Nominal penawaran" htmlFor="detail-offer-price" hint="Nominal usulan dalam rupiah, bukan pembayaran."><Input ref={element => { firstField.current = element; }} id="detail-offer-price" type="number" inputMode="numeric" min="1" max="1000000000000" step="1" required value={price} aria-describedby="detail-offer-price-hint" onChange={event => setPrice(event.target.value)} /></Field>}
-        {listing.type === 'EXCHANGE' && <Field label="Barang yang ditawarkan" htmlFor="detail-exchange-item" hint="Kelayakan barang penukar diperiksa berdasarkan penilaian terkini."><Select ref={element => { firstField.current = element; }} className="select" id="detail-exchange-item" required value={exchangeItemId} disabled={items.isPending || items.isError || !items.data?.data.length} aria-describedby="detail-exchange-item-hint" onChange={event => setExchangeItemId(event.target.value)}><option value="">Pilih barang milikmu</option>{items.data?.data.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</Select>
-          {items.isPending ? <p className="detail-inline-status" role="status">Memuat barangmu…</p> : items.isError ? <Notice kind="error">Barangmu gagal dimuat. <button type="button" className="link-button" onClick={() => items.refetch()}>Coba lagi</button></Notice> : !items.data?.data.length ? <p className="detail-inline-status">Belum ada barang untuk dipilih. <Link href="/app/barang/baru">Catat barangmu dahulu</Link>.</p> : null}
-        </Field>}
+        {listing.type === 'EXCHANGE' && <><p>Barang pemilik: <strong>{listing.revision.title}</strong>. Pemilik dapat menambahkan barang miliknya melalui counteroffer.</p><ExchangePicker listingId={listing.id} selected={exchangeItemIds} onChange={setExchangeItemIds} focusRef={element => { firstField.current = element; }} /><CashEditor value={cash} onChange={setCash} /></>}
         <Field label="Pesan untuk pemilik (opsional)" htmlFor="detail-offer-message"><textarea ref={listing.type === 'DONATE' ? element => { firstField.current = element; } : undefined} id="detail-offer-message" className="textarea" maxLength={500} value={message} placeholder="Tulis pertanyaan atau konteks singkat." onChange={event => setMessage(event.target.value)} /></Field>
         {feedback}
-        <Button type="submit" disabled={Boolean(busy) || listing.type === 'EXCHANGE' && (!exchangeItemId || items.isPending || items.isError)}>{busy === 'offer' ? 'Mengirim…' : 'Kirim penawaran'}<ArrowUpRight size={18} aria-hidden="true" /></Button>
+        <Button type="submit" disabled={Boolean(busy) || listing.type === 'EXCHANGE' && (!exchangeItemIds.length)}>{busy === 'offer' ? 'Mengirim…' : 'Kirim penawaran'}<ArrowUpRight size={18} aria-hidden="true" /></Button>
       </fieldset>
     </form>}
     <p className="detail-action-note">Chat untuk bertanya. Kesepakatan dicatat melalui penawaran.</p>

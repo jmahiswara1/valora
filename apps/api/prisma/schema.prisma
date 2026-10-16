@@ -273,6 +273,8 @@ model Item {
   listings                Listing[]
   listingRevisions        ListingRevision[]
   exchangeOffers          Offer[]           @relation("ExchangeItem")
+  offerRevisionItems OfferRevisionItem[]
+  transactionMemberships TransactionItem[]
   transactions Transaction[] @relation("TransactionItem")
   offeredTransactions Transaction[] @relation("TransactionExchangeItem")
   transfers OwnershipTransfer[]
@@ -590,6 +592,8 @@ model ModerationReview {
 }
 
 model Offer {
+  currentRevisionId String? @unique @db.Uuid
+  currentRevision OfferRevision? @relation("ActiveOfferRevision", fields: [currentRevisionId], references: [id], onDelete: SetNull)
   id                String          @id @default(uuid()) @db.Uuid
   listingId         String          @db.Uuid
   listing           Listing         @relation(fields: [listingId], references: [id], onDelete: Restrict)
@@ -625,6 +629,8 @@ enum TransactionStatus {
 }
 
 model Transaction {
+  items TransactionItem[]
+  cashConfirmations CashConfirmation[]
   agreedHandoverId String? @unique @db.Uuid
   agreedHandover HandoverProposal? @relation("ActiveHandover", fields: [agreedHandoverId], references: [id], onDelete: Restrict)
   handoverProposals HandoverProposal[] @relation("TransactionHandovers")
@@ -818,6 +824,11 @@ model InAppNotification {
 }
 
 model OfferRevision {
+  currentForOffer Offer? @relation("ActiveOfferRevision")
+  items OfferRevisionItem[]
+  exchangeTerms Json?
+  clientRequestId String? @unique @db.Uuid
+  requestHash String? @db.Char(64)
   id           String   @id @default(uuid()) @db.Uuid
   offerId      String   @db.Uuid
   offer        Offer    @relation(fields: [offerId], references: [id], onDelete: Cascade)
@@ -833,6 +844,35 @@ model OfferRevision {
 
   @@unique([offerId, revisionNo])
   @@index([respondsById, expiresAt])
+}
+
+model OfferRevisionItem {
+  revisionId String @db.Uuid
+  revision OfferRevision @relation(fields: [revisionId], references: [id], onDelete: Cascade)
+  itemId String @db.Uuid
+  item Item @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  @@id([revisionId, itemId])
+  @@index([itemId])
+}
+
+model TransactionItem {
+  transactionId String @db.Uuid
+  transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  itemId String @db.Uuid
+  item Item @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  @@id([transactionId, itemId])
+  @@index([itemId])
+}
+
+model CashConfirmation {
+  id String @id @default(uuid()) @db.Uuid
+  transactionId String @db.Uuid
+  transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  actorId String @db.Uuid
+  kind String @db.VarChar(12)
+  confirmedAt DateTime @default(now())
+  source String @default("USER_REPORTED") @db.VarChar(30)
+  @@unique([transactionId, kind])
 }
 
 model Conversation {

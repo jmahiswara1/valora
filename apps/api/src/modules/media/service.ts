@@ -10,6 +10,8 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 import type { Response } from 'express';
 import type { Prisma } from '../../generated/prisma/client.js';
 import { validId } from '../../shared/transactions.js';
+import { transactionUsingItem, exchangeItems } from '../../shared/exchange.js';
+import type { ExchangeTerms } from '@valora/contracts';
 
 const maxBytes = 8 * 1024 * 1024;
 
@@ -119,10 +121,10 @@ export class MediaService {
     if (media.repairRecordId) {
       if (media.uploadedById !== userId && !(media.item.currentOwnerId === userId && media.repairRecord?.status === 'VALID' && media.repairRecord.shareDetailsWithFutureOwner && media.shareWithFutureOwner)) throw new AppException(404, 'NOT_FOUND', 'Foto tidak ditemukan.');
     } else if (media.uploadedById !== userId && !(media.item.currentOwnerId === userId && media.shareWithFutureOwner)) {
-      const transactions = await this.db.transaction.findMany({ where: { OR: [{ sellerOrDonorId: userId }, { buyerOrRecipientId: userId }], AND: [{ OR: [{ itemId: media.itemId }, { offeredItemId: media.itemId }] }] }, select: { snapshot: true } });
+      const transactions = await this.db.transaction.findMany({ where: { OR: [{ sellerOrDonorId: userId }, { buyerOrRecipientId: userId }], AND: [transactionUsingItem(media.itemId)] }, select: { snapshot: true } });
       const acceptedPhoto = transactions.some((t) => (t.snapshot as unknown as { items: { mediaIds: string[] }[] }).items.some((i) => i.mediaIds.includes(mediaId)));
-      const offers = acceptedPhoto ? [] : await this.db.offer.findMany({ where: { exchangeItemId: media.itemId, OR: [{ bidderId: userId }, { listing: { ownerId: userId } }] }, select: { exchangeSnapshot: true } });
-      if (!acceptedPhoto && !offers.some((o) => (o.exchangeSnapshot as unknown as { mediaIds?: string[] } | null)?.mediaIds?.includes(mediaId))) throw new AppException(404, 'NOT_FOUND', 'Foto tidak ditemukan.');
+      const offers = acceptedPhoto ? [] : await this.db.offer.findMany({ where: { AND: [{ OR: [{ exchangeItemId: media.itemId }, { revisions: { some: { items: { some: { itemId: media.itemId } } } } }] }, { OR: [{ bidderId: userId }, { listing: { ownerId: userId } }] }] }, select: { exchangeSnapshot: true, revisions: { select: { exchangeTerms: true } } } });
+      if (!acceptedPhoto && !offers.some(o => (o.exchangeSnapshot as unknown as { mediaIds?: string[] } | null)?.mediaIds?.includes(mediaId) || o.revisions.some(revision => revision.exchangeTerms && exchangeItems(revision.exchangeTerms as unknown as ExchangeTerms).some(item => item.id === media.itemId && item.mediaIds.includes(mediaId))))) throw new AppException(404, 'NOT_FOUND', 'Foto tidak ditemukan.');
     }
     return media;
   }

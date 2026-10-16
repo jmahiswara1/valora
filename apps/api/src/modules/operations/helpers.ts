@@ -1,3 +1,4 @@
+import { transactionUsingItem } from '../../shared/exchange.js';
 import type { Prisma } from '../../generated/prisma/client.js';
 import { validId, json } from '../../shared/transactions.js';
 import { AppException } from '../../shared/http.js';
@@ -25,7 +26,7 @@ export async function scopeTransactionIds(tx: Prisma.TransactionClient, type: Op
 
 export async function scopeItem(tx: Prisma.TransactionClient, type: OperationsScope, scopeId: string, itemId: string) {
   const ids = await scopeTransactionIds(tx, type, scopeId);
-  if (await tx.transaction.findFirst({ where: { id: { in: ids }, OR: [{ itemId }, { offeredItemId: itemId }] } })) return;
+  if (await tx.transaction.findFirst({ where: { id: { in: ids }, ...transactionUsingItem(itemId) } })) return;
   if (type === 'REPORT') {
     const report = await tx.report.findUnique({ where: { id: scopeId } });
     if (report?.targetType === 'LISTING' && await tx.listing.findFirst({ where: { id: report.targetId, itemId } })) return;

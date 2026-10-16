@@ -3,6 +3,7 @@ import type { TransactionTimelineDto } from '@valora/contracts';
 import { AppException } from '../../shared/http.js';
 
 const labels: Record<string, string> = {
+  CASH_SENT: 'Penyerahan tambahan uang dilaporkan', CASH_RECEIVED: 'Penerimaan tambahan uang dilaporkan',
   TRANSACTION_STARTED: 'Penawaran disepakati', HANDOVER_PROPOSED: 'Koordinasi serah terima diajukan', HANDOVER_APPROVED: 'Koordinasi serah terima disepakati', HANDOVER_REJECTED: 'Usulan koordinasi ditolak', HANDOVER_WITHDRAWN: 'Usulan koordinasi ditarik', HANDOVER_EXPIRED: 'Waktu usulan terlewati', HANDOVER_INVALIDATED: 'Usulan koordinasi ditutup', SHIPMENT_UPDATED: 'Informasi pengiriman dicatat', HANDED_OVER: 'Penyerahan barang dikonfirmasi', RECEIVED: 'Penerimaan barang dikonfirmasi', CANCELLATION_REQUESTED: 'Pembatalan diminta', CANCELLATION_RESPONDED: 'Permintaan pembatalan ditanggapi', DISPUTE_OPENED: 'Sengketa dibuka', DISPUTE_RESOLVED: 'Putusan sengketa dicatat', TRANSACTION_COMPLETED: 'Transaksi selesai', TRANSACTION_CANCELLED: 'Transaksi dibatalkan', CORRECTION_OPENED: 'Koreksi riwayat dibuka', CORRECTION_RESOLVED: 'Putusan koreksi dicatat',
 };
 export async function timeline(tx: Prisma.TransactionClient, id: string, query: { limit: number; cursor?: string }) {
@@ -20,6 +21,7 @@ export async function timeline(tx: Prisma.TransactionClient, id: string, query: 
       SELECT 'start:' || id::text AS event_id, 'TRANSACTION_STARTED' AS type, NULL::uuid AS actor_id, NULL::uuid AS proposal_id, NULL::uuid AS item_id, "acceptedAt" AS at FROM "Transaction" WHERE id = ${id}::uuid
       UNION ALL SELECT 'coord:' || id::text, type, "actorId", "proposalId", "itemId", "occurredAt" FROM "HandoverEvent" WHERE "transactionId" = ${id}::uuid
       UNION ALL SELECT 'confirm:' || id::text, kind, "actorId", NULL::uuid, "itemId", "confirmedAt" FROM "HandoverConfirmation" WHERE "transactionId" = ${id}::uuid
+      UNION ALL SELECT 'cash:' || id::text, 'CASH_' || kind, "actorId", NULL::uuid, NULL::uuid, "confirmedAt" FROM "CashConfirmation" WHERE "transactionId" = ${id}::uuid
       UNION ALL SELECT 'cancel-request:' || id::text, 'CANCELLATION_REQUESTED', "requestedById", NULL::uuid, NULL::uuid, "createdAt" FROM "CancellationRequest" WHERE "transactionId" = ${id}::uuid
       UNION ALL SELECT 'cancel-response:' || id::text, 'CANCELLATION_RESPONDED', "respondedById", NULL::uuid, NULL::uuid, "respondedAt" FROM "CancellationRequest" WHERE "transactionId" = ${id}::uuid AND "respondedAt" IS NOT NULL
       UNION ALL SELECT 'dispute:' || id::text, 'DISPUTE_OPENED', "openedById", NULL::uuid, NULL::uuid, "createdAt" FROM "DisputeCase" WHERE "transactionId" = ${id}::uuid

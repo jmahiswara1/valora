@@ -1,6 +1,7 @@
 import type { NotificationType, TransactionSnapshot } from '@valora/contracts';
 import type { Prisma, Transaction } from '../../generated/prisma/client.js';
 import { requestContext } from '../../shared/request-context.js';
+import { expandOfferItems } from '../../shared/exchange.js';
 
 type Payload = { title: string; offerId?: string; transactionId?: string; listingId?: string; day?: number; proposalId?: string; leadMinutes?: number };
 
@@ -33,7 +34,7 @@ export async function notifyTransaction(tx: Prisma.TransactionClient, row: Trans
 
 // Shared by every domain path which expires offers. Only changed rows emit events.
 export async function expireOffers(tx: Prisma.TransactionClient, where: Prisma.OfferWhereInput, reason: string) {
-  const rows = await tx.offer.findMany({ where: { AND: [where, { status: { in: ['PENDING', 'COUNTERED'] } }] },
+  const rows = await tx.offer.findMany({ where: { AND: [expandOfferItems(where), { status: { in: ['PENDING', 'COUNTERED'] } }] },
     include: { listing: { select: { ownerId: true } }, listingRevision: { select: { title: true } } } });
   for (const row of rows) {
     const changed = await tx.offer.updateMany({ where: { id: row.id, version: row.version, status: { in: ['PENDING', 'COUNTERED'] } }, data: { status: 'EXPIRED', endReason: reason, version: { increment: 1 } } });

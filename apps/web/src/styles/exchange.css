@@ -1,0 +1,39 @@
+.exchange-terms { display: grid; gap: 20px; min-width: 0; }
+.exchange-bundles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.exchange-bundle { min-width: 0; }
+.exchange-bundle h3 { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px 12px; font-size: 1rem; margin: 0 0 12px; }
+.exchange-bundle ul { list-style: none; padding: 0; margin: 0; }
+.exchange-item { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 12px; padding: 12px 0; border-top: 1px solid #E2E8DF; }
+.exchange-item > img, .exchange-item > .private-photo-placeholder { width: 64px; height: 64px; object-fit: contain; border-radius: 10px; }
+.exchange-item strong, .exchange-candidate strong { display: block; font-size: .9375rem; overflow-wrap: anywhere; }
+.exchange-item p { font-size: .875rem; max-width: 72ch; overflow-wrap: anywhere; }
+.exchange-item summary { cursor: pointer; min-height: 44px; align-content: center; font-size: .8125rem; color: var(--green); }
+.exchange-cash-summary { padding: 16px 0; border-block: 1px solid #E2E8DF; }
+.exchange-cash-summary strong { font-variant-numeric: tabular-nums; }
+.exchange-cash-summary p { margin-top: 6px; font-size: .875rem; }
+.exchange-picker { min-width: 0; margin: 0; padding: 0; border: 0; }
+.exchange-picker legend { font-weight: 600; display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+.exchange-picker > p { margin: 0 0 12px; }
+.exchange-candidates { max-height: 360px; overflow: auto; overscroll-behavior: contain; padding: 4px; scrollbar-color: var(--sage) transparent; scrollbar-width: thin; }
+.exchange-candidate { display: grid; grid-template-columns: 18px 48px minmax(0, 1fr); gap: 12px; align-items: center; min-height: 72px; padding: 12px 4px; border-top: 1px solid #E2E8DF; cursor: pointer; }
+.exchange-candidate input { width: 18px; height: 18px; accent-color: var(--green); }
+.exchange-candidate:has(input:focus-visible) { outline: 2px solid var(--green); outline-offset: 1px; }
+.exchange-candidate:has(input:disabled) { cursor: default; }
+.exchange-candidate > img, .exchange-candidate > .private-photo-placeholder { width: 48px; height: 48px; object-fit: contain; border-radius: 10px; }
+.exchange-candidate small { display: block; font-size: .8125rem; color: var(--muted); overflow-wrap: anywhere; margin-top: 4px; }
+.exchange-selected > div { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; flex-wrap: wrap; }
+.exchange-cash-editor { display: grid; gap: 16px; }
+.exchange-history { border-top: 1px solid #E2E8DF; padding-top: 12px; }
+.exchange-history > summary { min-height: 44px; cursor: pointer; align-content: center; font-weight: 600; }
+.exchange-revision { padding-block: 20px; border-bottom: 1px solid #E2E8DF; }
+.exchange-revision > h3 { font-size: 1rem; }
+.exchange-revision > .meta { margin-bottom: 16px; }
+.exchange-settlement > p { max-width: 72ch; margin-top: 10px; }
+.exchange-cash-amount { font-size: 1.25rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.transaction-dialog .exchange-bundles { grid-template-columns: minmax(0, 1fr); }
+.offer-counter-form > fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 20px; min-width: 0; }
+.offer-counter-form > .form-actions { margin: 0; }
+@media (max-width: 600px) {
+  .exchange-bundles { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .exchange-cash-summary strong { overflow-wrap: anywhere; }
+}

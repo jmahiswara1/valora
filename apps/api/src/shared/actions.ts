@@ -20,9 +20,9 @@ export async function authorizeReplay(tx: Prisma.TransactionClient, actorId: str
   const input = (payload ?? {}) as Record<string, string>;
   const user = await tx.user.findUnique({ where: { id: actorId } });
   if (!user || user.status !== 'ACTIVE') throw new AppException(403, 'ACCOUNT_SUSPENDED', 'Akun tidak dapat digunakan.');
-  const member = ['handover-propose', 'handover-respond', 'handover-withdraw', 'shipment-update', 'accept', 'confirm', 'cancel-request', 'cancel-respond', 'dispute', 'overdue-case', 'evidence', 'correction-open', 'correction-evidence', 'review-create', 'review-reply'].includes(name);
+  const member = ['handover-propose', 'handover-respond', 'handover-withdraw', 'shipment-update', 'accept', 'confirm', 'cash-confirm', 'cancel-request', 'cancel-respond', 'dispute', 'overdue-case', 'evidence', 'correction-open', 'correction-evidence', 'review-create', 'review-reply'].includes(name);
   if (!member && user.role !== 'ADMIN') throw new AppException(403, 'FORBIDDEN', 'Izin admin diperlukan.');
-  if (['handover-propose', 'handover-respond', 'handover-withdraw', 'shipment-update', 'confirm', 'cancel-request', 'cancel-respond', 'dispute', 'overdue-case', 'correction-open'].includes(name)) {
+  if (['handover-propose', 'handover-respond', 'handover-withdraw', 'shipment-update', 'confirm', 'cash-confirm', 'cancel-request', 'cancel-respond', 'dispute', 'overdue-case', 'correction-open'].includes(name)) {
     const row = await tx.transaction.findUnique({ where: { id } });
     if (!row || ![row.sellerOrDonorId, row.buyerOrRecipientId].includes(actorId)) throw new AppException(404, 'NOT_FOUND', 'Transaksi tidak ditemukan.');
   }

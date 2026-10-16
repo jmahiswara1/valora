@@ -2,7 +2,7 @@ import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { Controller, UseGuards, Get, Req, Param, Post, Headers, Body } from '@nestjs/common';
 import { SessionGuard } from '../auth/guards.js';
 import { type AppRequest, ZodPipe } from '../../shared/http.js';
-import { confirmationSchema, type ConfirmationInput, cancellationSchema, cancellationResponseSchema, disputeSchema } from '@valora/contracts';
+import { confirmationSchema, type ConfirmationInput, cashConfirmationSchema, type CashConfirmationInput, cancellationSchema, cancellationResponseSchema, disputeSchema } from '@valora/contracts';
 import { TransactionsService } from "./service.js";
 
 @ApiTags('transactions')
@@ -10,6 +10,9 @@ import { TransactionsService } from "./service.js";
 @UseGuards(SessionGuard)
 export class TransactionsController {
   constructor(private readonly transactions: TransactionsService) {}
+  @Post(':id/cash-confirmations')
+  @ApiOperation({ summary: 'Laporan pengguna atas penyerahan atau penerimaan tambahan uang Exchange' })
+  cash(@Req() req: AppRequest, @Param('id') id: string, @Headers('idempotency-key') key: string | undefined, @Body(new ZodPipe(cashConfirmationSchema)) input: CashConfirmationInput) { return this.transactions.confirmCash(req.actor!.id, id, input, key); }
   @Get(':id') @ApiOperation({ summary: 'Detail kesepakatan bagi peserta atau admin kasus' })
   get(@Req() req: AppRequest, @Param('id') id: string) { return this.transactions.get(req.actor!.id, id); }
   @Post(':id/confirmations') @ApiOperation({ summary: 'Konfirmasi penyerahan atau penerimaan barang' })

@@ -17,19 +17,21 @@ export function paging(query: PageQuery, statuses: readonly string[]) {
 }
 
 export async function transactionDto(tx: Prisma.TransactionClient, row: Transaction): Promise<TransactionDto> {
-  const [confirmations, cancellations, disputes, conversation, corrections] = await Promise.all([
+  const [confirmations, cancellations, disputes, conversation, corrections, cashConfirmations] = await Promise.all([
     tx.handoverConfirmation.findMany({ where: { transactionId: row.id }, orderBy: [{ confirmedAt: 'asc' }, { id: 'asc' }] }),
     tx.cancellationRequest.findMany({ where: { transactionId: row.id }, orderBy: [{ createdAt: 'desc' }, { id: 'desc' }] }),
     tx.disputeCase.findMany({ where: { transactionId: row.id }, orderBy: [{ createdAt: 'desc' }, { id: 'desc' }] }),
     tx.conversation.findFirst({ where: { listingId: row.listingId, participantAId: { in: [row.sellerOrDonorId, row.buyerOrRecipientId] }, participantBId: { in: [row.sellerOrDonorId, row.buyerOrRecipientId] } } }),
     tx.correctionCase.findMany({ where: { transactionId: row.id }, orderBy: { createdAt: 'desc' } }),
+    tx.cashConfirmation.findMany({ where: { transactionId: row.id }, orderBy: [{ confirmedAt: 'asc' }, { id: 'asc' }] }),
   ]);
   return {
     id: row.id, listingId: row.listingId, offerId: row.offerId, type: row.type, status: row.status,
     sellerOrDonorId: row.sellerOrDonorId, buyerOrRecipientId: row.buyerOrRecipientId, finalPriceIdr: row.finalPriceIdr === null ? null : Number(row.finalPriceIdr),
-    snapshot: row.snapshot as unknown as TransactionSnapshot, acceptedAt: row.acceptedAt.toISOString(), targetHandoverAt: row.targetHandoverAt.toISOString(), overdueAt: row.overdueAt?.toISOString() ?? null,
+    snapshot: { ...(row.snapshot as unknown as TransactionSnapshot), cashAdjustment: (row.snapshot as unknown as TransactionSnapshot).cashAdjustment ?? null }, acceptedAt: row.acceptedAt.toISOString(), targetHandoverAt: row.targetHandoverAt.toISOString(), overdueAt: row.overdueAt?.toISOString() ?? null,
     completedAt: row.completedAt?.toISOString() ?? null, cancelledAt: row.cancelledAt?.toISOString() ?? null, resolutionOrigin: row.resolutionOrigin, correctedAt: row.correctedAt?.toISOString() ?? null, version: row.version,
     confirmations: confirmations.map((c) => ({ id: c.id, actorId: c.actorId, itemId: c.itemId, kind: c.kind as 'HANDED_OVER' | 'RECEIVED', confirmedAt: c.confirmedAt.toISOString(), source: c.source })),
+    cashConfirmations: cashConfirmations.map(c => ({ id: c.id, actorId: c.actorId, kind: c.kind as 'SENT' | 'RECEIVED', confirmedAt: c.confirmedAt.toISOString(), source: 'USER_REPORTED' as const })),
     cancellations: cancellations.map((c) => ({ id: c.id, requestedById: c.requestedById, reason: c.reason, status: c.status, endReason: c.endReason, createdAt: c.createdAt.toISOString(), respondedAt: c.respondedAt?.toISOString() ?? null })),
     disputes: disputes.map((c) => ({ id: c.id, transactionId: c.transactionId, status: c.status, assignedAdminId: c.assignedAdminId, reason: c.reason, resolution: c.resolution, resolutionReason: c.resolutionReason, version: c.version, createdAt: c.createdAt.toISOString(), resolvedAt: c.resolvedAt?.toISOString() ?? null })),
     corrections: corrections.map((c) => ({ id: c.id, transactionId: c.transactionId, status: c.status, assignedAdminId: c.assignedAdminId, version: c.version, resolution: c.resolution, createdAt: c.createdAt.toISOString(), resolvedAt: c.resolvedAt?.toISOString() ?? null })),

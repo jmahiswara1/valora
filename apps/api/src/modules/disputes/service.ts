@@ -1,3 +1,4 @@
+import { cashReady } from '../../shared/exchange.js';
 import { invalidateHandover } from '../handover/lifecycle.js';
 import { messageDto, attachmentDto } from '../conversations/message.js';
 import type { Prisma } from '../../generated/prisma/client.js';
@@ -135,9 +136,9 @@ export class DisputesService {
       else if (input.decision === 'COMPLETE_AUTHORIZED') await this.transactions.complete(tx, row, 'ADMIN_AUTHORIZED');
       else {
         const confirmations = await tx.handoverConfirmation.count({ where: { transactionId } });
-        const status = confirmations ? 'ONE_SIDE_CONFIRMED' : 'AWAITING_HANDOVER';
+        const status = confirmations || await tx.cashConfirmation.count({ where: { transactionId } }) ? 'ONE_SIDE_CONFIRMED' : 'AWAITING_HANDOVER';
         const continued = await tx.transaction.update({ where: { id: transactionId }, data: { status, version: { increment: 1 } } });
-        if (confirmations === requiredConfirmations(row).length) await this.transactions.complete(tx, continued, 'USER_CONFIRMED');
+        if (confirmations === requiredConfirmations(row).length && await cashReady(tx, row)) await this.transactions.complete(tx, continued, 'USER_CONFIRMED');
         else await notifyTransaction(tx, row, 'DISPUTE_CONTINUED', `dispute:${record.id}:continued`);
       }
       await tx.disputeCase.update({ where: { id: input.caseId }, data: { status: 'RESOLVED', resolution: input.decision, resolutionReason: input.reason, resolvedAt: new Date(), version: { increment: 1 } } });

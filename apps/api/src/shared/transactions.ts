@@ -54,7 +54,8 @@ export async function lockTransaction(tx: Prisma.TransactionClient, id: string):
   const ref = await tx.transaction.findUnique({ where: { id } });
   if (!ref) throw new AppException(404, 'NOT_FOUND', 'Transaksi tidak ditemukan.');
   await lockRows(tx, 'User', [ref.sellerOrDonorId, ref.buyerOrRecipientId]);
-  await lockRows(tx, 'Item', [ref.itemId, ...(ref.offeredItemId ? [ref.offeredItemId] : [])]);
+  const members = await tx.transactionItem.findMany({ where: { transactionId: id }, select: { itemId: true } });
+  await lockRows(tx, 'Item', [...members.map(member => member.itemId), ...(ref.snapshot as unknown as TransactionSnapshot).items.map(item => item.id)]);
   await lockRows(tx, 'Listing', [ref.listingId]);
   await lockRows(tx, 'Offer', [ref.offerId]);
   await lockRows(tx, 'Transaction', [id]);

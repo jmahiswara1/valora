@@ -109,6 +109,6 @@ try {
   const correction = check(await domain(buyer, `/transactions/${transaction.id}/corrections`, { expectedVersion: transaction.version, reason: 'Foto pesan dirujuk untuk koreksi.' }), 201, 'Correction');
   check(await domain(buyer, `/correction-cases/${correction.id}/evidence`, { expectedVersion: correction.version, note: 'Rujukan foto kondisi dari chat.', messageId: evidenceMessage.id }), 201, 'Correction message evidence');
   const correctionDetail = check(await buyer.account.request(`/correction-cases/${correction.id}`), 200, 'Correction snapshot'); assert(correctionDetail.evidence.some(e => e.messageSnapshot?.attachments.length === 1));
-  const spec = await (await fetch(base + '/api/docs-json')).json(); assert.equal(spec.info.version, '1.16.0'); for (const route of ['/conversations/{id}', '/conversations/{id}/messages/status', '/message-photos/{id}/access']) assert(spec.paths['/api/v1' + route]);
+  const spec = await (await fetch(base + '/api/docs-json')).json(); assert.equal(spec.info.version, '1.17.0'); for (const route of ['/conversations/{id}', '/conversations/{id}/messages/status', '/message-photos/{id}/access']) assert(spec.paths['/api/v1' + route]);
   console.log('PASS chat: photos, limits, idempotency, grouping, guarded reads, private sessions, report grants, block, recovery, pagination and retention');
 } finally { await db.$disconnect(); }

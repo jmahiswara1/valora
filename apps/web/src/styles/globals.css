@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./exchange.css";
 
 :root {
   --font-ui: "Plus Jakarta Sans", Arial, sans-serif;

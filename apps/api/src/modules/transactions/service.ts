@@ -2,12 +2,13 @@ import { invalidateHandover } from '../handover/lifecycle.js';
 import { expireOffers, notify, notifyTransaction } from '../notifications/events.js';
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../../infrastructure/database.service.js';
-import type { OfferAcceptInput, TransactionItemSnapshot, TransactionDto, ConfirmationInput, TransactionSnapshot } from '@valora/contracts';
+import type { OfferAcceptInput, ExchangeTerms, CashConfirmationInput, TransactionItemSnapshot, TransactionDto, ConfirmationInput, TransactionSnapshot } from '@valora/contracts';
 import { validId, idempotent, lockRows, eligible, json, lockTransaction, participant, mutable, requiredConfirmations, activeTransactionStatuses, serial } from '../../shared/transactions.js';
 import { AppException } from '../../shared/http.js';
 import type { Transaction, Prisma } from '../../generated/prisma/client.js';
 import { transactionDto, paging } from './helpers.js';
 import type { PageQuery } from './shared.js';
+import { advancedExchange, exchangeHash, exchangeItems, validateExchange, requiredCash, cashReady } from '../../shared/exchange.js';
 
 const day = 86400000;
 
@@ -18,14 +19,15 @@ export class TransactionsService {
   async accept(actorId: string, offerId: string, input: OfferAcceptInput, key?: string) {
     validId(offerId);
     return idempotent(this.db, actorId, 'accept:' + offerId, key, input, async (tx) => {
-      const ref = await tx.offer.findUnique({ where: { id: offerId }, include: { listing: true } });
+      const ref = await tx.offer.findUnique({ where: { id: offerId }, include: { listing: true, currentRevision: true } });
       if (!ref || (actorId !== ref.bidderId && actorId !== ref.listing.ownerId)) throw new AppException(404, 'NOT_FOUND', 'Penawaran tidak ditemukan.');
       await lockRows(tx, 'User', [ref.bidderId, ref.listing.ownerId]);
-      await lockRows(tx, 'Item', [ref.listing.itemId, ...(ref.exchangeItemId ? [ref.exchangeItemId] : [])]);
+      const captured = ref.currentRevision?.exchangeTerms as unknown as ExchangeTerms | null;
+      await lockRows(tx, 'Item', [ref.listing.itemId, ...(captured ? exchangeItems(captured).map(item => item.id) : ref.exchangeItemId ? [ref.exchangeItemId] : [])]);
       await lockRows(tx, 'Listing', [ref.listingId]);
       await lockRows(tx, 'Offer', [offerId]);
-      const offer = await tx.offer.findUniqueOrThrow({ where: { id: offerId }, include: { listing: { include: { currentRevision: { include: { media: true } } } }, revisions: { orderBy: { revisionNo: 'desc' }, take: 1 } } });
-      const listing = offer.listing; const revision = listing.currentRevision; const final = offer.revisions[0];
+      const offer = await tx.offer.findUniqueOrThrow({ where: { id: offerId }, include: { listing: { include: { currentRevision: { include: { media: true } } } }, currentRevision: true, revisions: { orderBy: { revisionNo: 'desc' }, take: 1 } } });
+      const listing = offer.listing; const revision = listing.currentRevision; const final = offer.currentRevision ?? offer.revisions[0];
       if (!final || final.respondsById !== actorId) throw new AppException(403, 'FORBIDDEN', 'Hanya penerima revisi ini yang dapat menyetujuinya.');
       if (offer.expiresAt <= new Date()) throw new AppException(410, 'OFFER_EXPIRED', 'Masa penawaran telah berakhir.');
       if (listing.status === 'RESERVED') throw new AppException(409, 'ITEM_RESERVED', 'Item sudah dipilih untuk transaksi lain.');
@@ -39,7 +41,16 @@ export class TransactionsService {
       if (!mediaIds.length || await tx.mediaAsset.count({ where: { id: { in: mediaIds }, deletedAt: null, caseId: null, repairRecordId: null } }) !== mediaIds.length) throw new AppException(422, 'ACTION_NEEDS_DATA', 'Foto kesepakatan tidak lagi tersedia.');
       const items: TransactionItemSnapshot[] = [{ id: main.item.id, itemRevision: main.item.itemRevision, assessmentId: main.assessment.id, title: revision.title, description: revision.description, conditionSummary: revision.conditionDisclosure, categoryCode: main.item.categoryCode, subcategoryCode: main.item.subcategoryCode, estimatedWeightGrams: main.item.estimatedWeightGrams, mediaIds, fromUserId: listing.ownerId, toUserId: offer.bidderId }];
       const privateItems = [{ id: main.item.id, purchaseYear: main.item.purchaseYear, originalPriceIdr: main.item.originalPriceIdr === null ? null : Number(main.item.originalPriceIdr) }];
-      if (listing.type === 'EXCHANGE') {
+      const terms = final.exchangeTerms as unknown as ExchangeTerms | null;
+      if (listing.type === 'EXCHANGE' && terms) {
+        if ((advancedExchange(terms) || input.exchangeTermsHash !== undefined) && input.exchangeTermsHash !== exchangeHash(terms)) throw new AppException(409, 'STATE_CONFLICT', 'Tinjau seluruh barang dan tambahan uang sebelum menerima revisi ini.');
+        await validateExchange(tx, terms, listing, offer.bidderId);
+        items.splice(0, items.length, ...exchangeItems(terms)); privateItems.splice(0);
+        for (const snapshot of items) {
+          const item = await tx.item.findUniqueOrThrow({ where: { id: snapshot.id } });
+          privateItems.push({ id: item.id, purchaseYear: item.purchaseYear, originalPriceIdr: item.originalPriceIdr === null ? null : Number(item.originalPriceIdr) });
+        }
+      } else if (listing.type === 'EXCHANGE') {
         const snapshot = offer.exchangeSnapshot as unknown as TransactionItemSnapshot | null;
         if (!offer.exchangeItemId || !snapshot) throw new AppException(409, 'STATE_CONFLICT', 'Kirim ulang Offer Exchange dengan snapshot Item.');
         const other = await eligible(tx, offer.exchangeItemId, offer.bidderId, 'EXCHANGE', snapshot.assessmentId);
@@ -50,8 +61,9 @@ export class TransactionsService {
         privateItems.push({ id: other.item.id, purchaseYear: other.item.purchaseYear, originalPriceIdr: other.item.originalPriceIdr === null ? null : Number(other.item.originalPriceIdr) });
       }
       const acceptedAt = new Date();
-      const row = await tx.transaction.create({ data: { listingId: listing.id, offerId, itemId: main.item.id, offeredItemId: offer.exchangeItemId, sellerOrDonorId: listing.ownerId, buyerOrRecipientId: offer.bidderId, type: listing.type, finalPriceIdr: listing.type === 'RESELL' ? final.priceIdr : null, snapshot: json({ listingRevisionId: revision.id, offerRevisionId: final.id, items, parties: users.map((u) => ({ id: u.id, displayName: u.displayName })), handoverMethods: revision.handoverMethods }), privateSnapshot: json(privateItems), acceptedAt, targetHandoverAt: new Date(acceptedAt.getTime() + 14 * day) } });
-      await tx.item.updateMany({ where: { id: { in: items.map((i) => i.id) } }, data: { reservedByTransactionId: row.id, version: { increment: 1 } } });
+      const row = await tx.transaction.create({ data: { listingId: listing.id, offerId, itemId: main.item.id, offeredItemId: offer.exchangeItemId, sellerOrDonorId: listing.ownerId, buyerOrRecipientId: offer.bidderId, type: listing.type, finalPriceIdr: listing.type === 'RESELL' ? final.priceIdr : null, snapshot: json({ listingRevisionId: revision.id, offerRevisionId: final.id, items, parties: users.map((u) => ({ id: u.id, displayName: u.displayName })), handoverMethods: revision.handoverMethods, cashAdjustment: listing.type === 'EXCHANGE' ? terms?.cashAdjustment ?? null : null }), privateSnapshot: json(privateItems), items: { create: items.map(item => ({ itemId: item.id })) }, acceptedAt, targetHandoverAt: new Date(acceptedAt.getTime() + 14 * day) } });
+      const reserved = await tx.item.updateMany({ where: { id: { in: items.map((i) => i.id) }, reservedByTransactionId: null, archivedAt: null }, data: { reservedByTransactionId: row.id, version: { increment: 1 } } });
+      if (reserved.count !== items.length) throw new AppException(409, 'ITEM_RESERVED', 'Sebagian barang sudah tidak tersedia. Seluruh reservasi dibatalkan.');
       await tx.listing.update({ where: { id: listing.id }, data: { status: 'RESERVED', version: { increment: 1 } } });
       await tx.offer.update({ where: { id: offerId }, data: { status: 'ACCEPTED', version: { increment: 1 } } });
       const [participantAId, participantBId] = [listing.ownerId, offer.bidderId].sort();
@@ -87,7 +99,7 @@ export class TransactionsService {
       await invalidateHandover(tx, id, 'FIRST_CONFIRMATION', actorId);
       const confirmation = await tx.handoverConfirmation.upsert({ where: { transactionId_actorId_itemId_kind: { transactionId: id, actorId, itemId: input.itemId, kind: input.kind } }, update: {}, create: { transactionId: id, actorId, itemId: input.itemId, kind: input.kind, idempotencyKey: requestKey } });
       const count = await tx.handoverConfirmation.count({ where: { transactionId: id } });
-      if (count === requiredConfirmations(row).length) await this.complete(tx, row, 'USER_CONFIRMED');
+      if (count === requiredConfirmations(row).length && await cashReady(tx, row)) await this.complete(tx, row, 'USER_CONFIRMED');
       else {
         await tx.transaction.update({ where: { id }, data: { status: 'ONE_SIDE_CONFIRMED', version: { increment: 1 } } });
         await notifyTransaction(tx, row, 'HANDOVER_CONFIRMED', `confirmation:${confirmation.id}`, actorId);
@@ -96,8 +108,24 @@ export class TransactionsService {
     });
   }
 
+  async confirmCash(actorId: string, id: string, input: CashConfirmationInput, key?: string) {
+    return idempotent(this.db, actorId, 'cash-confirm:' + id, key, input, async tx => {
+      const row = await lockTransaction(tx, id); participant(row, actorId); mutable(row, input.expectedVersion);
+      if (row.status === 'DISPUTED') throw new AppException(409, 'STATE_CONFLICT', 'Konfirmasi ditahan selama sengketa.');
+      if (!requiredCash(row).some(need => need.actorId === actorId && need.kind === input.kind)) throw new AppException(403, 'FORBIDDEN', 'Konfirmasi tambahan uang ini bukan tindakanmu.');
+      const confirmation = await tx.cashConfirmation.upsert({ where: { transactionId_kind: { transactionId: id, kind: input.kind } }, update: {}, create: { transactionId: id, actorId, kind: input.kind } });
+      if (await cashReady(tx, row) && await tx.handoverConfirmation.count({ where: { transactionId: id } }) === requiredConfirmations(row).length) await this.complete(tx, row, 'USER_CONFIRMED');
+      else {
+        await tx.transaction.update({ where: { id }, data: { status: 'ONE_SIDE_CONFIRMED', version: { increment: 1 } } });
+        await notifyTransaction(tx, row, 'EXCHANGE_CASH_CONFIRMED', 'cash-confirmation:' + confirmation.id, actorId);
+      }
+      return transactionDto(tx, await tx.transaction.findUniqueOrThrow({ where: { id } }));
+    });
+  }
+
   async complete(tx: Prisma.TransactionClient, row: Transaction, origin: 'USER_CONFIRMED' | 'ADMIN_AUTHORIZED'): Promise<void> {
     if (row.status === 'COMPLETED' || row.status === 'CANCELLED' || (row.status === 'DISPUTED' && origin !== 'ADMIN_AUTHORIZED')) throw new AppException(409, 'STATE_CONFLICT', 'Transaksi tidak dapat diselesaikan.');
+    if (origin === 'USER_CONFIRMED' && (await tx.handoverConfirmation.count({ where: { transactionId: row.id } }) !== requiredConfirmations(row).length || !await cashReady(tx, row))) throw new AppException(409, 'STATE_CONFLICT', 'Konfirmasi seluruh barang dan tambahan uang belum lengkap.');
     const snapshot = row.snapshot as unknown as TransactionSnapshot; const now = new Date();
     const listing = await tx.listing.findUniqueOrThrow({ where: { id: row.listingId } });
     if (listing.status !== 'RESERVED' || listing.currentRevisionId !== snapshot.listingRevisionId) throw new AppException(409, 'STATE_CONFLICT', 'Listing kesepakatan tidak sesuai.');

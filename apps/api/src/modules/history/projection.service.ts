@@ -1,3 +1,4 @@
+import { transactionUsingItem } from '../../shared/exchange.js';
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../../infrastructure/database.service.js';
 import { StorageService } from '../../infrastructure/storage.service.js';
@@ -20,7 +21,7 @@ export class PassportImpactService {
     return serial(this.db, async (tx) => {
       const item = await tx.item.findUnique({ where: { id } });
       if (!item || (ownerId && (item.currentOwnerId !== ownerId || item.archivedAt))) throw new AppException(404, 'NOT_FOUND', 'Passport tidak ditemukan.');
-      const completed = await tx.transaction.findFirst({ where: { status: 'COMPLETED', OR: [{ itemId: id }, { offeredItemId: id }] } });
+      const completed = await tx.transaction.findFirst({ where: { status: 'COMPLETED', ...transactionUsingItem(id) } });
       const visibleListing = await tx.listing.findFirst({ where: { itemId: id, status: { in: ['ACTIVE', 'RESERVED'] } } });
       const access = (!completed && !visibleListing) || item.passportVisibility === 'HIDDEN' ? 'UNAVAILABLE' : item.passportVisibility === 'LIMITED' ? 'LIMITED' : 'PUBLIC';
       if (!ownerId && access === 'UNAVAILABLE') throw new AppException(404, 'NOT_FOUND', 'Passport tidak ditemukan.');

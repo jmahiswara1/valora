@@ -9,7 +9,7 @@ EconomicReferenceInput: economicReferenceCreateSchema
 export const adminOutputs = {
 AdminCaseDetail: obj({ id: uuid, transactionId: uuid, status: str, assignedAdminId: nil(uuid), resolution: nil(str), version: num, transaction: nil(ref('Transaction')), createdAt: date, resolvedAt: nil(date) }),
 AdminUser: obj({ id: uuid, displayName: str, email: str, role: str, status: str, version: num, createdAt: date }, ['id', 'displayName', 'email', 'role', 'status', 'version']),
-AdminTransactionMetadata: obj({ id: uuid, itemId: uuid, offeredItemId: nil(uuid), type: str, status: str, version: num, acceptedAt: date, completedAt: nil(date), correctedAt: nil(date), targetHandoverAt: date }),
+AdminTransactionMetadata: obj({ items: arr(obj({ itemId: uuid })), id: uuid, itemId: uuid, offeredItemId: nil(uuid), type: str, status: str, version: num, acceptedAt: date, completedAt: nil(date), correctedAt: nil(date), targetHandoverAt: date }),
 AuditMetadata: obj({ id: uuid, adminId: uuid, targetType: str, targetId: uuid, action: str, createdAt: date })
 };
 

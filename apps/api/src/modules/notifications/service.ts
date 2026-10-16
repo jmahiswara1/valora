@@ -9,6 +9,7 @@ import { expireOffers } from './events.js';
 
 const payloadSchema = z.object({ proposalId: uuidSchema.optional(), leadMinutes: z.number().int().positive().optional(), title: z.string(), offerId: uuidSchema.optional(), transactionId: uuidSchema.optional(), listingId: uuidSchema.optional(), day: z.number().optional(), conversationId: uuidSchema.optional(), latestMessageSequence: z.number().int().positive().optional() });
 const copy = {
+  EXCHANGE_CASH_CONFIRMED: ['Tambahan uang dikonfirmasi', 'Pihak lain melaporkan penyerahan atau penerimaan tambahan uang Exchange.'],
   HANDOVER_PROPOSED: ['Usulan serah terima', 'Pihak lain mengajukan koordinasi. Periksa dan beri tanggapan.'],
   HANDOVER_APPROVED: ['Koordinasi disepakati', 'Jadwal dan detail serah terima telah disepakati.'],
   HANDOVER_REJECTED: ['Usulan ditolak', 'Pihak lain menolak usulan koordinasi serah terima.'],

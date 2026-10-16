@@ -98,7 +98,7 @@ try {
   await new SearchesService(db).processBatch(); await drain(); assert.equal(await db.inAppNotification.count({ where: { type: 'SAVED_SEARCH_MATCH', userId: { in: ids } } }), 101);
   check(await other.account.request('/auth/reauthenticate', { method: 'POST', body: { password: credentials.password } }), 201, 'Reautentikasi');
   check(await other.account.request('/me/close', { method: 'POST', body: {} }), 201, 'Tutup akun'); assert.equal(await db.savedSearch.count({ where: { userId: other.user.id } }), 0);
-  const spec = await (await fetch(base + '/api/docs-json')).json(); assert.equal(spec.info.version, '1.16.0');
+  const spec = await (await fetch(base + '/api/docs-json')).json(); assert.equal(spec.info.version, '1.17.0');
   for (const path of ['/me/saved-searches', '/me/saved-searches/{id}']) assert(spec.paths['/api/v1' + path]);
   console.log('Pencarian tersimpan smoke lulus: validasi, batas, CSRF/sesi, duplikasi, versi, pencocokan, notifikasi privat, publikasi pertama, watermark aktivasi, rollback, worker lock/checkpoint/restart, dan penutupan akun.');
 } finally {
