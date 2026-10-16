@@ -1,7 +1,7 @@
 # Valora — Product Requirements Document
 
-**Versi:** 1.26
-**Tanggal:** 11 Oktober 2026  
+**Versi:** 1.28
+**Tanggal:** 16 Oktober 2026  
 **Status:** Karya INSYFEST 2026; arah produk disepakati, spesifikasi MVP ada di `docs/`, dan implementasi tahap 1 dicatat pada `docs/15-stage1-implementation.md`  
 **Tagline:** *Keep Things Valuable*  
 **Platform:** Web application  
@@ -13,7 +13,7 @@
 2. Area publik, dashboard pengguna, dan dashboard admin memiliki navigasi serta hak akses terpisah.
 3. **Chat masuk MVP.** Percakapan menghubungkan calon pihak transaksi pada suatu listing dan berlanjut selama transaksi berlangsung. Perubahan kesepakatan formal tetap terjadi melalui Offer dan Transaction.
 4. AI pada MVP berupa **Valora AI Explainer**: menjelaskan Score yang telah dihitung dan alasan rekomendasi dari data terstruktur. AI tidak menghitung Score, menaksir harga pasar, memverifikasi kondisi fisik, atau mengubah ownership.
-5. Ownership berpindah hanya ketika Transaction selesai melalui konfirmasi serah terima kedua pihak. Exchange memindahkan dua Item secara atomik.
+5. Ownership berpindah hanya ketika Transaction selesai melalui konfirmasi serah terima kedua pihak. Exchange MVP memindahkan dua Item secara atomik; perluasan Exchange mendukung 1–3 Item per pihak dan menunggu laporan tambahan uang bila disepakati.
 6. Passport adalah riwayat Item yang berlanjut lintas pemilik. Impact dihitung dari peristiwa yang definisinya jelas; klaim dampak lingkungan tidak melampaui data yang tersedia.
 7. UI memakai gaya editorial dengan foto dominan, ruang putih, aksen hijau, sedikit cream, sudut membulat, dan tanpa shadow. Referensi pengguna pada 3 Oktober 2026 menjadi arah komposisi baru, disesuaikan untuk berbagai kategori barang. Migrasi bertahap dimulai dari Beranda, Cara Kerja, dan Impact publik, lalu akun, Market, serta dashboard pengguna/admin.
 8. Donate dan Exchange boleh memakai Assessment dengan komponen ekonomi belum lengkap, selama komponen lain dan pemeriksaan keselamatan lengkap. Score total tidak ditampilkan sampai keempat komponen lengkap. Resell tetap memerlukan Assessment lengkap.
@@ -130,11 +130,11 @@ Pemeriksaan peran dan kepemilikan wajib dilakukan pada API dan akses data, bukan
 
 ### 4.3 Jalur Exchange
 
-- Satu Offer menukar **satu Item milik penawar dengan satu Item pada Listing**, tanpa tambahan uang. Kedua Item harus memiliki Assessment terkini dan memenuhi aturan kelayakan.
+- Pada MVP, satu Offer menukar **satu Item milik penawar dengan satu Item pada Listing**, tanpa tambahan uang. Kedua Item harus memiliki Assessment terkini dan memenuhi aturan kelayakan.
 - Item penawar tidak boleh sedang reserved atau dalam Listing aktif lain. Jika Item tersebut memiliki draft Listing, draft tetap tidak dipublikasi selama reservasi.
 - Saat Offer diterima, kedua Item direservasi. Masing-masing pihak mengonfirmasi telah menyerahkan Item miliknya **dan** menerima Item lawan.
 - Penyelesaian menukar kedua `currentOwnerId` dan menulis peristiwa pada kedua Passport secara atomik.
-- Format banyak Item atau tambahan uang memerlukan aturan transaksi tersendiri dan berada di Future Features.
+- Perluasan [Exchange lanjutan](docs/32-advanced-exchange.md) mendukung 1–3 Item per pihak, tambahan uang opsional dari pemilik Listing atau penawar, counteroffer bergantian, serta riwayat revisi. Barang utama Listing tetap disertakan. Seluruh Item direservasi dan dipindahkan atomik; penyelesaian biasa menunggu laporan penyerahan/penerimaan setiap Item serta dua laporan uang bila diperlukan. Valora tidak memproses pembayaran atau memverifikasi transfer bank.
 
 ### 4.4 Jalur Donate
 
@@ -205,11 +205,11 @@ Offer berlaku tujuh hari sejak dibuat atau revisi Counteroffer terakhir; setelah
 
 ### 6.3 Status Transaction
 
-`AWAITING_HANDOVER → ONE_SIDE_CONFIRMED → COMPLETED`, atau `AWAITING_HANDOVER/ONE_SIDE_CONFIRMED → CANCELLED / DISPUTED`. Pada Exchange, `ONE_SIDE_CONFIRMED` berarti belum semua konfirmasi penyerahan dan penerimaan kedua Item lengkap. Transaksi dalam sengketa memerlukan hasil admin yang tercatat: lanjutkan proses, batalkan dan lepaskan reservasi, atau selesaikan melalui prosedur yang sama dengan jejak keputusan.
+`AWAITING_HANDOVER → ONE_SIDE_CONFIRMED → COMPLETED`, atau `AWAITING_HANDOVER/ONE_SIDE_CONFIRMED → CANCELLED / DISPUTED`. Pada Exchange, `ONE_SIDE_CONFIRMED` berarti belum semua konfirmasi penyerahan dan penerimaan seluruh Item lengkap, termasuk laporan tambahan uang bila disepakati. Transaksi dalam sengketa memerlukan hasil admin yang tercatat: lanjutkan proses, batalkan dan lepaskan reservasi, atau selesaikan melalui prosedur yang sama dengan jejak keputusan.
 
 Target serah terima adalah 14 hari sejak Offer diterima, dengan pengingat dalam aplikasi pada hari ke-7 dan ke-12. Setelah target lewat, Transaction ditandai terlambat dan masuk antrean tindak lanjut admin; status, reservasi, dan ownership tidak berubah otomatis. Jika belum ada konfirmasi, satu pihak dapat meminta pembatalan dengan alasan dan pihak lain harus menyetujuinya. Jika sudah ada konfirmasi, pembatalan tetap memerlukan persetujuan formal kedua pihak atau putusan sengketa. Penolakan, tidak adanya respons, atau perbedaan fakta dapat diajukan sebagai sengketa. Pembukaan sengketa membekukan penyelesaian otomatis. Putusan admin mencatat alasan, bukti yang dirujuk, dan apakah penyelesaian terjadi melalui konfirmasi kedua pihak atau otorisasi admin; admin tidak mengganti owner melalui edit Item biasa.
 
-Penyelesaian memeriksa kembali owner, status kedua Item jika Exchange, status Listing, dan idempotency key. Perubahan Transaction, owner, Passport, serta Impact ditulis dalam transaksi database yang sesuai; kegagalan salah satu membatalkan seluruh penyelesaian. Konfirmasi pembayaran di luar Valora bukan syarat yang dapat diverifikasi sistem.
+Penyelesaian memeriksa kembali owner, status seluruh Item, status Listing, dan idempotency key. Perubahan Transaction, owner, Passport, serta Impact ditulis dalam transaksi database yang sesuai; kegagalan salah satu membatalkan seluruh penyelesaian. Pada Exchange lanjutan, laporan tambahan uang menjadi syarat penyelesaian biasa tetapi tetap berasal dari pengguna; pembayaran di luar Valora tidak diverifikasi sistem. Putusan admin yang sah tidak membuat laporan uang palsu.
 
 ## 7. Chat dalam MVP
 
@@ -367,7 +367,9 @@ Periksa desktop 1.440 px, layar lebar 1.920 px, tablet 768 px, dan ponsel 390 px
 
 Untuk penilaian lomba, alur MVP harus dapat didemonstrasikan dengan akun dan data contoh yang diberi label sebagai data demo. Status transaksi, statistik, dan metrik Impact dalam demonstrasi berasal dari data aplikasi yang dijalankan, bukan angka pemasaran yang dikarang. Paket demo dan cara akses juri dirancang dari kebutuhan karya saat ini; bila panduan lomba diberikan kemudian, keduanya dapat disesuaikan. Kesiapan menerima transaksi nyata menjadi keputusan terpisah.
 
-**Future Features:** payment gateway/escrow; integrasi pengiriman; marketplace jasa repair; notifikasi email/push; lampiran chat tambahan; gamification, badge, dan community challenge; peta; tutorial repair AI interaktif berbasis konten terkurasi; estimasi harga dari data pembanding; pertukaran banyak Item atau pertukaran dengan tambahan uang.
+**Future Features:** payment gateway/escrow; integrasi pengiriman; marketplace jasa repair; notifikasi email/push; lampiran chat tambahan; gamification, badge, dan community challenge; peta; tutorial repair AI interaktif berbasis konten terkurasi; estimasi harga dari data pembanding.
+
+**Perluasan Exchange lanjutan:** paket 1–3 Item per pihak, tambahan uang opsional, counteroffer bergantian, riwayat immutable, reservasi seluruh barang dan konfirmasi uang oleh pemberi/penerima. Batas pembayaran manual, migrasi dan kontrak OpenAPI 1.17.0 tercatat pada [Exchange lanjutan](docs/32-advanced-exchange.md).
 
 **Perluasan setelah MVP:** Favorit menyimpan Listing privat di akun, menyediakan
 tombol hati dan halaman `/app/favorit`, serta mempertahankan nama saat disimpan
@@ -434,3 +436,8 @@ bukti kasus serta retensi dicatat pada [Peningkatan Chat](docs/28-chat-enhanceme
 **Perluasan AI Explainer:** penjelasan manual dari hasil penilaian terstruktur melalui gateway 9router, tanpa identitas/teks bebas. Score dan kelayakan tetap berasal dari aturan Valora. Kuota default 20/pengguna/hari dan 200/global/hari, cache 24 jam, fallback rubrik, serta ACL dan pemeriksaan state sebelum respons dicatat pada [AI Explainer](docs/30-ai-explainer.md).
 
 **Perluasan Analisis Foto AI:** bantuan manual pada formulir barang baru/edit untuk nama, kategori/subkategori, deskripsi dan kondisi/kendala visual dari 1–3 foto. Saran dipilih per kolom dan diterapkan ke formulir sebelum disimpan; fungsi, keamanan, harga dan Score tidak disimpulkan. Foto terpilih tanpa metadata serta katalog aktif dikirim ke 9router. Kuota harian dan kapasitas generasi dibagi dengan AI Explainer, cache privat 24 jam dan pemeriksaan izin/state sebelum respons; rincian pada [Analisis Foto AI](docs/31-ai-photo-analysis.md).
+
+
+## Perluasan: panduan perawatan & perbaikan interaktif
+
+Enam panduan bawaan berversi tersedia untuk pemilik barang tanpa Assessment wajib. Sesi privat menyimpan persiapan, progres, jeda, foto dan pertanyaan. AI memilih penjelasan dari katalog; pengguna menandai tindakan dan meninjau hasil sebelum pencatatan. Mulai mengerjakan menjeda Listing dan mengakhiri penawaran terkait; Market ditahan selama sesi berjalan. MAINTENANCE dibedakan dari REPAIR dan tidak menambah REPAIRS_RECORDED. Sesi tidak berpindah kepada pemilik baru. Rincian kontrak, privasi, retensi, rollout dan batas pemeriksaan ada pada [docs/33-ai-repair-tutorials.md](docs/33-ai-repair-tutorials.md).

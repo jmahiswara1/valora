@@ -62,8 +62,13 @@ dan kontrak OpenAPI 1.12.0.
 [28 — Peningkatan Chat](28-chat-enhancements.md) mencatat foto privat, cursor
 baca, SSE bersama, notifikasi percakapan, bukti kasus dan kontrak OpenAPI 1.13.0.
 
-[29 — Koordinasi Serah Terima](29-handover-coordination.md) mencatat usulan jadwal, alamat privat, resi per barang, linimasa, pengingat, akses admin dan retensi. Kontrak OpenAPI terkini 1.16.0.
+[29 — Koordinasi Serah Terima](29-handover-coordination.md) mencatat usulan jadwal, alamat privat, resi per barang, linimasa, pengingat, akses admin dan retensi. Kontrak OpenAPI terkini 1.18.0.
 
 [AI Explainer Penilaian](30-ai-explainer.md) menjelaskan hasil penilaian melalui 9router, dengan validasi, kuota harian, cache dan fallback rubrik.
 
 [Analisis Foto Barang dengan AI](31-ai-photo-analysis.md) membantu mengisi barang baru/edit dengan saran per kolom dari 1–3 foto, berbagi kuota dengan AI Explainer, dan tetap memerlukan tinjauan serta simpan manual.
+
+[32 — Exchange Lanjutan](32-advanced-exchange.md) mencatat paket 1–3 barang per pihak, counteroffer bergantian, riwayat revisi, tambahan uang manual, reservasi dan perpindahan atomik, serta migrasi kompatibel untuk data lama.
+
+
+[33 — Panduan Perawatan & Perbaikan dengan AI](33-ai-repair-tutorials.md) mencatat katalog, progres dan tanya jawab privat, perubahan Market saat mulai, foto bukti terpilih, jenis aktivitas, retensi, konfigurasi dan migrasi tanpa reset.
