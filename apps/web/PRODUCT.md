@@ -20,7 +20,7 @@ Identitas Item dan Valora Passport melanjutkan riwayat barang lintas pemilik. Va
 
 ## Operating Context
 
-Monorepo Next.js, React, Fastify, PostgreSQL, dan kontrak TypeScript bersama. PRD.md serta docs/ adalah sumber aturan bisnis. Market dapat dijelajahi publik; akses akun dan admin mengikuti kebijakan sesi serta peran yang sudah diterapkan.
+Monorepo Next.js, React, Fastify, PostgreSQL, dan kontrak TypeScript bersama. docs/PRD.md serta docs/ adalah sumber aturan bisnis. Market dapat dijelajahi publik; akses akun dan admin mengikuti kebijakan sesi serta peran yang sudah diterapkan.
 
 ## Capabilities and Constraints
 
@@ -35,7 +35,7 @@ Nama Valora, bahasa Indonesia, dan Plus Jakarta Sans dengan bobot 500/600/700 di
 
 ## Evidence on Hand
 
-PRD.md, docs/08-design-system.md, implementasi tahap 1–6, API Market dan Impact, foto katalog demo lokal, serta referensi visual yang diberikan pengguna. Listing dan metrik yang tampil berasal dari API.
+docs/PRD.md, docs/08-design-system.md, implementasi tahap 1–6, API Market dan Impact, foto katalog demo lokal, serta referensi visual yang diberikan pengguna. Listing dan metrik yang tampil berasal dari API.
 
 ## Product Principles
 

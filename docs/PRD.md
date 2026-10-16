@@ -134,7 +134,7 @@ Pemeriksaan peran dan kepemilikan wajib dilakukan pada API dan akses data, bukan
 - Item penawar tidak boleh sedang reserved atau dalam Listing aktif lain. Jika Item tersebut memiliki draft Listing, draft tetap tidak dipublikasi selama reservasi.
 - Saat Offer diterima, kedua Item direservasi. Masing-masing pihak mengonfirmasi telah menyerahkan Item miliknya **dan** menerima Item lawan.
 - Penyelesaian menukar kedua `currentOwnerId` dan menulis peristiwa pada kedua Passport secara atomik.
-- Perluasan [Exchange lanjutan](docs/32-advanced-exchange.md) mendukung 1–3 Item per pihak, tambahan uang opsional dari pemilik Listing atau penawar, counteroffer bergantian, serta riwayat revisi. Barang utama Listing tetap disertakan. Seluruh Item direservasi dan dipindahkan atomik; penyelesaian biasa menunggu laporan penyerahan/penerimaan setiap Item serta dua laporan uang bila diperlukan. Valora tidak memproses pembayaran atau memverifikasi transfer bank.
+- Perluasan [Exchange lanjutan](32-advanced-exchange.md) mendukung 1–3 Item per pihak, tambahan uang opsional dari pemilik Listing atau penawar, counteroffer bergantian, serta riwayat revisi. Barang utama Listing tetap disertakan. Seluruh Item direservasi dan dipindahkan atomik; penyelesaian biasa menunggu laporan penyerahan/penerimaan setiap Item serta dua laporan uang bila diperlukan. Valora tidak memproses pembayaran atau memverifikasi transfer bank.
 
 ### 4.4 Jalur Donate
 
@@ -169,7 +169,7 @@ Rubrik kategori awal meliputi elektronik, furnitur, pakaian, buku, peralatan rum
 
 `Economic Value` menggunakan nominal rupiah: `net = max(0, estimatedResaleValue − estimatedRepairCost)` dan rasio `net / comparableReplacementPrice` dari pembanding kategori yang dikelola admin atau referensi yang dimasukkan pengguna. Rasio 0 menghasilkan nilai 0; rasio di atas 0 sampai 0,10 menghasilkan 25; di atas 0,10 sampai 0,30 menghasilkan 50; di atas 0,30 sampai 0,60 menghasilkan 75; dan di atas 0,60 menghasilkan 100. Pembanding harus lebih besar dari nol. Ketika pemilik tidak mengetahui estimasi yang diperlukan dan tidak ada pembanding kategori, komponen ini tetap belum lengkap. Dasar dan sumber estimasi ditampilkan, sehingga pengguna mengetahui bahwa nilai ekonominya dapat bergantung pada laporan pemilik.
 
-Rubrik ini adalah aturan produk awal untuk diimplementasikan dan diuji dengan contoh barang pada setiap kategori. Pertanyaan enam indikator, deklarasi keselamatan, dan kasus batas sembilan kategori/subkategori MVP dirinci pada [rubrik implementasi](docs/06-category-rubric-draft.md); sumber ekonomi dan batas angka pada [K02](docs/10-mvp-implementation-decisions.md#o05--sumber-nilai-ekonomi-dan-batas-formula). Admin dapat menerbitkan versi aturan berikutnya setelah ditinjau; perubahan versi tidak mengubah hasil historis.
+Rubrik ini adalah aturan produk awal untuk diimplementasikan dan diuji dengan contoh barang pada setiap kategori. Pertanyaan enam indikator, deklarasi keselamatan, dan kasus batas sembilan kategori/subkategori MVP dirinci pada [rubrik implementasi](06-category-rubric-draft.md); sumber ekonomi dan batas angka pada [K02](10-mvp-implementation-decisions.md#o05--sumber-nilai-ekonomi-dan-batas-formula). Admin dapat menerbitkan versi aturan berikutnya setelah ditinjau; perubahan versi tidak mengubah hasil historis.
 
 ### 5.3 Rekomendasi
 
@@ -258,7 +258,7 @@ Metrik per pengguna dan metrik platform dipisahkan. Event penyelesaian menjadi s
 
 Admin memiliki dashboard operasional berisi antrean moderasi, laporan baru, sengketa, Listing aktif/ditangguhkan, transaksi, pengguna, rubrik kategori, dan ringkasan aktivitas. Admin dapat menerima/menolak Listing dengan alasan, menangguhkan akun atau Listing, mengelola daftar kategori dan kelayakan, serta menangani laporan.
 
-Gerbang moderasi memeriksa kelengkapan informasi keselamatan wajib lebih dulu. Setelah lengkap, kebijakan kategori membedakan kondisi **terlarang**, **perlu tinjauan khusus admin**, dan **boleh ditawarkan dengan pengungkapan kondisi**. Kondisi terlarang tidak diterbitkan; kasus meragukan masuk review dengan penanda risiko; kondisi yang boleh ditawarkan tetap menunggu persetujuan admin sebelum `ACTIVE`. Score tinggi tidak mengesampingkan aturan ini. Daftar kasus per kategori dan versi kebijakannya ada pada [kebijakan moderasi MVP](docs/09-moderation-policy-draft.md) dan [rubrik keselamatan](docs/06-category-rubric-draft.md).
+Gerbang moderasi memeriksa kelengkapan informasi keselamatan wajib lebih dulu. Setelah lengkap, kebijakan kategori membedakan kondisi **terlarang**, **perlu tinjauan khusus admin**, dan **boleh ditawarkan dengan pengungkapan kondisi**. Kondisi terlarang tidak diterbitkan; kasus meragukan masuk review dengan penanda risiko; kondisi yang boleh ditawarkan tetap menunggu persetujuan admin sebelum `ACTIVE`. Score tinggi tidak mengesampingkan aturan ini. Daftar kasus per kategori dan versi kebijakannya ada pada [kebijakan moderasi MVP](09-moderation-policy-draft.md) dan [rubrik keselamatan](06-category-rubric-draft.md).
 
 Laporan dapat ditautkan ke Listing, User, Message, atau Transaction. Alur: `OPEN → IN_REVIEW → RESOLVED/DISMISSED`; hasil serta bukti dicatat. Sengketa Transaction memiliki rekaman terpisah dan tidak menghapus chat atau Passport. Admin tidak dapat mengganti current owner lewat edit profil Item biasa; penyelesaian sengketa yang berujung transfer harus melewati prosedur terotorisasi dan tercatat.
 
@@ -295,7 +295,7 @@ Analisis kondisi otomatis dari foto, tutorial AI interaktif, estimasi harga berb
 
 ### 12.1 Prinsip visual
 
-**Arah desain:** editorial marketplace dengan foto besar, navigasi sederhana, ruang putih yang lapang, judul tegas, sudut membulat, dan grid rapi. Referensi pengguna menjadi dasar komposisi, dengan identitas putih/hijau/cream Valora dan berbagai kategori barang. Cara Kerja serta Impact memakai tata letak yang sesuai dengan informasi masing-masing. [Design system MVP](docs/08-design-system.md) menjelaskan migrasi; [DESIGN.md](apps/web/DESIGN.md) mencatat token yang telah dikodekan.
+**Arah desain:** editorial marketplace dengan foto besar, navigasi sederhana, ruang putih yang lapang, judul tegas, sudut membulat, dan grid rapi. Referensi pengguna menjadi dasar komposisi, dengan identitas putih/hijau/cream Valora dan berbagai kategori barang. Cara Kerja serta Impact memakai tata letak yang sesuai dengan informasi masing-masing. [Design system MVP](08-design-system.md) menjelaskan migrasi; [DESIGN.md](../apps/web/DESIGN.md) mencatat token yang telah dikodekan.
 
 **Aturan visual wajib:**
 
@@ -369,25 +369,25 @@ Untuk penilaian lomba, alur MVP harus dapat didemonstrasikan dengan akun dan dat
 
 **Future Features:** payment gateway/escrow; integrasi pengiriman; marketplace jasa repair; notifikasi email/push; lampiran chat tambahan; gamification, badge, dan community challenge; peta; tutorial repair AI interaktif berbasis konten terkurasi; estimasi harga dari data pembanding.
 
-**Perluasan Exchange lanjutan:** paket 1–3 Item per pihak, tambahan uang opsional, counteroffer bergantian, riwayat immutable, reservasi seluruh barang dan konfirmasi uang oleh pemberi/penerima. Batas pembayaran manual, migrasi dan kontrak OpenAPI 1.17.0 tercatat pada [Exchange lanjutan](docs/32-advanced-exchange.md).
+**Perluasan Exchange lanjutan:** paket 1–3 Item per pihak, tambahan uang opsional, counteroffer bergantian, riwayat immutable, reservasi seluruh barang dan konfirmasi uang oleh pemberi/penerima. Batas pembayaran manual, migrasi dan kontrak OpenAPI 1.17.0 tercatat pada [Exchange lanjutan](32-advanced-exchange.md).
 
 **Perluasan setelah MVP:** Favorit menyimpan Listing privat di akun, menyediakan
 tombol hati dan halaman `/app/favorit`, serta mempertahankan nama saat disimpan
 ketika Listing tidak tersedia tanpa membuka detail/foto lama. Perilaku, batas,
-kontrak, dan verifikasi ada pada [fitur Favorit](docs/23-favorites.md). Fitur ini
+kontrak, dan verifikasi ada pada [fitur Favorit](23-favorites.md). Fitur ini
 tidak mengubah cakupan wajib MVP tahap 1–6. Koleksi bernama, pencarian tersimpan,
 dan pemberitahuan perubahan harga menjadi pengembangan berikutnya.
 
 **Perluasan pusat notifikasi:** riwayat privat aktivitas penawaran dan transaksi,
 preview lonceng desktop/mobile, filter, dan penandaan dibaca. Pengingat MVP
 tetap tersedia; email/push dan notifikasi pesan/moderasi belum termasuk.
-Lihat [Pusat Notifikasi](docs/24-notification-center.md).
+Lihat [Pusat Notifikasi](24-notification-center.md).
 
 **Perluasan Passport QR:** pemilik dapat menyimpan QR sejak barang didaftarkan;
 pengunjung dapat berbagi Passport publik yang dapat diakses. QR hanya berisi
 tautan kanonis barang, tetap sama lintas pemilik, serta menyediakan salin
 tautan dan unduh PNG. Kelayakan publik dan pembatasan moderasi tetap berlaku.
-Konfigurasi domain dan verifikasi ada pada [Passport QR](docs/25-passport-qr.md).
+Konfigurasi domain dan verifikasi ada pada [Passport QR](25-passport-qr.md).
 
 Pada MVP, pilihan metode pembayaran dan serah terima hanya dicatat sebagai kesepakatan/koordinasi para pihak; Valora tidak memproses atau memverifikasi keduanya. Tampilan Transaction harus menjelaskan batas ini sebelum para pihak mengonfirmasi.
 
@@ -414,7 +414,7 @@ Selain keberhasilan teknis, pantau jumlah Item dengan Assessment lengkap, persen
 **Perluasan Pencarian Tersimpan:** pengguna dapat menyimpan kriteria Market privat
 dan menerima satu notifikasi per listing yang pertama kali terbit dan cocok.
 Pengelolaan dasar, watermark aktivasi, serta pemrosesan antrean persisten
-dicatat pada [Pencarian Tersimpan](docs/26-saved-searches.md).
+dicatat pada [Pencarian Tersimpan](26-saved-searches.md).
 
 **Perluasan Profil Publik dan Ulasan:** akun aktif memiliki profil berisi identitas
 minimal, barang aktif, dan pengalaman dari transaksi selesai. Foto publik opsional
@@ -422,22 +422,22 @@ dan dinonaktifkan secara default. Pembeli/penerima mengulas penjual/donor; Excha
 mengizinkan kedua peserta mengulas, sekali dalam 30 hari sejak selesai. Rating
 1–5 wajib, komentar opsional, dan satu balasan final tersedia. Privasi, koreksi,
 laporan, moderasi serta retensi dicatat pada
-[Profil Publik dan Ulasan](docs/27-public-profiles-reviews.md).
+[Profil Publik dan Ulasan](27-public-profiles-reviews.md).
 
 
 **Perluasan Chat:** teks dan maksimal tiga foto privat per pesan, tanda dibaca
 berdasarkan pesan terlihat, notifikasi yang dikelompokkan per percakapan,
 dan profil publik dari header chat. Pengiriman idempoten, pemulihan respons,
-bukti kasus serta retensi dicatat pada [Peningkatan Chat](docs/28-chat-enhancements.md).
+bukti kasus serta retensi dicatat pada [Peningkatan Chat](28-chat-enhancements.md).
 
 
-**Perluasan koordinasi serah terima:** peserta dapat mengusulkan dan menyepakati jadwal/lokasi atau perkiraan penerimaan dengan alamat privat per penerima. Tenggat tetap 14 hari; konfirmasi formal mengunci koordinasi dan tetap menjadi dasar transfer kepemilikan. Resi manual beralasan, linimasa transaksi, pengingat 24/2 jam, akses admin lima menit serta retensi terdokumentasi pada [Koordinasi Serah Terima](docs/29-handover-coordination.md).
+**Perluasan koordinasi serah terima:** peserta dapat mengusulkan dan menyepakati jadwal/lokasi atau perkiraan penerimaan dengan alamat privat per penerima. Tenggat tetap 14 hari; konfirmasi formal mengunci koordinasi dan tetap menjadi dasar transfer kepemilikan. Resi manual beralasan, linimasa transaksi, pengingat 24/2 jam, akses admin lima menit serta retensi terdokumentasi pada [Koordinasi Serah Terima](29-handover-coordination.md).
 
-**Perluasan AI Explainer:** penjelasan manual dari hasil penilaian terstruktur melalui gateway 9router, tanpa identitas/teks bebas. Score dan kelayakan tetap berasal dari aturan Valora. Kuota default 20/pengguna/hari dan 200/global/hari, cache 24 jam, fallback rubrik, serta ACL dan pemeriksaan state sebelum respons dicatat pada [AI Explainer](docs/30-ai-explainer.md).
+**Perluasan AI Explainer:** penjelasan manual dari hasil penilaian terstruktur melalui gateway 9router, tanpa identitas/teks bebas. Score dan kelayakan tetap berasal dari aturan Valora. Kuota default 20/pengguna/hari dan 200/global/hari, cache 24 jam, fallback rubrik, serta ACL dan pemeriksaan state sebelum respons dicatat pada [AI Explainer](30-ai-explainer.md).
 
-**Perluasan Analisis Foto AI:** bantuan manual pada formulir barang baru/edit untuk nama, kategori/subkategori, deskripsi dan kondisi/kendala visual dari 1–3 foto. Saran dipilih per kolom dan diterapkan ke formulir sebelum disimpan; fungsi, keamanan, harga dan Score tidak disimpulkan. Foto terpilih tanpa metadata serta katalog aktif dikirim ke 9router. Kuota harian dan kapasitas generasi dibagi dengan AI Explainer, cache privat 24 jam dan pemeriksaan izin/state sebelum respons; rincian pada [Analisis Foto AI](docs/31-ai-photo-analysis.md).
+**Perluasan Analisis Foto AI:** bantuan manual pada formulir barang baru/edit untuk nama, kategori/subkategori, deskripsi dan kondisi/kendala visual dari 1–3 foto. Saran dipilih per kolom dan diterapkan ke formulir sebelum disimpan; fungsi, keamanan, harga dan Score tidak disimpulkan. Foto terpilih tanpa metadata serta katalog aktif dikirim ke 9router. Kuota harian dan kapasitas generasi dibagi dengan AI Explainer, cache privat 24 jam dan pemeriksaan izin/state sebelum respons; rincian pada [Analisis Foto AI](31-ai-photo-analysis.md).
 
 
 ## Perluasan: panduan perawatan & perbaikan interaktif
 
-Enam panduan bawaan berversi tersedia untuk pemilik barang tanpa Assessment wajib. Sesi privat menyimpan persiapan, progres, jeda, foto dan pertanyaan. AI memilih penjelasan dari katalog; pengguna menandai tindakan dan meninjau hasil sebelum pencatatan. Mulai mengerjakan menjeda Listing dan mengakhiri penawaran terkait; Market ditahan selama sesi berjalan. MAINTENANCE dibedakan dari REPAIR dan tidak menambah REPAIRS_RECORDED. Sesi tidak berpindah kepada pemilik baru. Rincian kontrak, privasi, retensi, rollout dan batas pemeriksaan ada pada [docs/33-ai-repair-tutorials.md](docs/33-ai-repair-tutorials.md).
+Enam panduan bawaan berversi tersedia untuk pemilik barang tanpa Assessment wajib. Sesi privat menyimpan persiapan, progres, jeda, foto dan pertanyaan. AI memilih penjelasan dari katalog; pengguna menandai tindakan dan meninjau hasil sebelum pencatatan. Mulai mengerjakan menjeda Listing dan mengakhiri penawaran terkait; Market ditahan selama sesi berjalan. MAINTENANCE dibedakan dari REPAIR dan tidak menambah REPAIRS_RECORDED. Sesi tidak berpindah kepada pemilik baru. Rincian kontrak, privasi, retensi, rollout dan batas pemeriksaan ada pada [docs/33-ai-repair-tutorials.md](33-ai-repair-tutorials.md).

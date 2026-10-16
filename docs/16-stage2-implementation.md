@@ -1,6 +1,6 @@
 # Implementasi tahap 2 — Nilai Item
 
-**Status:** selesai untuk baseline MVP lokal. Rubrik berversi, Assessment dan Score deterministik, rekomendasi, Repair, riwayat, serta layar pengguna telah diterapkan dan diverifikasi melalui smoke tahap 1–2. Aturan produk tetap mengikuti [PRD](../PRD.md), [domain](03-domain-and-scoring.md), [rubrik](06-category-rubric-draft.md), dan [kontrak API](12-api-contract.md).
+**Status:** selesai untuk baseline MVP lokal. Rubrik berversi, Assessment dan Score deterministik, rekomendasi, Repair, riwayat, serta layar pengguna telah diterapkan dan diverifikasi melalui smoke tahap 1–2. Aturan produk tetap mengikuti [PRD](PRD.md), [domain](03-domain-and-scoring.md), [rubrik](06-category-rubric-draft.md), dan [kontrak API](12-api-contract.md).
 
 ## Yang berjalan
 

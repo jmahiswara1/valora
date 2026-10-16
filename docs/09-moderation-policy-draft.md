@@ -1,6 +1,6 @@
 # Kebijakan moderasi kategori dan Listing untuk MVP
 
-**Status:** prinsip tiga perlakuan, penahanan informasi keselamatan yang belum lengkap, dan matriks kasus awal per kategori **disepakati** sebagai D18 dalam [PRD v1.14](../PRD.md). Pertanyaan, kasus batas, serta operasi ditetapkan pada [rubrik](06-category-rubric-draft.md) dan [K01–K05](10-mvp-implementation-decisions.md). Dokumen ini menjelaskan kebijakan produk untuk MVP lomba, bukan bukti bahwa Valora memeriksa fisik barang.
+**Status:** prinsip tiga perlakuan, penahanan informasi keselamatan yang belum lengkap, dan matriks kasus awal per kategori **disepakati** sebagai D18 dalam [PRD v1.14](PRD.md). Pertanyaan, kasus batas, serta operasi ditetapkan pada [rubrik](06-category-rubric-draft.md) dan [K01–K05](10-mvp-implementation-decisions.md). Dokumen ini menjelaskan kebijakan produk untuk MVP lomba, bukan bukti bahwa Valora memeriksa fisik barang.
 
 ## Tujuan dan batas
 

@@ -4,7 +4,7 @@
 
 ## Tujuan karya
 
-Valora dikembangkan sebagai proyek lomba **INSYFEST 2026**. [PRD](../PRD.md) tetap menetapkan empat jalur MVP: Repair, Resell, Exchange, dan Donate, beserta Score, Listing, chat, Transaction, Passport, Impact, dan moderasi. Pasar sasaran produk adalah Indonesia, dengan nominal rupiah dan lokasi publik paling rinci kota.
+Valora dikembangkan sebagai proyek lomba **INSYFEST 2026**. [PRD](PRD.md) tetap menetapkan empat jalur MVP: Repair, Resell, Exchange, dan Donate, beserta Score, Listing, chat, Transaction, Passport, Impact, dan moderasi. Pasar sasaran produk adalah Indonesia, dengan nominal rupiah dan lokasi publik paling rinci kota.
 
 Target dekat adalah **karya yang dapat diperiksa dan didemonstrasikan**. Istilah `ACTIVE`, “publik”, atau “transaksi selesai” di spesifikasi menjelaskan perilaku aplikasi dan hak akses, tidak berarti platform sudah dibuka untuk perdagangan nyata. Pengoperasian bagi pengguna umum, pemrosesan transaksi sungguhan, dan kewajiban operasionalnya memerlukan keputusan terpisah.
 
@@ -37,7 +37,7 @@ Untuk reproduksi demo, rancang akun contoh owner, calon penerima, dan admin; Ite
 ## Gerbang kesiapan karya — usulan
 
 1. Cocokkan karya dan materi pengumpulan dengan kategori, tema, serta aturan resmi INSYFEST 2026 ketika panduan tersedia.
-2. Selesaikan alur MVP sesuai [kriteria penerimaan PRD](../PRD.md#14-kriteria-penerimaan-produk), termasuk empat jalur dan batas klaim.
+2. Selesaikan alur MVP sesuai [kriteria penerimaan PRD](PRD.md#14-kriteria-penerimaan-produk), termasuk empat jalur dan batas klaim.
 3. Jalankan skenario demo dengan data contoh yang konsisten, akun juri yang sesuai, dan langkah pemulihan bila layanan luar seperti AI atau realtime gagal.
 4. Periksa tampilan desktop/mobile terhadap referensi Pencil, keterbacaan teks Indonesia, dan tidak adanya angka atau badge yang menyiratkan verifikasi palsu.
 5. Siapkan materi penjelasan singkat: masalah, solusi, pembeda Valora, alur produk, keputusan keamanan/privasi, batas MVP, dan potensi pengembangan. Bentuknya disesuaikan bila panduan lomba diberikan kemudian.

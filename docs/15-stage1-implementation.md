@@ -1,6 +1,6 @@
 # Implementasi tahap 1 — fondasi Valora
 
-**Status:** tahap 1 selesai pada lingkungan pengembangan lokal, 29 September 2026. Proyek ini disiapkan untuk INSYFEST 2026. [PRD](../PRD.md) tetap acuan perilaku produk; dokumen ini memetakan bagian yang sudah berjalan agar tahap 2 tidak mengira kontrak masa depan telah tersedia.
+**Status:** tahap 1 selesai pada lingkungan pengembangan lokal, 29 September 2026. Proyek ini disiapkan untuk INSYFEST 2026. [PRD](PRD.md) tetap acuan perilaku produk; dokumen ini memetakan bagian yang sudah berjalan agar tahap 2 tidak mengira kontrak masa depan telah tersedia.
 
 ## Yang sudah dapat dipakai
 

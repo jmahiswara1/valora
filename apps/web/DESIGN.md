@@ -749,7 +749,7 @@ Dokumen ini mencatat Beranda, katalog Market (/market), detail Listing (/market/
 - Kontrol pill dan kartu datar dengan fokus keyboard yang terlihat.
 - Kondisi, sumber data, serta state gagal atau kosong tetap terbaca.
 
-Basis ekstraksi: [stylesheet publik](src/styles/public.css), [token dan komponen dasar](src/styles/globals.css), [font yang disajikan aplikasi](src/app/layout.tsx), serta komponen dan tiga route publik. Nilai token di frontmatter bersifat normatif; prose menjelaskan penggunaannya. [Kontrak arah publik](.impeccable/briefs/public.md), [PRD bagian 12](../../PRD.md), dan [catatan migrasi](../../docs/08-design-system.md) memberi konteks batas tahap.
+Basis ekstraksi: [stylesheet publik](src/styles/public.css), [token dan komponen dasar](src/styles/globals.css), [font yang disajikan aplikasi](src/app/layout.tsx), serta komponen dan tiga route publik. Nilai token di frontmatter bersifat normatif; prose menjelaskan penggunaannya. [Kontrak arah publik](.impeccable/briefs/public.md), [PRD bagian 12](../../docs/PRD.md), dan [catatan migrasi](../../docs/08-design-system.md) memberi konteks batas tahap.
 
 [Review penuh kanvas](.impeccable/review/flat-layout/finish-review-initial.md) menjadi dasar [verdict koreksi lebar baca](.impeccable/review/finish-review-flat.md), yang memberi disposition ship pada satu perbaikan 70ch yang resolved. Refinement navbar sticky dicatat melalui [pemeriksaan dokumentasi navbar](.impeccable/review/navbar/documentation.md) dan inspeksi render terfokus root. Verdict kanvas/70ch tidak menjadi verdict untuk navbar baru. Bukti tersebut tidak menyatakan seluruh isi aplikasi telah dimigrasi atau operasi transaksi nyata telah disetujui.
 

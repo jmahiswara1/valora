@@ -1,6 +1,6 @@
 # Alur pengguna dan status produk
 
-Dokumen ini merinci [PRD](../PRD.md) tanpa mengubah cakupan MVP. Cabang status yang sebelumnya terbuka pada O04 kini mengikuti [K01](10-mvp-implementation-decisions.md#o04--siklus-listing-dan-pembatalan).
+Dokumen ini merinci [PRD](PRD.md) tanpa mengubah cakupan MVP. Cabang status yang sebelumnya terbuka pada O04 kini mengikuti [K01](10-mvp-implementation-decisions.md#o04--siklus-listing-dan-pembatalan).
 
 ## Aktor dan batas akses
 

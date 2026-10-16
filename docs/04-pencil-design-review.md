@@ -1,6 +1,6 @@
 # Audit referensi desain Pencil
 
-**Sumber:** kanvas pen.dev aktif `pencil-new.pen`, ditinjau 28 September 2026 melalui MCP Pencil. Audit ini bersifat baca-saja; kanvas tidak diubah dan tidak perlu diedit sebelum implementasi. [PRD v1.14](../PRD.md) menetapkan token visual `v1`, font, warning text, dan penghapusan badge tanpa objek verifikasi. Screenshot dan layer dipakai untuk membaca arah visual serta cakupan layar; koreksi berikut dikerjakan pada UI yang dikodekan.
+**Sumber:** kanvas pen.dev aktif `pencil-new.pen`, ditinjau 28 September 2026 melalui MCP Pencil. Audit ini bersifat baca-saja; kanvas tidak diubah dan tidak perlu diedit sebelum implementasi. [PRD v1.14](PRD.md) menetapkan token visual `v1`, font, warning text, dan penghapusan badge tanpa objek verifikasi. Screenshot dan layer dipakai untuk membaca arah visual serta cakupan layar; koreksi berikut dikerjakan pada UI yang dikodekan.
 
 ## Inventaris
 

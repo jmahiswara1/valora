@@ -1,6 +1,6 @@
 # Keputusan produk dan rincian implementasi
 
-**Acuan:** [PRD v1.14](../PRD.md), diskusi 27–29 September 2026. D01–D20 dan D22 berasal dari keputusan pengguna; rincian K01–K06 di bawah adalah baseline spesifikasi yang diturunkan pada 28 September 2026 untuk melengkapi docs sebelum kode.
+**Acuan:** [PRD v1.14](PRD.md), diskusi 27–29 September 2026. D01–D20 dan D22 berasal dari keputusan pengguna; rincian K01–K06 di bawah adalah baseline spesifikasi yang diturunkan pada 28 September 2026 untuk melengkapi docs sebelum kode.
 
 ## Keputusan yang disepakati
 

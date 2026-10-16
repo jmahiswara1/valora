@@ -1,6 +1,6 @@
 # Model data MVP Valora
 
-**Status:** kontrak data MVP karya INSYFEST 2026. Skema PostgreSQL/Prisma tahap 1–4 sudah berjalan, termasuk Transaction, kasus/bukti/grant, Transfer, event Passport/Impact, dan notifikasi. Proyeksi, agregasi, koreksi ledger, dan operasi admin penuh tetap target tahap 5. Nama kolom fisik dapat berbeda selama aturan produk, privasi, relasi, dan konsistensinya terpenuhi. [PRD](../PRD.md), [alur](02-flows-and-states.md), dan [K01–K06](10-mvp-implementation-decisions.md) menjadi sumber aturan. Bukti implementasi ada di [tahap 1](15-stage1-implementation.md), [tahap 2](16-stage2-implementation.md), [tahap 3](17-stage3-implementation.md), dan [tahap 4](18-stage4-implementation.md).
+**Status:** kontrak data MVP karya INSYFEST 2026. Skema PostgreSQL/Prisma tahap 1–4 sudah berjalan, termasuk Transaction, kasus/bukti/grant, Transfer, event Passport/Impact, dan notifikasi. Proyeksi, agregasi, koreksi ledger, dan operasi admin penuh tetap target tahap 5. Nama kolom fisik dapat berbeda selama aturan produk, privasi, relasi, dan konsistensinya terpenuhi. [PRD](PRD.md), [alur](02-flows-and-states.md), dan [K01–K06](10-mvp-implementation-decisions.md) menjadi sumber aturan. Bukti implementasi ada di [tahap 1](15-stage1-implementation.md), [tahap 2](16-stage2-implementation.md), [tahap 3](17-stage3-implementation.md), dan [tahap 4](18-stage4-implementation.md).
 
 ## Tipe dan konvensi
 

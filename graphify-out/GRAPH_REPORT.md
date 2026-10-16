@@ -1,6 +1,6 @@
 # Graph Report - insyfest  (2026-09-28)
 
-> Snapshot analisis awal: PRD v1.12 dan 11 dokumen sebelum penutupan K01–K06. Untuk aturan terkini, baca [PRD v1.14](../PRD.md) dan [indeks docs](../docs/README.md). [Audit temuan](../docs/14-graphify-audit.md) menjelaskan bagaimana graph ini dipakai.
+> Snapshot analisis awal: PRD v1.12 dan 11 dokumen sebelum penutupan K01–K06. Untuk aturan terkini, baca [PRD v1.14](../docs/PRD.md) dan [indeks docs](../docs/README.md). [Audit temuan](../docs/14-graphify-audit.md) menjelaskan bagaimana graph ini dipakai.
 
 ## Corpus Check
 - Corpus is ~19,061 words - fits in a single context window. You may not need a graph.

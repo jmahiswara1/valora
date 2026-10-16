@@ -2,7 +2,7 @@
 
 **Status:** selesai untuk tahap 3 pada 30 September 2026, sebagai bagian dari karya INSYFEST 2026. Market, Listing, moderasi awal/ulang, negosiasi Offer, chat, block, dan laporan telah diterapkan. Tahap ini belum menyelesaikan seluruh MVP: penerimaan Offer, reservasi, Transaction, Passport, Impact, dan alur konfirmasi belum dibuat. Tidak ada pemrosesan pembayaran atau verifikasi serah terima fisik.
 
-Dokumen ini mencatat perilaku yang benar-benar berjalan, bukan seluruh target PRD. Aturan produk dan alur lengkap tetap mengacu pada [PRD](../PRD.md), [keputusan produk](01-product-decisions.md), [model data](11-data-model.md), [kontrak API](12-api-contract.md), serta [matriks penerimaan MVP](13-acceptance-and-demo.md). Kanvas Pencil tidak diubah; layar web diselaraskan saat implementasi.
+Dokumen ini mencatat perilaku yang benar-benar berjalan, bukan seluruh target PRD. Aturan produk dan alur lengkap tetap mengacu pada [PRD](PRD.md), [keputusan produk](01-product-decisions.md), [model data](11-data-model.md), [kontrak API](12-api-contract.md), serta [matriks penerimaan MVP](13-acceptance-and-demo.md). Kanvas Pencil tidak diubah; layar web diselaraskan saat implementasi.
 
 ## Perilaku yang sudah berjalan
 

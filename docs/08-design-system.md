@@ -1,6 +1,6 @@
 # Design system MVP Valora
 
-**Status:** redesign publik tahap pertama dengan koreksi kanvas penuh dan refinement navbar sticky, 3 Oktober 2026, mengikuti [PRD v1.17](../PRD.md) dan referensi pengguna. Beranda, Cara Kerja, Impact publik, serta header/footer memakai sistem baru. [DESIGN.md](../apps/web/DESIGN.md) dan [sidecar desain](../apps/web/.impeccable/design.json) mencatat token serta pola implementasi. Kanvas Pencil dan [audit desain](04-pencil-design-review.md) menjadi catatan historis.
+**Status:** redesign publik tahap pertama dengan koreksi kanvas penuh dan refinement navbar sticky, 3 Oktober 2026, mengikuti [PRD v1.17](PRD.md) dan referensi pengguna. Beranda, Cara Kerja, Impact publik, serta header/footer memakai sistem baru. [DESIGN.md](../apps/web/DESIGN.md) dan [sidecar desain](../apps/web/.impeccable/design.json) mencatat token serta pola implementasi. Kanvas Pencil dan [audit desain](04-pencil-design-review.md) menjadi catatan historis.
 
 ## Arah visual yang dipakai sebagai dasar
 
