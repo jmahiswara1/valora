@@ -159,10 +159,10 @@ export class ItemsService {
       const changed = await tx.item.updateMany({ where: { id: itemId, currentOwnerId: userId, version: item.version, archivedAt: null, reservedByTransactionId: null }, data: { version: { increment: 1 }, itemRevision: { increment: 1 } } });
       if (changed.count !== 1) throw new AppException(409, 'STATE_CONFLICT', 'Item sudah berubah. Muat ulang sebelum menghapus foto.');
       await tx.mediaAsset.update({ where: { id: mediaId }, data: { deletedAt: new Date(), version: { increment: 1 } } });
+      await tx.storageDeletion.upsert({ where: { storageKey: asset.storageKey }, update: {}, create: { storageKey: asset.storageKey } });
       await invalidateTutorials(tx, itemId);
       await pauseListingsForItem(tx, itemId);
     });
-    await this.storage.remove(asset.storageKey);
     return this.get(userId, itemId);
   }
 }

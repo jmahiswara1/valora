@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../../dist/generated/prisma/client.js';
 import { HandoverService } from '../../dist/modules/handover/service.js';
-import { RetentionService } from '../../dist/modules/retention/service.js';
+import { createMaintenanceServices } from '../../dist/testing/maintenance.js';
 import { TransactionsService } from '../../dist/modules/transactions/service.js';
 import { base, check, client, login } from '../helpers/fixtures.mjs';
 import { handoverActors, handoverTransaction, mutate, destination } from '../helpers/handover.mjs';
@@ -74,7 +74,7 @@ try {
   // Retention: all plans and tracking revisions, active case and hold guard.
   const old = new Date(Date.now() - 181 * 86400000); await db.transaction.update({ where: { id }, data: { completedAt: old } }); await db.conversation.update({ where: { id: transaction.conversationId }, data: { createdAt: old } });
   const hold = await db.retentionHold.create({ data: { scopeType: 'DISPUTE', scopeId: caseId, adminId: admin.user.id, reason: 'Retensi bukti pengiriman.', reviewAt: new Date(Date.now() + 86400000) } });
-  const retention = new RetentionService(db, { remove: async () => {} }, { delete: async () => {} }); await retention.purge(); assert.equal((await db.handoverProposal.findUniqueOrThrow({ where: { id: ep.id } })).purgedAt, null, 'Active case keeps private data');
+  const { retention } = createMaintenanceServices(db); await retention.purge(); assert.equal((await db.handoverProposal.findUniqueOrThrow({ where: { id: ep.id } })).purgedAt, null, 'Active case keeps private data');
   assert((await db.handoverProposal.findUniqueOrThrow({ where: { id: delivery.id } })).purgedAt); assert.equal((await db.shipmentRecord.findFirstOrThrow({ where: { proposalId: delivery.id } })).trackingNumber, null); assert.equal(await db.shipmentRecord.count({ where: { proposalId: delivery.id, purgedAt: null } }), 0); const purgedView = await get(); assert.equal(purgedView.agreed.privateDetails, null); assert(purgedView.directions[0].shipment.purgedAt); assert.equal(purgedView.directions[0].shipment.trackingNumber, null);
   await db.retentionHold.update({ where: { id: hold.id }, data: { revokedAt: new Date() } });
   // Legacy reminder fallback remains and deadlines never auto-close.

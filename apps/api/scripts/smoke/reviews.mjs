@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto';
 import sharp from 'sharp';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../../dist/generated/prisma/client.js';
-import { RetentionService } from '../../dist/modules/retention/service.js';
+import { createMaintenanceServices } from '../../dist/testing/maintenance.js';
 import { base, client, check, photo, login, createItem, createListing, approve } from '../helpers/fixtures.mjs';
 
 if (!new URL(process.env.DATABASE_URL).pathname.endsWith('_test')) throw new Error('Ulasan membutuhkan database test.');
@@ -124,7 +124,7 @@ try {
   // Account holds include reviews/replies targeted by a third-party report.
   await db.user.update({ where: { id: owner.user.id }, data: { status: 'CLOSED', closedAt: new Date(Date.now() - 31 * 86400000) } });
   check(await guest.request(`/profiles/${owner.user.id}`), 404, 'Profil ditutup');
-  const retention = new RetentionService(db, { prune: async () => 0 });
+  const { retention } = createMaintenanceServices(db);
   await retention.accounts(); assert.equal((await db.user.findUniqueOrThrow({ where: { id: owner.user.id } })).anonymizedAt, null, 'Laporan balasan terbuka menahan');
   await db.report.update({ where: { id: replyReport.id }, data: { status: 'RESOLVED', resolvedAt: new Date() } });
   await retention.accounts(); assert((await db.user.findUniqueOrThrow({ where: { id: owner.user.id } })).anonymizedAt); assert.equal((await db.reviewReply.findUniqueOrThrow({ where: { id: replied.reply.id } })).body, null);

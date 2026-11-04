@@ -18,7 +18,8 @@ async function fit(page) {
 async function approveDialog(page, button = 'Simpan konfirmasi') {
   const dialog = page.getByRole('dialog');
   await expect(dialog).toBeVisible();
-  await expect(dialog.getByRole('checkbox')).toBeFocused();
+  await expect(dialog.getByRole('heading', { level: 2 })).toBeFocused();
+  await expect(dialog.getByRole('button', { name: button, exact: true })).toBeDisabled();
   await dialog.getByRole('checkbox').check();
   await dialog.getByRole('button', { name: button, exact: true }).click();
   await expect(dialog).not.toBeVisible();

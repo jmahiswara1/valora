@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto';
 import sharp from 'sharp';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../../dist/generated/prisma/client.js';
-import { RetentionService } from '../../dist/modules/retention/service.js';
+import { createMaintenanceServices } from '../../dist/testing/maintenance.js';
 import { base, check, photo, login, createItem, createListing, approve } from '../helpers/fixtures.mjs';
 
 if (!new URL(process.env.DATABASE_URL).pathname.endsWith('_test')) throw new Error('Chat hanya memakai database test.');
@@ -86,9 +86,9 @@ try {
   check(await buyer.account.request(`${path}/messages?before=broken`), 400, 'Invalid history cursor');
   const page = await buyer.account.request(`${path}/messages?limit=1`); assert.equal(page.payload.data.length, 1); assert(page.payload.meta.nextCursor);
   const old = new Date(Date.now() - 91 * 86400000); await db.message.updateMany({ where: { conversationId: conversation.id }, data: { sentAt: old } });
-  const retention = new RetentionService(db, { remove: async () => {} }, { delete: async () => {} }); await retention.purge(new Date()); assert.equal((await db.messageAttachment.findUniqueOrThrow({ where: { id: message.attachments[0].id } })).deletedAt, null, 'Active report holds photo');
+  const { retention } = createMaintenanceServices(db); await retention.purge(new Date()); assert.equal((await db.messageAttachment.findUniqueOrThrow({ where: { id: message.attachments[0].id } })).deletedAt, null, 'Active report holds photo');
   const retentionPhoto = await uploaded(outsider, other.id), retentionMessage = check(await post(outsider, `/conversations/${other.id}/messages`, { clientMessageId: randomUUID(), ticketIds: [retentionPhoto] }), 201, 'Retention photo');
-  await db.message.update({ where: { id: retentionMessage.id }, data: { sentAt: old } }); await retention.purge(new Date()); assert((await db.messageAttachment.findUniqueOrThrow({ where: { id: retentionMessage.attachments[0].id } })).deletedAt); assert(await db.storageDeletion.findFirst({ where: { storageKey: retentionPhoto + '.webp' } }));
+  await db.message.update({ where: { id: retentionMessage.id }, data: { sentAt: old } }); await retention.purge(new Date()); assert((await db.messageAttachment.findUniqueOrThrow({ where: { id: retentionMessage.attachments[0].id } })).deletedAt); assert(await db.storageDeletion.findFirst({ where: { storageKey: (await db.uploadTicket.findUniqueOrThrow({ where: { id: retentionPhoto } })).storageKey } }));
   check(await owner.account.request(`/blocks/${buyer.user.id}`, { method: 'DELETE' }), 200, 'Unblock for evidence fixture');
   const offer = check(await post(buyer, `/listings/${listing.id}/offers`, { expectedListingVersion: listing.version, listingRevisionId: listing.revision.id, clientRequestId: randomUUID(), priceIdr: 300000 }), 201, 'Evidence offer');
   const domain = (a, route, body) => a.account.request(route, { method: 'POST', body, extraHeaders: { 'Idempotency-Key': randomUUID() } });

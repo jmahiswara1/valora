@@ -51,7 +51,7 @@ try {
   const extraTicket = check(await owner.request(`/items/${sale.item.id}/media/tickets`, { method: 'POST', body: { fileName: 'privat.webp', mime: 'image/webp', bytes: photo.length } }), 201, 'Tiket foto privat');
   check(await owner.request(`/media/uploads/${extraTicket.ticketId}`, { method: 'PUT', body: photo, type: 'image/webp' }), 200, 'Unggah privat');
   // A privately stored photo is deliberately outside the accepted Listing snapshot.
-  const hiddenPhoto = await db.mediaAsset.create({ data: { itemId: sale.item.id, uploadedById: ownerProfile.id, storageKey: extraTicket.ticketId + '.webp', mime: 'image/webp', bytes: photo.length, orderIndex: 1, processedAt: new Date() } });
+  const hiddenPhoto = await db.mediaAsset.create({ data: { itemId: sale.item.id, uploadedById: ownerProfile.id, storageKey: (await db.uploadTicket.findUniqueOrThrow({ where: { id: extraTicket.ticketId } })).storageKey, mime: 'image/webp', bytes: photo.length, orderIndex: 1, processedAt: new Date() } });
   await db.uploadTicket.update({ where: { id: extraTicket.ticketId }, data: { status: 'CONSUMED', consumedAt: new Date() } });
   let saleOffer = await offer(sale);
   saleOffer = check(await mutate(owner, `/offers/${saleOffer.id}/counter`, { expectedVersion: saleOffer.version, priceIdr: 320000 }), 201, 'Counteroffer owner');
@@ -207,9 +207,8 @@ try {
   const closedResult = check(await closed.account.request('/me/close', { method: 'POST', body: { reason: 'Uji penutupan akun dengan transaksi aktif.' } }), 201, 'Tutup akun aktif');
   assert(closedResult.pendingTransactionIds.includes(closedTx.id)); closedTx = await getTx(closedTx, bidder); assert.equal(closedTx.status, 'DISPUTED');
   await db.user.update({ where: { id: closed.id }, data: { closedAt: new Date(Date.now() - 31 * 86400000) } });
-  const { MaintenanceService } = await import('../../dist/infrastructure/jobs/maintenance.service.js');
-  const { RetentionService } = await import('../../dist/modules/retention/service.js');
-  const maintenance = new MaintenanceService(db, {}, service, new RetentionService(db, { remove: async () => { throw new Error('Aktif tidak boleh menghapus media.'); } }));
+  const { createMaintenanceServices } = await import('../../dist/testing/maintenance.js');
+  const { maintenance } = createMaintenanceServices(db, undefined, service);
   await maintenance.purgeClosedAccounts(); assert.equal((await db.user.findUniqueOrThrow({ where: { id: closed.id } })).anonymizedAt, null);
   assert.equal((await db.item.findUniqueOrThrow({ where: { id: closedListing.item.id } })).reservedByTransactionId, closedTx.id);
 

@@ -12,6 +12,7 @@ import type { RegisterInput, LoginInput, UserDto } from '@valora/contracts';
 import type { Response } from 'express';
 import { sha256, randomToken, sevenDays, sessionCookie } from './shared.js';
 import { resolveSession } from './helpers.js';
+import { expireOffers } from '../notifications/events.js';
 
 const thirtyMinutes = 30 * 60 * 1000;
 
@@ -245,6 +246,8 @@ export class AuthService {
       await lockRows(tx, 'User', [id, ...active.flatMap((t) => [t.sellerOrDonorId, t.buyerOrRecipientId])]);
       await requireRecentAuthentication(tx);
       const ids = await closeForAccount(tx, id);
+      await tx.listing.updateMany({ where: { ownerId: id, status: { notIn: ['RESERVED', 'CLOSED', 'WITHDRAWN'] } }, data: { status: 'WITHDRAWN', publishedAt: null, closedAt: now, version: { increment: 1 } } });
+      await expireOffers(tx, { OR: [{ bidderId: id }, { listing: { ownerId: id } }] }, 'ACCOUNT_CLOSED');
       await this.photos.closeForAccount(tx, id, now);
       await tx.favorite.deleteMany({ where: { userId: id } });
       await tx.savedSearch.deleteMany({ where: { userId: id } });

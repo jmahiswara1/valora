@@ -6,9 +6,7 @@ import { mkdir, readFile, writeFile, access } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from "../../dist/generated/prisma/client.js";
-import { RetentionService } from "../../dist/modules/retention/service.js";
-import { StorageService } from "../../dist/infrastructure/storage.service.js";
-import { MaintenanceService } from "../../dist/infrastructure/jobs/maintenance.service.js";
+import { createMaintenanceServices } from '../../dist/testing/maintenance.js';
 import { exclusiveJob } from "../../dist/infrastructure/jobs/lock.js";
 import { base, client, check, login, credentials, createItem, createListing, approve } from "../helpers/fixtures.mjs";
 if (!new URL(process.env.DATABASE_URL).pathname.endsWith('_test')) throw new Error('Stage 6 requires the test database.');
@@ -141,14 +139,14 @@ try {
   const heldReport = await db.report.create({ data: { reporterId: b.id, targetType: 'USER', targetId: fresh.id, reasonCode: 'STAGE6_HOLD', details: 'Private held report must survive purge', status: 'RESOLVED', assignedAdminId: admin.id, resolvedAt: new Date(Date.now() - 181 * 86400000) } });
   let releaseHold; let holdEntered; const holdReady = new Promise((r) => { holdEntered = r; }); const holdBarrier = new Promise((r) => { releaseHold = r; });
   const committingHold = db.$transaction(async (tx) => { await tx.$queryRaw`SELECT pg_advisory_xact_lock(610006)::text`; await tx.retentionHold.create({ data: { scopeType: 'REPORT', scopeId: heldReport.id, adminId: admin.id, reason: 'Synthetic hold competing with purge', reviewAt: new Date(Date.now() + 86400000) } }); holdEntered(); await holdBarrier; }, { timeout: 10000 });
-  await holdReady; const holdRetention = new RetentionService(db, new StorageService()); const pendingPurge = holdRetention.purge(); await new Promise((r) => setTimeout(r, 200)); releaseHold(); await committingHold; await pendingPurge;
+  await holdReady; const { retention: holdRetention } = createMaintenanceServices(db); const pendingPurge = holdRetention.purge(); await new Promise((r) => setTimeout(r, 200)); releaseHold(); await committingHold; await pendingPurge;
   assert.equal((await db.report.findUniqueOrThrow({ where: { id: heldReport.id } })).details, heldReport.details); mark('queued_purge_rechecks_committed_hold');
   const mailId = randomUUID();
   // Config localRoot is the repo .local, independently of the process cwd.
   const { config } = await import('../../dist/infrastructure/config.js'); const directory = resolve(config.localRoot, 'mail'); await mkdir(directory, { recursive: true });
   await writeFile(resolve(directory, mailId + '.txt'), 'Synthetic expired mail');
   await db.mailOutbox.create({ data: { id: mailId, recipient: 'synthetic@invalid.valora.local', subject: 'Fixture', encryptedBody: '', expiresAt: new Date(Date.now() - 90000000), createdAt: new Date(Date.now() - 90000000), sentAt: new Date(Date.now() - 90000000) } });
-  const storage = new StorageService(); const retention = new RetentionService(db, storage); const maintenance = new MaintenanceService(db, { cleanupOrphans: async () => {} }, { reminders: async () => {} }, retention);
+  const { retention, maintenance } = createMaintenanceServices(db);
   let removed = false;
   for (let i = 0; i < 60; i++) { await maintenance.run(); try { await access(resolve(directory, mailId + '.txt')); } catch { removed = true; break; } await new Promise((r) => setTimeout(r, 1000)); }
   assert(removed, 'Expired local mail eventually removed after the existing maintenance job finishes'); assert.equal(await db.mailOutbox.count({ where: { id: mailId } }), 0);

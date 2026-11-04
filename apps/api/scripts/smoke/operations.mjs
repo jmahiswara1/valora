@@ -5,7 +5,7 @@ import { writeFile } from 'node:fs/promises';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from "../../dist/generated/prisma/client.js";
 import { LedgerService } from "../../dist/modules/history/ledger.service.js";
-import { RetentionService } from "../../dist/modules/retention/service.js";
+import { createMaintenanceServices } from '../../dist/testing/maintenance.js';
 import { StorageService } from "../../dist/infrastructure/storage.service.js";
 import { base, client, check, login, photo, createItem, createListing, approve } from "../helpers/fixtures.mjs";
 
@@ -245,14 +245,17 @@ try {
   await db.report.update({ where: { id: report.id }, data: { resolvedAt: old } });
   const hold = check(await mutate(admin, '/admin/retention/holds', { scopeType: 'CORRECTION', scopeId: caseRow.id, reason: 'Tahan bukti untuk review retensi pengujian.', reviewAt: new Date(now.getTime() + 86400000).toISOString() }), 201, 'Hold retensi');
   const storage = new StorageService(); let failStorage = true;
-  const retention = new RetentionService(db, { remove: async (key) => { if (key === evidenceTicket.ticketId + '.webp' && failStorage) { failStorage = false; throw new Error('Simulated storage error'); } await storage.remove(key); } });
+  const evidenceStorageKey = (await db.uploadTicket.findUniqueOrThrow({ where: { id: evidenceTicket.ticketId } })).storageKey;
+  const removeFile = storage.remove.bind(storage);
+  storage.remove = async key => { if (key === evidenceStorageKey && failStorage) { failStorage = false; throw new Error('Simulated storage error'); } await removeFile(key); };
+  const { retention } = createMaintenanceServices(db, storage);
   await retention.purge(now); assert.equal((await db.message.findUniqueOrThrow({ where: { id: newMessage.id } })).deletedAt, null);
   check(await mutate(admin, `/admin/retention/holds/${hold.id}/release`, { expectedVersion: hold.version, reason: 'Review selesai, lepaskan penahanan bukti.' }), 201, 'Release hold');
   await retention.purge(now);
   const erasedMessage = await db.message.findUniqueOrThrow({ where: { id: newMessage.id } }); assert(erasedMessage.deletedAt); assert(!erasedMessage.body.includes('SECRET'));
   const erasedEvidence = await db.correctionEvidence.findFirstOrThrow({ where: { messageId: newMessage.id } }); assert.equal(erasedEvidence.messageSnapshot, null); assert(erasedEvidence.purgedAt);
   assert((await db.correctionAttachment.findUniqueOrThrow({ where: { id: attachment.id } })).deletedAt);
-  const deletion = await db.storageDeletion.findUniqueOrThrow({ where: { storageKey: evidenceTicket.ticketId + '.webp' } }); assert.equal(deletion.completedAt, null); assert.equal(deletion.attempts, 1);
+  const deletion = await db.storageDeletion.findUniqueOrThrow({ where: { storageKey: evidenceStorageKey } }); assert.equal(deletion.completedAt, null); assert.equal(deletion.attempts, 1);
   assert.equal((await mutate(a.account, `/correction-cases/${caseRow.id}/evidence`, evidenceBody, evidenceKey)).status, 410);
   await retention.drain(new Date(now.getTime() + 60001)); assert((await db.storageDeletion.findUniqueOrThrow({ where: { id: deletion.id } })).completedAt);
   assert.equal(await db.ownershipTransfer.count({ where: { transactionId: saleTx.id } }), 1); assert((await get(guest, `/passport/${sale.item.id}`)).timeline.length);

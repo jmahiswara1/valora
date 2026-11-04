@@ -7,7 +7,7 @@ import type { MediaTicketInput } from '@valora/contracts';
 import { serial } from '../../shared/transactions.js';
 import { AppException } from '../../shared/http.js';
 import sharp from 'sharp';
-import { createHmac, timingSafeEqual } from 'node:crypto';
+import { createHash, createHmac, timingSafeEqual } from 'node:crypto';
 import type { Response } from 'express';
 import type { Prisma } from '../../generated/prisma/client.js';
 import { validId } from '../../shared/transactions.js';
@@ -67,7 +67,7 @@ export class MediaService {
     validId(ticketId);
     const ticket = await this.db.uploadTicket.findUnique({ where: { id: ticketId } });
     if (!ticket || ticket.userId !== userId) throw new AppException(404, 'NOT_FOUND', 'Tiket unggah tidak ditemukan.');
-    if (ticket.status !== 'ISSUED' || ticket.expiresAt <= new Date()) throw new AppException(409, 'STATE_CONFLICT', 'Tiket unggah tidak berlaku.');
+    if (!['ISSUED', 'UPLOADED'].includes(ticket.status) || ticket.expiresAt <= new Date()) throw new AppException(409, 'STATE_CONFLICT', 'Tiket unggah tidak berlaku.');
     if (!Buffer.isBuffer(body) || body.length < 1 || body.length > maxBytes || body.length !== ticket.declaredBytes) throw new AppException(400, 'MEDIA_INVALID', 'Ukuran foto tidak sesuai atau melebihi 8 MiB.');
     if (contentType?.split(';')[0] !== ticket.declaredMime) throw new AppException(400, 'MEDIA_INVALID', 'Jenis berkas tidak sesuai tiket.');
     let processed: Buffer;
@@ -81,10 +81,12 @@ export class MediaService {
     } catch {
       throw new AppException(400, 'MEDIA_INVALID', 'Isi berkas bukan foto JPEG, PNG, atau WebP yang valid.');
     }
-    const storageKey = ticket.id + '.webp';
+    const storageKey = ticket.id + '-' + createHash('sha256').update(processed).digest('hex') + '.webp';
     const dimensions = await sharp(processed).metadata();
-    await this.storage.write(storageKey, processed);
-    const changed = await serial(this.db, async (tx) => {
+    const authorize = async (tx: Prisma.TransactionClient) => {
+      const fresh = await tx.uploadTicket.findUnique({ where: { id: ticket.id } });
+      if (!fresh || fresh.userId !== userId || !['ISSUED', 'UPLOADED'].includes(fresh.status) || fresh.expiresAt <= new Date()) throw new AppException(409, 'STATE_CONFLICT', 'Tiket unggah tidak berlaku.');
+      if (fresh.storageKey && fresh.storageKey !== storageKey) throw new AppException(409, 'STATE_CONFLICT', 'Tiket sudah terikat foto lain. Buat tiket baru untuk mengganti foto.');
       if (ticket.purpose === 'REPAIR_TUTORIAL') {
         if (!ticket.tutorialSessionId) throw new AppException(400, 'MEDIA_INVALID', 'Foto tidak terikat sesi.');
         await authorizeTutorialUpload(tx, userId, ticket.tutorialSessionId);
@@ -93,13 +95,23 @@ export class MediaService {
         if (!ticket.conversationId) throw new AppException(400, 'MEDIA_INVALID', 'Tiket foto tidak terikat percakapan.');
         await authorizeConversationUpload(tx, userId, ticket.conversationId);
       }
-      return tx.uploadTicket.updateMany({
-      where: { id: ticket.id, status: 'ISSUED', expiresAt: { gt: new Date() } },
-      data: { status: 'UPLOADED', actualMime: 'image/webp', actualBytes: processed.length, width: dimensions.width, height: dimensions.height, storageKey, uploadedAt: new Date() },
-    }); }).catch(async (error: unknown) => { await this.db.storageDeletion.upsert({ where: { storageKey }, update: {}, create: { storageKey } }); throw error; });
-    if (changed.count !== 1) {
-      await this.storage.remove(storageKey);
-      throw new AppException(409, 'STATE_CONFLICT', 'Tiket unggah tidak berlaku.');
+      return fresh;
+    };
+    const ready = await serial(this.db, async tx => {
+      const fresh = await authorize(tx);
+      if (fresh.status === 'UPLOADED') return true;
+      // Persist the key before disk I/O, so a crash leaves a discoverable orphan.
+      await tx.uploadTicket.update({ where: { id: ticket.id }, data: { storageKey } });
+      return false;
+    });
+    if (!ready) {
+      // Atomic publication also lets concurrent retries reuse identical bytes.
+      await this.storage.writeImmutable(storageKey, processed);
+      await serial(this.db, async tx => {
+        const fresh = await authorize(tx);
+        if (fresh.status === 'UPLOADED') return;
+        await tx.uploadTicket.update({ where: { id: ticket.id }, data: { status: 'UPLOADED', actualMime: 'image/webp', actualBytes: processed.length, width: dimensions.width, height: dimensions.height, uploadedAt: new Date() } });
+      });
     }
     return { ticketId: ticket.id, mime: 'image/webp', bytes: processed.length };
   }
@@ -156,11 +168,13 @@ export class MediaService {
 
   async cleanupOrphans(): Promise<void> {
     const threshold = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    await this.storage.cleanupTemporaryUploads(threshold);
     const old = await this.db.uploadTicket.findMany({ where: { createdAt: { lt: threshold }, status: { not: 'CONSUMED' } }, take: 100 });
     for (const ticket of old) await serial(this.db, async (tx) => {
       const fresh = await tx.uploadTicket.findUnique({ where: { id: ticket.id } });
       if (!fresh || fresh.status === 'CONSUMED' || fresh.createdAt >= threshold) return;
-      if (fresh.storageKey) await tx.storageDeletion.upsert({ where: { storageKey: fresh.storageKey }, update: {}, create: { storageKey: fresh.storageKey } });
+      const storageKey = fresh.storageKey ?? fresh.id + '.webp';
+      await tx.storageDeletion.upsert({ where: { storageKey }, update: {}, create: { storageKey } });
       await tx.uploadTicket.delete({ where: { id: fresh.id } });
     });
   }

@@ -3,7 +3,7 @@ import type { Prisma } from '../../generated/prisma/client.js';
 
 // Both the public catalog and saved-search alerts match the same public revision.
 export function marketWhere(filters: MarketSearchFilters): Prisma.ListingWhereInput {
-  return { status: 'ACTIVE', ...(filters.type ? { type: filters.type } : {}), currentRevision: { is: {
+  return { status: 'ACTIVE', owner: { status: 'ACTIVE' }, ...(filters.type ? { type: filters.type } : {}), currentRevision: { is: {
     ...(filters.category ? { categoryCode: filters.category } : {}), ...(filters.cityId ? { cityId: filters.cityId } : {}),
     ...(filters.minPriceIdr !== undefined || filters.maxPriceIdr !== undefined ? { askingPriceIdr: {
       ...(filters.minPriceIdr !== undefined ? { gte: BigInt(filters.minPriceIdr) } : {}), ...(filters.maxPriceIdr !== undefined ? { lte: BigInt(filters.maxPriceIdr) } : {}),

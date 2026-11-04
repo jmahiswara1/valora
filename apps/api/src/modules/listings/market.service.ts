@@ -67,14 +67,14 @@ export class MarketService {
   async getPublic(id: string): Promise<PublicListingDto> {
     if (!uuidSchema.safeParse(id).success) throw new AppException(404, 'NOT_FOUND', 'Listing tidak ditemukan.');
     const row = await this.db.listing.findUnique({ where: { id }, include: listingInclude });
-    if (!row || !row.currentRevision) throw new AppException(404, 'NOT_FOUND', 'Listing tidak ditemukan.');
+    if (!row || !row.currentRevision || row.owner.status !== 'ACTIVE') throw new AppException(404, 'NOT_FOUND', 'Listing tidak ditemukan.');
     if (row.status === 'RESERVED') return { id: row.id, type: row.type, status: 'RESERVED' };
     if (row.status !== 'ACTIVE') throw new AppException(404, 'NOT_FOUND', 'Listing tidak ditemukan.');
     return activeListingDto(row);
   }
 
   async publicPhoto(listingId: string, mediaId: string, response: Response): Promise<void> {
-    const link = await this.db.listingRevisionMedia.findFirst({ where: { mediaId, revision: { listingId, listing: { status: 'ACTIVE', currentRevisionId: { not: null } } }, media: { deletedAt: null, repairRecordId: null, caseId: null } }, include: { revision: { include: { listing: true } }, media: true } });
+    const link = await this.db.listingRevisionMedia.findFirst({ where: { mediaId, revision: { listingId, listing: { status: 'ACTIVE', owner: { status: 'ACTIVE' }, currentRevisionId: { not: null } } }, media: { deletedAt: null, repairRecordId: null, caseId: null } }, include: { revision: { include: { listing: true } }, media: true } });
     if (!link || link.revision.listing.currentRevisionId !== link.revisionId) throw new AppException(404, 'NOT_FOUND', 'Foto tidak ditemukan.');
     const bytes = await this.storage.read(link.media.storageKey);
     response.set({ 'Content-Type': 'image/webp', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });

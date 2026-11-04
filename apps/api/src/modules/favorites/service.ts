@@ -30,7 +30,7 @@ export class FavoritesService {
     const page = rows.slice(0, input.limit);
     const data: FavoriteDto[] = page.map(row => {
       const base = { listingId: row.listingId, savedAt: row.createdAt.toISOString(), savedTitle: row.savedTitle };
-      if (row.listing.status === 'ACTIVE' && row.listing.currentRevision) return { ...base, availability: 'ACTIVE', listing: activeListingDto(row.listing) };
+      if (row.listing.status === 'ACTIVE' && row.listing.owner.status === 'ACTIVE' && row.listing.currentRevision) return { ...base, availability: 'ACTIVE', listing: activeListingDto(row.listing) };
       return { ...base, availability: row.listing.status === 'RESERVED' ? 'RESERVED' : 'UNAVAILABLE', listing: null };
     });
     const last = page.at(-1);
@@ -50,9 +50,9 @@ export class FavoritesService {
     return serial(this.db, async tx => {
       const existing = await tx.favorite.findUnique({ where: { userId_listingId: { userId, listingId } } });
       if (!existing) {
-        const listing = await tx.listing.findUnique({ where: { id: listingId }, include: { currentRevision: true } });
+        const listing = await tx.listing.findUnique({ where: { id: listingId }, include: { currentRevision: true, owner: { select: { status: true } } } });
         if (!listing) throw new AppException(404, 'NOT_FOUND', 'Listing tidak ditemukan.');
-        if (listing.status !== 'ACTIVE' || !listing.currentRevision) throw new AppException(409, 'STATE_CONFLICT', 'Barang tidak lagi tersedia untuk disimpan.');
+        if (listing.status !== 'ACTIVE' || listing.owner.status !== 'ACTIVE' || !listing.currentRevision) throw new AppException(409, 'STATE_CONFLICT', 'Barang tidak lagi tersedia untuk disimpan.');
         await tx.favorite.create({ data: { userId, listingId, savedTitle: listing.currentRevision.title } });
       }
       return { listingId, isFavorite: true };
