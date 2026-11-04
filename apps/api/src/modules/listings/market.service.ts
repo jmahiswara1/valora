@@ -8,21 +8,15 @@ import type { Response } from 'express';
 import { type MarketFilters, listingInclude, revisionDto, activeListingDto } from './shared.js';
 
 import { marketWhere } from './search.js';
+import { decodeMarketCursor } from './market-cursor.js';
 
 const encode = (value: object) => Buffer.from(JSON.stringify(value)).toString('base64url');
-
-const decode = <T>(value: string): T => {
-  try { return JSON.parse(Buffer.from(value, 'base64url').toString('utf8')) as T; }
-  catch { throw new AppException(400, 'INVALID_INPUT', 'Cursor Market tidak valid.'); }
-};
 
 const pageLimit = (value?: string) => {
   const limit = value === undefined ? 20 : Number(value);
   if (!Number.isInteger(limit) || limit < 1 || limit > 50) throw new AppException(400, 'INVALID_INPUT', 'Limit harus antara 1 dan 50.');
   return limit;
 };
-
-type MarketCursor = { sort: string; id: string; createdAt: string; price?: number; score?: number | null };
 
 @Injectable()
 export class MarketService {
@@ -33,16 +27,15 @@ export class MarketService {
     if (!parsed.success) throw new AppException(400, 'INVALID_INPUT', parsed.error.issues[0]?.message ?? 'Filter Market tidak valid.');
     const { sort } = parsed.data;
     const limit = pageLimit(filters.limit);
-    const cursor = filters.cursor ? decode<MarketCursor>(filters.cursor) : null;
-    if (cursor && (cursor.sort !== sort || !uuidSchema.safeParse(cursor.id).success || Number.isNaN(Date.parse(cursor.createdAt)))) throw new AppException(400, 'INVALID_INPUT', 'Cursor tidak sesuai dengan urutan Market.');
+    const cursor = filters.cursor === undefined ? null : decodeMarketCursor(filters.cursor, sort);
     let where: Prisma.ListingWhereInput = marketWhere(parsed.data);
     if (cursor) {
       const at = new Date(cursor.createdAt);
       let cursorWhere: Prisma.ListingWhereInput;
-      if (sort === 'newest') cursorWhere = { OR: [{ createdAt: { lt: at } }, { createdAt: at, id: { lt: cursor.id } }] };
-      else if (sort === 'price_asc' || sort === 'price_desc') {
-        const price = BigInt(cursor.price ?? 0);
-        const priceComparison = sort === 'price_asc' ? { gt: price } : { lt: price };
+      if (cursor.sort === 'newest') cursorWhere = { OR: [{ createdAt: { lt: at } }, { createdAt: at, id: { lt: cursor.id } }] };
+      else if (cursor.sort === 'price_asc' || cursor.sort === 'price_desc') {
+        const price = BigInt(cursor.price);
+        const priceComparison = cursor.sort === 'price_asc' ? { gt: price } : { lt: price };
         cursorWhere = { OR: [
           { currentRevision: { is: { askingPriceIdr: priceComparison } } },
           { currentRevision: { is: { askingPriceIdr: price } }, createdAt: { lt: at } },

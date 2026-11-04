@@ -5,6 +5,7 @@ import { StorageService } from '../../infrastructure/storage.service.js';
 import { config } from '../../infrastructure/config.js';
 import type { PassportDto, PassportTimelineEntry, ImpactDto, TransactionSnapshot } from '@valora/contracts';
 import { validId, serial } from '../../shared/transactions.js';
+import { publicRead } from '../../shared/public-read.js';
 import { AppException } from '../../shared/http.js';
 import type { Response } from 'express';
 import { impactMetrics } from './ledger.js';
@@ -18,7 +19,7 @@ export class PassportImpactService {
   async passport(id: string, ownerId?: string): Promise<PassportDto> {
     validId(id);
     // A single repeatable read makes visibility and its projection consistent.
-    return serial(this.db, async (tx) => {
+    return (ownerId ? serial : publicRead)(this.db, async (tx) => {
       const item = await tx.item.findUnique({ where: { id } });
       if (!item || (ownerId && (item.currentOwnerId !== ownerId || item.archivedAt))) throw new AppException(404, 'NOT_FOUND', 'Passport tidak ditemukan.');
       const completed = await tx.transaction.findFirst({ where: { status: 'COMPLETED', ...transactionUsingItem(id) } });
@@ -68,7 +69,7 @@ export class PassportImpactService {
   }
   async impact(userId?: string, from?: string, to?: string): Promise<ImpactDto> {
     const range = period(from, to);
-    return serial(this.db, async (tx) => {
+    return (userId ? serial : publicRead)(this.db, async (tx) => {
       const grouped = await tx.impactEvent.groupBy({ by: ['metric', 'unit'], where: { attributedUserId: userId ?? null, occurredAt: range.filter }, _sum: { delta: true } });
       const transferred = await tx.transaction.findMany({ where: { status: 'COMPLETED', correctedAt: null, completedAt: range.filter, ...(userId ? { OR: [{ sellerOrDonorId: userId }, { buyerOrRecipientId: userId }] } : {}) }, select: { id: true, snapshot: true } });
       const weights = await tx.impactEvent.findMany({ where: { sourceType: 'TRANSACTION', metric: 'ESTIMATED_TRANSFER_WEIGHT', attributedUserId: userId ?? null, occurredAt: range.filter }, select: { sourceId: true, itemId: true } });

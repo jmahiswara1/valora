@@ -116,14 +116,23 @@ const rereviewBody = { expectedVersion: rereviewDetail.listingVersion, decision:
 const rereviewResult = check(await admin.request(`/admin/listing-reviews/${rereviewRow.revisionId}/decide`, { method: 'POST', extraHeaders: { 'Idempotency-Key': randomUUID() }, body: rereviewBody }), 201, 'Putuskan review ulang untuk revisi yang sama');
 assert.equal(rereviewResult.listingStatus, 'ACTIVE');
 
-const marketFirstResponse = await guest.request('/market?type=RESELL&sort=price_asc&limit=1');
-check(marketFirstResponse, 200, 'Market dengan cursor harga');
-assert.equal(marketFirstResponse.payload.data.length, 1);
-assert(marketFirstResponse.payload.meta.nextCursor, 'Market returns next cursor');
-const marketSecondResponse = await guest.request(`/market?type=RESELL&sort=price_asc&limit=1&cursor=${encodeURIComponent(marketFirstResponse.payload.meta.nextCursor)}`);
-check(marketSecondResponse, 200, 'Market halaman berikutnya');
-assert.equal(marketSecondResponse.payload.data.length, 1);
-assert.notEqual(marketFirstResponse.payload.data[0].id, marketSecondResponse.payload.data[0].id, 'Price cursor preserves filters and tie-breaks');
+for (const sort of ['newest', 'price_asc', 'price_desc', 'score_desc']) {
+  const path = `/market?type=RESELL&sort=${sort}&limit=1`;
+  const first = await guest.request(path); check(first, 200, `Market ${sort}`);
+  assert.equal(first.payload.data.length, 1); assert(first.payload.meta.nextCursor);
+  const second = await guest.request(`${path}&cursor=${encodeURIComponent(first.payload.meta.nextCursor)}`);
+  check(second, 200, `Market halaman berikutnya ${sort}`); assert.equal(second.payload.data.length, 1);
+  assert.notEqual(first.payload.data[0].id, second.payload.data[0].id, 'Cursor preserves filters and tie-breaks');
+  const payload = JSON.parse(Buffer.from(first.payload.meta.nextCursor, 'base64url').toString('utf8'));
+  const invalid = { ...payload, ...(sort.startsWith('price_') ? { price: 'invalid-price' } : sort === 'score_desc' ? { score: 101 } : { createdAt: 'invalid-date' }) };
+  const rejected = await guest.request(`${path}&cursor=${Buffer.from(JSON.stringify(invalid)).toString('base64url')}`);
+  check(rejected, 400, `Cursor invalid ${sort}`); assert.equal(rejected.payload.error.code, 'INVALID_INPUT');
+}
+for (const cursor of ['', '!invalid', Buffer.from('null').toString('base64url'), 'a'.repeat(1025)]) {
+  const rejected = await guest.request('/market?cursor=' + encodeURIComponent(cursor));
+  check(rejected, 400, 'Malformed cursor'); assert.equal(rejected.payload.error.code, 'INVALID_INPUT');
+}
+check(await guest.request('/market?cursor=first&cursor=second'), 400, 'Repeated cursor query');
 
 const offerInput = { listingRevisionId: publicA.revision.id, expectedListingVersion: publicA.version, clientRequestId: randomUUID(), priceIdr: 300000, message: 'Apakah semua tombol berfungsi?' };
 const offer = check(await bidder.request(`/listings/${publicA.id}/offers`, { method: 'POST', body: offerInput }), 201, 'Offer Resell');
