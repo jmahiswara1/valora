@@ -6,10 +6,12 @@ import { resolve } from 'node:path';
 import type { Prisma } from '../generated/prisma/client.js';
 import { config, secret } from './config.js';
 import { DatabaseService } from './database.service.js';
+import { createMailDelivery } from './mail-delivery.js';
 
 @Injectable()
 export class MailService implements OnModuleInit, OnModuleDestroy {
   private readonly key = secret('MAIL_ENCRYPTION_KEY');
+  private readonly delivery = createMailDelivery(process.env, config.appEnv);
   private timer?: NodeJS.Timeout;
 
   constructor(private readonly db: DatabaseService) {}
@@ -33,23 +35,33 @@ export class MailService implements OnModuleInit, OnModuleDestroy {
   }
 
   async flushDue(): Promise<void> { await exclusiveJob('mail', () => this.flushUnlocked()); }
+
+  async dispatchAfterCommit(): Promise<void> {
+    // Production delivery belongs to the worker. Local fixtures can read their
+    // verification message immediately, without making queue failures undo a response.
+    if (this.delivery.mode === 'local') await this.flushDue().catch(() => this.logFailure());
+  }
+
+  private logFailure(): void { console.error(JSON.stringify({ event: 'mail_job_failed' })); }
   private async flushUnlocked(): Promise<void> {
     const now = new Date();
     const due = await this.db.mailOutbox.findMany({ where: { sentAt: null, nextAttemptAt: { lte: now } }, orderBy: { createdAt: 'asc' }, take: 20 });
     if (due.length === 0) return;
-    if (config.appEnv !== 'local') throw new Error('Adapter email eksternal belum dikonfigurasi');
     const directory = resolve(config.localRoot, 'mail');
-    await mkdir(directory, { recursive: true });
+    if (this.delivery.mode === 'local') await mkdir(directory, { recursive: true });
     for (const row of due) {
       if (row.expiresAt <= now) {
         await this.db.mailOutbox.update({ where: { id: row.id }, data: { encryptedBody: '', sentAt: now } });
         continue;
       }
       try {
-        await writeFile(resolve(directory, row.id + '.txt'), 'Kepada: ' + row.recipient + '\nSubjek: ' + row.subject + '\n\n' + this.decrypt(row.encryptedBody), 'utf8');
+        const body = this.decrypt(row.encryptedBody);
+        if (this.delivery.mode === 'local') await writeFile(resolve(directory, row.id + '.txt'), 'Kepada: ' + row.recipient + '\nSubjek: ' + row.subject + '\n\n' + body, 'utf8');
+        else await this.delivery.send(row, body);
         await this.db.mailOutbox.update({ where: { id: row.id }, data: { encryptedBody: '', sentAt: new Date() } });
       } catch {
-        await this.db.mailOutbox.update({ where: { id: row.id }, data: { attempts: { increment: 1 }, nextAttemptAt: new Date(Date.now() + Math.min(3600000, 15000 * 2 ** row.attempts)) } });
+        this.logFailure();
+        await this.db.mailOutbox.update({ where: { id: row.id }, data: { attempts: { increment: 1 }, nextAttemptAt: new Date(Date.now() + Math.min(3600000, 15000 * 2 ** Math.min(row.attempts, 8))) } });
       }
     }
   }
@@ -60,5 +72,5 @@ export class MailService implements OnModuleInit, OnModuleDestroy {
     this.timer.unref();
   }
 
-  onModuleDestroy(): void { if (this.timer) clearInterval(this.timer); }
+  onModuleDestroy(): void { if (this.timer) clearInterval(this.timer); this.delivery.close(); }
 }

@@ -102,7 +102,7 @@ export class AuthService {
       await this.createMailToken(tx, created.id, 'EMAIL_VERIFY', created.email);
       return created;
     }).catch(rethrowEmailConflict);
-    await this.mail.flushDue();
+    await this.mail.dispatchAfterCommit();
     return { id: user.id, email: user.email, emailVerifiedAt: null };
   }
 
@@ -133,7 +133,7 @@ export class AuthService {
     if (user && (!user.emailVerifiedAt || user.pendingEmail)) {
       const purpose: VerificationPurpose = user.pendingEmail ? 'EMAIL_CHANGE' : 'EMAIL_VERIFY';
       await serial(this.db, async (tx) => this.createMailToken(tx, user.id, purpose, user.pendingEmail ?? user.email));
-      await this.mail.flushDue();
+      await this.mail.dispatchAfterCommit();
     }
     return { message: 'Jika email dapat diverifikasi, tautan baru telah dikirim.' };
   }
@@ -167,7 +167,7 @@ export class AuthService {
     const user = await this.db.user.findUnique({ where: { email } });
     if (user?.status === 'ACTIVE') {
       await serial(this.db, async (tx) => this.createMailToken(tx, user.id, 'PASSWORD_RESET', user.email));
-      await this.mail.flushDue();
+      await this.mail.dispatchAfterCommit();
     }
     return { message: 'Jika akun tersedia, tautan pemulihan telah dikirim.' };
   }
@@ -219,7 +219,7 @@ export class AuthService {
       } });
       if (input.email && input.email !== current.email) await this.createMailToken(tx, id, 'EMAIL_CHANGE', input.email);
     });
-    if (input.email && input.email !== current.email) await this.mail.flushDue();
+    if (input.email && input.email !== current.email) await this.mail.dispatchAfterCommit();
     return this.publicUser(id);
   }
 
