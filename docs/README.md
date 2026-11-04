@@ -74,3 +74,7 @@ baca, SSE bersama, notifikasi percakapan, bukti kasus dan kontrak OpenAPI 1.13.0
 
 
 [33 — Panduan Perawatan & Perbaikan dengan AI](33-ai-repair-tutorials.md) mencatat katalog, progres dan tanya jawab privat, perubahan Market saat mulai, foto bukti terpilih, jenis aktivitas, retensi, konfigurasi dan migrasi tanpa reset.
+
+[34 — Perbaikan P1/P2](34-p1-p2-hardening.md) mencatat adapter SMTP/outbox, penutupan akun, upload dan penghapusan foto, pembacaan publik tanpa kunci mutasi, serta perbaikan test harness dan bukti regresi.
+
+[35 — Validasi Cursor Market](35-market-cursor-validation.md) mencatat perbaikan P3 untuk encoding, payload per pengurutan, rentang harga/Score, respons 400, dan regresi pagination.

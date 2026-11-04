@@ -25,6 +25,16 @@ Web tersedia di `http://localhost:3000`, API di `http://127.0.0.1:4000/api/v1`, 
 
 Email verifikasi dan pemulihan demo ada di `.local/mail`. Akun demo hasil seed ada di `.local/demo-credentials.json`; berkas tersebut memuat kata sandi demo dan harus tetap lokal. Foto berada di `.local/media`.
 
+## Email produksi
+
+Untuk lingkungan selain `local`, siapkan `MAIL_ENCRYPTION_KEY`, `MAIL_TRANSPORT=smtp`, `MAIL_FROM` (alamat email pengirim), `SMTP_HOST`, dan `SMTP_PORT`. Isi `SMTP_USER` dan `SMTP_PASSWORD` bersama bila relay memerlukan autentikasi. Simpan kredensial pada environment deployment, tanpa memasukkannya ke Git. Pengirim/domain perlu diaktifkan pada provider SMTP yang dipilih.
+
+Gunakan `SMTP_SECURE=true` untuk TLS langsung, biasanya port 465. Untuk STARTTLS, biasanya port 587, gunakan `SMTP_SECURE=false`; koneksi tetap wajib ditingkatkan ke TLS. Sertifikat server tetap diverifikasi. Adapter memakai [transport SMTP Nodemailer](https://nodemailer.com/smtp).
+
+Konfigurasi SMTP yang tidak lengkap menghentikan startup. Registrasi dan permintaan tautan menyimpan pesan terenkripsi secara atomik dengan operasi akun; worker mengirim antrean setiap 15 detik. Kegagalan pengiriman mempertahankan pesan dan menaikkan `attempts` serta `nextAttemptAt` dengan backoff. Pesan kedaluwarsa dibersihkan tanpa dikirim. Pengiriman ulang setelah kegagalan pencatatan hasil dapat menghasilkan duplikat dengan Message-ID yang sama; adapter tidak menjanjikan pengiriman tepat satu kali.
+
+Lingkungan lokal tetap memakai `MAIL_TRANSPORT=local`. Runner test dan E2E memaksakan adapter lokal sehingga pemeriksaan tidak mengirim email eksternal. Pengujian provider SMTP produksi dengan domain/kredensial nyata dilakukan terpisah saat deployment.
+
 ## Pemeriksaan
 
 ```powershell
@@ -33,7 +43,7 @@ pnpm lint
 pnpm build
 ```
 
-`pnpm test` menjalankan enam uji rumus serta smoke API tahap 1–6 pada `valora_test`. `pnpm test:e2e` menjalankan alur transaksi, sengketa, Passport, Impact, dan operasi koreksi, serta matriks auth/sesi 45 rute dengan Chrome lokal pada desktop/mobile. Jalankan keduanya bergantian karena memakai API port 4001 dan database test yang sama.
+`pnpm test` menjalankan seluruh unit test dan smoke API pada `valora_test`, termasuk regresi email/outbox, upload/retry, penutupan akun dan pembacaan publik tanpa menunggu kunci mutasi. Factory service maintenance untuk smoke ikut dikompilasi agar perubahan dependensi terdeteksi oleh typecheck. `pnpm test:e2e` menjalankan alur transaksi, sengketa, Passport, Impact, dan operasi koreksi, serta matriks auth/sesi seluruh rute dengan Chrome lokal pada desktop/mobile. Jalankan keduanya bergantian karena memakai API port 4001 dan database test yang sama.
 
 `pnpm demo:stage4` menyiapkan fixture sintetis Resell, Donate parsial, dan Exchange; rute tersimpan di `.local/stage4-demo-fixtures.json`. Rincian fitur, migrasi, hasil verifikasi, dan batas tahap ada pada [catatan tahap 4](18-stage4-implementation.md). Jika shim pnpm belum aktif, setiap perintah dapat dijalankan melalui `corepack pnpm`.
 
