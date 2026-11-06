@@ -1,0 +1,71 @@
+/* Collection refinements stay inside the two account index surfaces. */
+.account-collection-page { display: grid; gap: 24px; width: 100%; }
+.account-main .account-collection-page > .app-heading { margin: 0; }
+.collection-toolbar { display: grid; gap: 20px; padding: 20px 0; border-block: 1px solid #E2E8DF; }
+.collection-search-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(200px, 280px); align-items: end; gap: 20px; }
+.collection-search { position: relative; }
+.collection-search > svg { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+.account-main .account-collection-page .collection-search .input { padding-left: 44px; }
+.collection-filter-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.collection-type-filters, .offer-phase-filters { display: flex; align-items: center; gap: 4px; overflow-x: auto; max-width: 100%; padding: 3px; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+.collection-type-filters > button, .offer-phase-filters > button { flex-shrink: 0; min-height: 44px; padding: 10px 16px; border: 0; border-radius: 100px; background: transparent; color: var(--muted); font: inherit; font-size: .8125rem; font-weight: 600; }
+.collection-type-filters > button:hover, .offer-phase-filters > button:hover { background: #EDF1EA; color: var(--forest); }
+.collection-type-filters > button[aria-pressed=true] { background: #EDF1EA; color: var(--forest); }
+.offer-phase-filters { justify-self: start; background: var(--cream); border-radius: 100px; }
+.offer-phase-filters > button[aria-pressed=true] { background: var(--forest); color: white; }
+.collection-type-filters > button:focus-visible, .offer-phase-filters > button:focus-visible { outline-offset: -3px; }
+.collection-result-count { color: var(--muted); font-size: .8125rem; font-variant-numeric: tabular-nums; }
+.collection-result-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.collection-result-header > .button { flex-shrink: 0; }
+.collection-entry-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; color: var(--muted); font-size: .75rem; }
+.collection-status { display: inline-flex; padding: 4px 9px; border-radius: 100px; background: var(--cream); color: var(--muted); font-size: .75rem; font-weight: 600; }
+.collection-status:is([data-status=ACTIVE], [data-status=ACCEPTED], [data-status=RESERVED]) { background: #EDF1EA; color: var(--forest); }
+.collection-status:is([data-status=PENDING], [data-status=COUNTERED], [data-status=PENDING_REVIEW], [data-status=PAUSED]) { background: #F4EAD5; color: #6C471D; }
+.collection-status:is([data-status=REJECTED], [data-status=SUSPENDED]) { background: #F7E9E5; color: var(--danger); }
+.owner-listings-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
+.owner-listing-card { display: flex; flex-direction: column; min-width: 0; border: 1px solid #E2E8DF; border-radius: 16px; background: white; color: var(--forest); text-decoration: none; }
+.owner-listing-card:hover { border-color: var(--line); text-decoration: none; }
+.owner-listing-photo { display: grid; place-items: center; width: 100%; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 15px 15px 0 0; background: var(--cream); }
+.owner-listing-photo > img, .owner-listing-photo > .private-photo-placeholder { width: 100%; height: 100%; object-fit: contain; }
+.owner-listing-copy { display: flex; flex: 1; flex-direction: column; align-items: stretch; gap: 12px; padding: 18px; }
+.account-main .owner-listings-page .owner-listing-copy h2 { margin: 0; font-size: 1.0625rem; line-height: 1.45; overflow-wrap: anywhere; }
+.owner-listing-price { font-size: 1rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.owner-listing-city { display: flex; align-items: flex-start; gap: 6px; color: var(--muted); font-size: .8125rem; }
+.owner-listing-city > svg { flex-shrink: 0; margin-top: 3px; }
+.owner-listing-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: auto; padding-top: 14px; border-top: 1px solid #E2E8DF; font-size: .75rem; }
+.owner-listing-footer time { color: var(--muted); }
+.owner-listing-footer > span { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+.collection-pagination { display: flex; justify-content: center; padding-block: 8px; }
+.account-main .offers-page .offer-list { grid-template-columns: minmax(0, 1fr); gap: 0; border: 1px solid #E2E8DF; border-radius: 16px; }
+.account-main .offers-page .offer-card { gap: 16px; padding: 24px; border: 0; border-bottom: 1px solid #E2E8DF; border-radius: 0; }
+.account-main .offers-page .offer-card:first-child { border-radius: 16px 16px 0 0; }
+.account-main .offers-page .offer-card:last-child { border-bottom: 0; border-radius: 0 0 16px 16px; }
+.offer-row-main { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; }
+.offer-row-copy { display: grid; gap: 8px; }
+.account-main .offers-page .offer-row-copy h2 { margin: 0; font-size: 1.0625rem; line-height: 1.5; }
+.offer-direction { display: inline-flex; align-items: center; gap: 4px; }
+.offer-response-label { color: var(--green); font-weight: 600; }
+.offer-row-progress, .offer-row-exchange { color: var(--muted); font-size: .8125rem; line-height: 1.65; }
+.offer-row-message { max-width: 75ch; margin-top: 4px; font-size: .875rem; line-height: 1.7; overflow-wrap: anywhere; }
+.offer-row-value { display: grid; justify-items: end; align-content: start; gap: 8px; max-width: 260px; text-align: right; }
+.offer-row-value > strong { font-size: 1.125rem; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.offer-row-value > p, .offer-row-value > time { color: var(--muted); font-size: .8125rem; line-height: 1.65; }
+.offer-row-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px 20px; }
+.offer-row-footer > a { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-size: .8125rem; font-weight: 600; }
+.account-main .offers-page .offer-card > [role=status]:empty { display: none; }
+@container (min-width: 600px) { .owner-listings-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@container (min-width: 1000px) { .owner-listings-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@container (max-width: 700px) {
+  .offer-row-main { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .offer-row-value { justify-items: start; max-width: none; text-align: left; }
+}
+@media (max-width: 600px) {
+  .collection-search-row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .collection-toolbar { gap: 16px; }
+  .account-main .offers-page .offer-card { padding: 20px 16px; }
+  .collection-type-filters > button, .offer-phase-filters > button { padding-inline: 12px; }
+}
+@media (forced-colors: active) {
+  .collection-status { border: 1px solid CanvasText; }
+  .collection-type-filters > button[aria-pressed=true], .offer-phase-filters > button[aria-pressed=true] { outline: 2px solid Highlight; outline-offset: -3px; }
+}

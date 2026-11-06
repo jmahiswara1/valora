@@ -176,3 +176,51 @@ test('empty unread category does not claim other categories were read', async ({
   await expect(page.getByRole('heading', { name: 'Tidak ada kabar baru di kategori ini.' })).toBeVisible();
   await expect(bell(page)).toHaveAttribute('aria-label', 'Notifikasi, 1 belum dibaca');
 });
+
+test('notification workspace fills available width and empty inbox fills the screen', async ({ page }, testInfo) => {
+  await mock(page, 0);
+  await mkdir(resolve('../../.local/notifications'), { recursive: true });
+  for (const width of [390, 768, 1440, 1920]) {
+    await page.setViewportSize({ width, height: 900 }); await page.goto('/app/notifikasi');
+    await expect(page.getByRole('heading', { name: 'Belum ada notifikasi.' })).toBeVisible();
+    const bounds = await page.evaluate(() => {
+      const main = document.querySelector('.account-main'), inbox = document.querySelector('.notifications-inbox');
+      const workspace = document.querySelector('.account-workspace').getBoundingClientRect();
+      const content = main.getBoundingClientRect(), panel = inbox.getBoundingClientRect(), style = getComputedStyle(main);
+      return { mainWidth: content.width, workspaceWidth: workspace.width, panelWidth: panel.width,
+        availableWidth: content.width - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight),
+        bottom: panel.bottom, viewport: innerHeight, overflow: document.documentElement.scrollWidth > innerWidth };
+    });
+    expect(Math.abs(bounds.mainWidth - bounds.workspaceWidth)).toBeLessThanOrEqual(1);
+    expect(Math.abs(bounds.panelWidth - bounds.availableWidth)).toBeLessThanOrEqual(1);
+    expect(bounds.bottom).toBeGreaterThanOrEqual(bounds.viewport - 32);
+    expect(bounds.overflow).toBe(false);
+    if (width === 390 || width === 1440) await page.screenshot({ path: resolve(`../../.local/notifications/empty-${testInfo.project.name}-${width}.png`) });
+  }
+});
+
+test('mixed states and long notification text keep independent usable controls', async ({ page }, testInfo) => {
+  const state = await mock(page, 6);
+  state.rows[0].itemTitle = 'Mesin kopi otomatis dengan penggiling dan perlengkapan seduh untuk dapur bersama';
+  state.rows[0].message = 'Ada penawaran yang menunggu tanggapanmu. Buka detail penawaran untuk melihat nominal, pesan, dan perkembangan terbaru dari barang ini.';
+  state.rows[1].readAt = new Date().toISOString();
+  state.rows[2] = { ...state.rows[2], category: 'market', type: 'SAVED_SEARCH_MATCH', title: 'Barang sesuai pencarianmu', target: { kind: 'LISTING', id: id(302) } };
+  state.rows[3] = { ...state.rows[3], category: 'messages', type: 'MESSAGE_RECEIVED', title: 'Pesan baru', target: { kind: 'CONVERSATION', id: id(303) } };
+  await mkdir(resolve('../../.local/notifications'), { recursive: true });
+  for (const width of [320, 390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 }); await page.goto('/app/notifikasi');
+    await expect(page.locator('.notification-list li')).toHaveCount(6);
+    await expect(page.locator('.notification-list .notification-read-button')).toHaveCount(5);
+    for (const row of await page.locator('.notification-list li').all()) {
+      const link = await row.locator('.notification-entry-link').boundingBox(), control = row.locator('.notification-read-button');
+      if (await control.count()) {
+        const button = await control.boundingBox();
+        expect(button.width).toBeGreaterThanOrEqual(44); expect(button.height).toBeGreaterThanOrEqual(44);
+        expect(link.x + link.width).toBeLessThanOrEqual(button.x);
+      }
+      expect(await row.locator('.notification-entry-content').evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    if (width === 390 || width === 1440) await page.screenshot({ path: resolve(`../../.local/notifications/mixed-${testInfo.project.name}-${width}.png`) });
+  }
+});

@@ -2,6 +2,16 @@
 .account-main .handover-panel { display: grid; gap: 18px; }
 .handover-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
 .handover-heading > h2, .handover-heading > h3 { margin: 0; }
+.handover-coordination-options { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.handover-coordination-option { display: grid; grid-template-columns: 21px minmax(0, 1fr) 18px; align-items: start; gap: 12px; min-height: 88px; min-width: 0; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: white; color: var(--forest); font: inherit; text-align: left; text-decoration: none; }
+.handover-coordination-option > svg { margin-top: 2px; flex-shrink: 0; }
+.handover-option-copy { display: grid; gap: 6px; min-width: 0; overflow-wrap: anywhere; }
+.handover-option-copy > strong { font-size: .875rem; font-weight: 600; line-height: 1.5; }
+.handover-option-copy > span { color: var(--muted); font-size: .8125rem; line-height: 1.65; }
+.handover-coordination-option:where(:hover, :focus-visible):not(:disabled) { background: #EDF1EA; border-color: var(--green); text-decoration: none; }
+.handover-coordination-option:disabled { cursor: not-allowed; opacity: .6; }
+.handover-coordination-option:only-child { grid-column: 1 / -1; }
+@container (min-width: 600px) { .handover-coordination-options { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .handover-section { border-top: 1px solid #E2E8DF; padding-top: 22px; display: grid; gap: 14px; }
 .handover-details { display: grid; gap: 16px; overflow-wrap: anywhere; }
 .handover-details h4, .handover-shipment h4 { font-size: .9375rem; line-height: 1.5; margin: 0 0 5px; font-weight: 600; }
@@ -21,16 +31,70 @@
 .handover-comparison summary { min-height: 44px; display: list-item; cursor: pointer; padding-block: 12px; font-size: .875rem; font-weight: 600; }
 .handover-comparison .handover-details { padding: 12px 0; }
 .handover-history-row { padding-block: 12px; border-bottom: 1px solid #E2E8DF; }
-.account-main .transaction-dialog.handover-dialog { width: min(600px, calc(100vw - 32px)); padding: 26px; max-height: calc(100dvh - 32px); scrollbar-width: thin; scrollbar-color: #CAD4C7 #fff; }
-.handover-dialog > h2 { margin-bottom: 20px; }
+.account-main .transaction-dialog.handover-dialog { width: min(600px, calc(100dvw - 32px)); max-height: calc(100dvh - 32px); padding: 0; overflow: hidden; }
+.handover-dialog[open] { display: flex; flex-direction: column; }
+.handover-dialog-header { flex-shrink: 0; display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding: 24px 28px; border-bottom: 1px solid #E2E8DF; }
+.handover-dialog-header > div { min-width: 0; }
+.account-main .handover-dialog .handover-dialog-header h2 { margin: 0; }
+.account-main .handover-dialog .handover-dialog-header p { max-width: 72ch; margin: 8px 0 0; color: var(--muted); font-size: .8125rem; line-height: 1.65; }
+.handover-dialog-close { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin: -8px -8px 0 0; border: 0; border-radius: 50%; color: var(--forest); background: transparent; }
+.handover-dialog-close:hover { background: #EDF1EA; }
+.handover-dialog-form { display: flex; flex: 1; flex-direction: column; min-height: 0; }
+.handover-dialog-body { flex: 1; min-height: 0; padding: 24px 28px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #CAD4C7 #fff; scroll-padding-block: 24px; }
 .handover-fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
-.handover-dialog .form-actions { margin-top: 4px; }
-.handover-feedback { display: grid; gap: 14px; margin-top: 16px; }
+.handover-dialog-actions { flex-shrink: 0; display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding: 16px 28px; border-top: 1px solid #E2E8DF; background: white; }
+.handover-dialog-actions .button { min-height: 44px; }
+.handover-feedback { display: grid; gap: 14px; }
+.handover-feedback:has(> .notice, > button, > [role="status"]:not(:empty)) { margin-top: 20px; }
+.account-main .transaction-dialog.handover-proposal-dialog { width: min(1040px, calc(100dvw - 48px)); height: min(720px, calc(100dvh - 48px)); max-height: calc(100dvh - 48px); }
+.handover-proposal-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; }
+.handover-form-section { display: grid; align-content: start; gap: 20px; min-width: 0; }
+.handover-form-section + .handover-form-section { padding-top: 24px; border-top: 1px solid #E2E8DF; }
+.handover-section-heading { display: flex; align-items: center; gap: 10px; }
+.handover-section-heading > svg { flex-shrink: 0; color: var(--green); }
+.handover-section-heading > h3 { margin: 0; }
+.handover-zone-fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+.handover-zone-fieldset legend { margin-bottom: 8px; padding: 0; font-size: .875rem; font-weight: 600; }
+.handover-zone-choices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.handover-zone-choice { position: relative; min-width: 0; cursor: pointer; }
+.handover-zone-choice > input { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: inherit; }
+.handover-zone-label { display: grid; gap: 4px; min-height: 72px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: white; color: var(--muted); }
+.handover-zone-label > span { display: flex; align-items: center; justify-content: space-between; gap: 4px; }
+.handover-zone-label strong { font-size: .875rem; font-weight: 600; color: var(--forest); }
+.handover-zone-label small { font-size: .75rem; font-variant-numeric: tabular-nums; letter-spacing: 0; }
+.handover-zone-label svg { flex-shrink: 0; visibility: hidden; }
+.handover-zone-choice:hover .handover-zone-label { border-color: var(--green); }
+.handover-zone-choice > input:checked + .handover-zone-label { border-color: var(--forest); background: #EDF1EA; color: var(--forest); }
+.handover-zone-choice > input:checked + .handover-zone-label svg { visibility: visible; }
+.handover-zone-choice > input:focus-visible + .handover-zone-label { outline: 2px solid var(--green); outline-offset: 3px; }
+.handover-zone-choice > input:disabled { cursor: not-allowed; }
+.handover-zone-choice > input:disabled + .handover-zone-label { opacity: .55; }
+.account-main .handover-dialog .textarea { min-height: 100px; }
+.account-main .handover-dialog input[type="datetime-local"] { min-width: 0; max-width: 100%; }
+.handover-delivery-hint { color: var(--muted); font-size: .875rem; line-height: 1.7; }
+.handover-agreement-note { display: flex; align-items: flex-start; gap: 10px; padding-top: 20px; border-top: 1px solid #E2E8DF; color: var(--muted); font-size: .8125rem; line-height: 1.7; }
+.handover-agreement-note svg { flex-shrink: 0; margin-top: 2px; }
+@media (orientation: landscape) and (min-width: 720px) {
+  .handover-proposal-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
+  .handover-form-section + .handover-form-section { padding: 0 0 0 32px; border-top: 0; border-left: 1px solid #E2E8DF; }
+}
+@media (orientation: portrait) {
+  .account-main .transaction-dialog.handover-proposal-dialog { width: min(600px, calc(100dvw - 32px)); height: min(900px, calc(100dvh - 32px)); max-height: calc(100dvh - 32px); }
+}
 @media (max-width: 600px) {
   .handover-heading { align-items: flex-start; }
   .handover-facts > div { grid-template-columns: 1fr; gap: 4px; }
   .handover-timeline li { align-items: flex-start; flex-direction: column; gap: 8px; }
-  .account-main .transaction-dialog.handover-dialog { padding: 20px; }
-  .handover-dialog .form-actions { flex-direction: column; align-items: stretch; }
-  .handover-dialog .form-actions .button { width: 100%; }
+  .handover-dialog-header { gap: 12px; padding: 20px; }
+  .handover-dialog-body { padding: 20px; }
+  .handover-dialog-actions { gap: 8px; padding: 16px 20px; }
+  .handover-dialog-actions .button { flex: 1; }
+  .handover-zone-label { padding: 12px 8px; }
+}
+@media (max-height: 480px) and (orientation: landscape) {
+  .handover-dialog-header { padding-block: 16px; }
+  .handover-dialog-actions { padding-block: 12px; }
+}
+@media (forced-colors: active) {
+  .handover-zone-choice > input:checked + .handover-zone-label { outline: 2px solid Highlight; outline-offset: -3px; color: Highlight; }
 }

@@ -8,6 +8,7 @@ import { notificationHref, useNotificationRead } from './hooks';
 export function NotificationRow({ row, compact = false, onNavigate, onRead }: { row: NotificationCenterDto; compact?: boolean; onNavigate?: () => void; onRead?: () => void }) {
   const { read, pending } = useNotificationRead();
   const Icon = row.category === 'messages' ? MessageCircle : row.category === 'market' ? Search : row.type === 'HANDOVER_REMINDER' ? Bell : row.category === 'offers' ? Handshake : ReceiptText;
+  const category = row.category === 'messages' ? 'Pesan' : row.category === 'market' ? 'Market' : row.category === 'offers' ? 'Penawaran' : 'Transaksi';
   const fullTime = new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(row.createdAt));
   function markRead() { if (!row.readAt) { onRead?.(); read(row.id, row.latestMessageSequence); } }
   return <li className={`notification-entry${!row.readAt ? ' is-unread' : ''}${compact ? ' is-compact' : ''}`} data-notification-id={row.id}>
@@ -16,9 +17,10 @@ export function NotificationRow({ row, compact = false, onNavigate, onRead }: { 
     }}>
       <span className="notification-category-icon"><Icon size={19} strokeWidth={1.7} aria-hidden="true" /></span>
       <div className="notification-entry-content"><div className="notification-entry-title"><strong>{row.title}</strong>{!row.readAt && <span className="notification-unread-label">Baru</span>}</div>
-        <span className="notification-item-title">{row.itemTitle}</span>{!compact && <p>{row.message}</p>}<time dateTime={row.createdAt} title={fullTime}>{fullTime}</time>
+        <span className="notification-item-title">{row.itemTitle}</span>{!compact && <p>{row.message}</p>}
+        {compact ? <time dateTime={row.createdAt} title={fullTime}>{fullTime}</time> : <div className="notification-entry-meta"><span>{category}</span><time dateTime={row.createdAt} title={fullTime}>{fullTime}</time></div>}
       </div><ArrowUpRight className="notification-entry-arrow" size={16} aria-hidden="true" />
     </Link>
-    {!compact && !row.readAt && <button type="button" className="notification-read-button" aria-label={`Tandai ${row.title} untuk ${row.itemTitle} dibaca`} disabled={pending} onClick={markRead}><Check size={18} aria-hidden="true" /><span>Tandai dibaca</span></button>}
+    {!compact && !row.readAt && <button type="button" className="notification-read-button" aria-label={`Tandai ${row.title} untuk ${row.itemTitle} dibaca`} title="Tandai dibaca" disabled={pending} onClick={markRead}><Check size={18} aria-hidden="true" /><span>Tandai dibaca</span></button>}
   </li>;
 }

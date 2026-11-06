@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Bell, CheckCheck, ArrowUpRight } from 'lucide-react';
+import { Bell, CheckCheck, ArrowUpRight, ListFilter, Handshake, ReceiptText, Search, MessageCircle } from 'lucide-react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import type { NotificationCenterDto, NotificationsQuery } from '@valora/contracts';
 import { apiEnvelope } from '@/lib/api';
@@ -12,6 +12,14 @@ import { AccountError } from '@/features/account/error';
 import { AccountSkeleton } from '@/features/account/skeleton';
 import { useNotificationRead, useNotificationSummary } from './hooks';
 import { NotificationRow } from './row';
+
+const categories = [
+  { value: 'all', label: 'Semua aktivitas', Icon: ListFilter },
+  { value: 'offers', label: 'Penawaran', Icon: Handshake },
+  { value: 'transactions', label: 'Transaksi', Icon: ReceiptText },
+  { value: 'market', label: 'Market', Icon: Search },
+  { value: 'messages', label: 'Pesan', Icon: MessageCircle },
+] as const;
 
 export function NotificationsPage() {
   const userId = useSession().session?.user?.id, summary = useNotificationSummary();
@@ -31,15 +39,39 @@ export function NotificationsPage() {
     (next ?? heading.current)?.focus();
   }, [rows]);
   function chooseStatus(value: typeof status) { focus.current = null; setStatus(value); }
+  const unreadCount = summary.isError ? undefined : summary.data?.unreadCount;
   return <div className="notifications-page">
-    <div className="notifications-heading"><div><span className="notification-eyebrow">Aktivitas akun</span><h1 ref={heading} tabIndex={-1}>Notifikasi</h1><p>Ikuti barang yang kamu cari, pesan, penawaran, dan perkembangan transaksi.</p></div><Button variant="secondary" disabled={pending || summary.isError || !summary.data?.unreadCount} onClick={() => { if (status === 'unread' && rows[0]) focus.current = { id: rows[0].id, index: 0 }; read('all'); }}><CheckCheck size={18} aria-hidden="true" />{pending ? 'Menandai…' : 'Tandai semua dibaca'}</Button></div>
-    <div className="notification-filters"><div className="notification-status-filters" role="group" aria-label="Status notifikasi">{(['all', 'unread'] as const).map(value => <button type="button" key={value} aria-pressed={status === value} onClick={() => chooseStatus(value)}>{value === 'all' ? 'Semua' : 'Belum dibaca'}{value === 'unread' && !summary.isError && summary.data && <span>{summary.data.unreadCount > 99 ? '99+' : summary.data.unreadCount}</span>}</button>)}</div>
-      <div className="notification-category-filters" role="group" aria-label="Kategori notifikasi">{(['all', 'offers', 'transactions', 'market', 'messages'] as const).map(value => <button type="button" key={value} aria-pressed={category === value} onClick={() => { focus.current = null; setCategory(value); }}>{value === 'all' ? 'Semua aktivitas' : value === 'offers' ? 'Penawaran' : value === 'market' ? 'Market' : value === 'messages' ? 'Pesan' : 'Transaksi'}</button>)}</div></div>
-    {summary.isError && <AccountError retry={() => summary.refetch()}>Jumlah belum dibaca gagal dimuat.</AccountError>}
-    {rowsQuery.isPending ? <AccountSkeleton /> : rowsQuery.isError && !rowsQuery.data ? <AccountError retry={() => rowsQuery.refetch()}>Notifikasi gagal dimuat.</AccountError> : rows.length || rowsQuery.hasNextPage ? <>
-      <ul className="notification-list" ref={list}>{rows.map((row, index) => <NotificationRow key={row.id} row={row} onRead={() => { if (status === 'unread') focus.current = { id: row.id, index }; }} />)}</ul>
-      {rowsQuery.isError && !rowsQuery.isFetchNextPageError && <AccountError retry={() => rowsQuery.refetch()}>Pembaruan notifikasi gagal. Hasil sebelumnya tetap ditampilkan.</AccountError>}
-      {rowsQuery.hasNextPage && <div className="notification-pagination">{rowsQuery.isFetchNextPageError && <p role="alert">Notifikasi berikutnya gagal dimuat. Coba lagi.</p>}<Button variant="secondary" disabled={rowsQuery.isFetching} onClick={() => rowsQuery.fetchNextPage()}>{rowsQuery.isFetchingNextPage ? 'Memuat…' : rowsQuery.isFetchNextPageError ? 'Coba lagi' : 'Muat lebih banyak'}</Button></div>}
-    </> : <div className="notifications-empty"><span><Bell size={30} strokeWidth={1.5} aria-hidden="true" /></span><h2>{status === 'unread' ? category === 'all' ? 'Semua kabar sudah kamu baca.' : 'Tidak ada kabar baru di kategori ini.' : category !== 'all' ? 'Belum ada aktivitas di kategori ini.' : 'Belum ada notifikasi.'}</h2><p>{status === 'unread' ? 'Notifikasi baru akan muncul saat ada perkembangan.' : 'Kabar pencarian, pesan, penawaran, dan transaksi akan terkumpul di sini.'}</p><Link href="/market" className="button button-secondary">Jelajahi Market <ArrowUpRight size={16} aria-hidden="true" /></Link></div>}
+    <header className="notifications-heading">
+      <div><h1 ref={heading} tabIndex={-1}>Notifikasi</h1><p>Ikuti barang yang kamu cari, pesan, penawaran, dan perkembangan transaksi.</p></div>
+      <Button variant="secondary" disabled={pending || !unreadCount} onClick={() => {
+        if (status === 'unread' && rows[0]) focus.current = { id: rows[0].id, index: 0 };
+        read('all');
+      }}><CheckCheck size={18} aria-hidden="true" />{pending ? 'Menandai…' : 'Tandai semua dibaca'}</Button>
+    </header>
+    <section className="notifications-inbox" aria-label="Pusat notifikasi">
+      <div className="notification-filters">
+        <div className="notification-filter-toolbar">
+          <div className="notification-status-filters" role="group" aria-label="Status notifikasi">
+            {(['all', 'unread'] as const).map(value => <button type="button" key={value} aria-pressed={status === value} onClick={() => chooseStatus(value)}>
+              {value === 'all' ? 'Semua' : 'Belum dibaca'}{value === 'unread' && unreadCount !== undefined && <span>{unreadCount > 99 ? '99+' : unreadCount}</span>}
+            </button>)}
+          </div>
+          <p className="notification-summary" role="status">{unreadCount === undefined ? summary.isError ? 'Ringkasan belum tersedia' : 'Memuat ringkasan…' : unreadCount ? `${unreadCount.toLocaleString('id-ID')} belum dibaca` : 'Semua sudah dibaca'}</p>
+        </div>
+        <div className="notification-category-filters" role="group" aria-label="Kategori notifikasi">
+          {categories.map(({ value, label, Icon }) => <button type="button" key={value} aria-pressed={category === value} onClick={() => { focus.current = null; setCategory(value); }}>
+            <Icon size={16} strokeWidth={1.7} aria-hidden="true" />{label}
+          </button>)}
+        </div>
+      </div>
+      <div className="notification-results" aria-busy={rowsQuery.isFetching}>
+        {summary.isError && <AccountError retry={() => summary.refetch()}>Jumlah belum dibaca gagal dimuat.</AccountError>}
+        {rowsQuery.isPending ? <AccountSkeleton /> : rowsQuery.isError && !rowsQuery.data ? <AccountError retry={() => rowsQuery.refetch()}>Notifikasi gagal dimuat.</AccountError> : rows.length || rowsQuery.hasNextPage ? <>
+          <ul className="notification-list" aria-label="Daftar notifikasi" ref={list}>{rows.map((row, index) => <NotificationRow key={row.id} row={row} onRead={() => { if (status === 'unread') focus.current = { id: row.id, index }; }} />)}</ul>
+          {rowsQuery.isError && !rowsQuery.isFetchNextPageError && <AccountError retry={() => rowsQuery.refetch()}>Pembaruan notifikasi gagal. Hasil sebelumnya tetap ditampilkan.</AccountError>}
+          {rowsQuery.hasNextPage && <div className="notification-pagination">{rowsQuery.isFetchNextPageError && <p role="alert">Notifikasi berikutnya gagal dimuat. Coba lagi.</p>}<Button variant="secondary" disabled={rowsQuery.isFetching} onClick={() => rowsQuery.fetchNextPage()}>{rowsQuery.isFetchingNextPage ? 'Memuat…' : rowsQuery.isFetchNextPageError ? 'Coba lagi' : 'Muat lebih banyak'}</Button></div>}
+        </> : <div className="notifications-empty"><span><Bell size={30} strokeWidth={1.5} aria-hidden="true" /></span><h2>{status === 'unread' ? category === 'all' ? 'Semua kabar sudah kamu baca.' : 'Tidak ada kabar baru di kategori ini.' : category !== 'all' ? 'Belum ada aktivitas di kategori ini.' : 'Belum ada notifikasi.'}</h2><p>{status === 'unread' ? 'Notifikasi baru akan muncul saat ada perkembangan.' : 'Kabar pencarian, pesan, penawaran, dan transaksi akan terkumpul di sini.'}</p><Link href="/market" className="button button-secondary">Jelajahi Market <ArrowUpRight size={16} aria-hidden="true" /></Link></div>}
+      </div>
+    </section>
   </div>;
 }
