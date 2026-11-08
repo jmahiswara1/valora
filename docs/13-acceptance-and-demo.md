@@ -1,6 +1,6 @@
 # Matriks penerimaan MVP dan skenario demo
 
-**Status:** matriks penerimaan MVP karya INSYFEST 2026, disusun sebelum implementasi dan dipakai untuk verifikasi bertahap. Kriteria PRD tetap berlaku; dokumen ini memberi fixture dan hasil yang dapat diamati. Akun, foto, harga, dan chat demo memakai data sintetis berlabel **demo**. Tidak ada klaim pembayaran atau pemeriksaan fisik oleh Valora.
+**Status:** matriks penerimaan MVP Valora, disusun sebelum implementasi dan dipakai untuk verifikasi bertahap. Kriteria PRD tetap berlaku; dokumen ini memberi fixture dan hasil yang dapat diamati. Akun, foto, harga, dan chat demo memakai data sintetis berlabel **demo**. Tidak ada klaim pembayaran atau pemeriksaan fisik oleh Valora.
 
 Implementasi tahap 1–6 sudah mempunyai pengujian bertahap; cakupan dan batas verifikasi terbaru dicatat pada [status tahap 6](21-stage6-implementation.md). Tahap 6 memperluas pemeriksaan seluruh matriks ini, termasuk [auth dan session management pada setiap halaman](20-stage6-auth-session-plan.md). Penjelasan Assessment saat ini memakai template sesuai keputusan pengguna.
 
@@ -49,7 +49,7 @@ Uji desktop 1440 px dan mobile 390 px untuk Market, formulir Assessment, Detail 
 
 ## Bukti demo yang disiapkan setelah implementasi
 
-Satu reset fixture, rekaman atau urutan langkah empat jalur, tangkapan layar desktop/mobile, hasil uji kasus batas, contoh log audit tanpa data privat, dan penjelasan singkat batas klaim. Format pengumpulan mengikuti panduan INSYFEST 2026 jika kemudian tersedia. Kesiapan demo tidak menyatakan kesiapan operasi perdagangan publik; keputusan O11 tetap terpisah.
+Satu reset fixture, rekaman atau urutan langkah empat jalur, tangkapan layar desktop/mobile, hasil uji kasus batas, contoh log audit tanpa data privat, dan penjelasan singkat batas klaim. Kesiapan demo tidak menyatakan kesiapan operasi perdagangan publik; keputusan O11 tetap terpisah.
 
 ## Bukti implementasi tahap 4
 

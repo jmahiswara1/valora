@@ -1,12 +1,14 @@
-# Graph Report - insyfest  (2026-09-28)
+# Graph Report - Valora  (2026-09-28)
 
 > Snapshot analisis awal: PRD v1.12 dan 11 dokumen sebelum penutupan K01–K06. Untuk aturan terkini, baca [PRD v1.14](../docs/PRD.md) dan [indeks docs](../docs/README.md). [Audit temuan](../docs/14-graphify-audit.md) menjelaskan bagaimana graph ini dipakai.
+
+> Identitas dan konteks produk diperbarui pada 8 November 2026. Node dan relasi konteks lama dihapus; angka node, edge, dan cohesion komunitas terkait disesuaikan. Ekstraksi dan centrality lainnya tetap berasal dari snapshot awal.
 
 ## Corpus Check
 - Corpus is ~19,061 words - fits in a single context window. You may not need a graph.
 
 ## Summary
-- 135 nodes · 243 edges · 14 communities (11 shown, 3 thin omitted)
+- 133 nodes · 240 edges · 14 communities (11 shown, 3 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 34,708 input · 28,200 output
 
@@ -21,7 +23,7 @@
 - Moderasi dan Sengketa
 - Pencil dan UI
 - Fondasi MVP Valora
-- Lomba dan Demo
+- Demonstrasi Produk
 - Web Admin
 - Web Publik
 - Web Pengguna
@@ -67,7 +69,7 @@ Nodes (18): Immutable Assessment snapshot, Economic Value formula, Items Revalue
 
 ### Community 2 - "Dokumen dan Keputusan"
 Cohesion: 0.23
-Nodes (17): INSYFEST 2026 competition context, Product decisions, O05 category scoring rubrics, O06 moderation details, O07 Passport privacy and moderation, O08 account and data retention, User flows and product states, Domain, Score, Passport, Impact, and privacy (+9 more)
+Nodes (17): Valora product context, Product decisions, O05 category scoring rubrics, O06 moderation details, O07 Passport privacy and moderation, O08 account and data retention, User flows and product states, Domain, Score, Passport, Impact, and privacy (+9 more)
 
 ### Community 3 - "Listing dan Offer"
 Cohesion: 0.20
@@ -94,17 +96,16 @@ Cohesion: 0.22
 Nodes (10): Design audit findings, Landing mobile four card layout issue, Valora Pencil canvas, Pencil screen inventory, Unverified TERVERIFIKASI badge, Design token contrast checks, Responsive editorial layout, Newsreader, Funnel Sans, IBM Plex Mono typography (+2 more)
 
 ### Community 9 - "Fondasi MVP Valora"
-Cohesion: 0.50
-Nodes (4): INSYFEST 2026, Implementation phases 0–6, Valora MVP, Valora
-
-### Community 10 - "Lomba dan Demo"
 Cohesion: 0.67
-Nodes (3): Official competition guidance, Valora demonstration scenarios, Decision log D01–D20
+Nodes (3): Implementation phases 0–6, Valora MVP, Valora
+
+### Community 10 - "Demonstrasi Produk"
+Cohesion: 0.00
+Nodes (2): Valora demonstration scenarios, Decision log D01–D20
 
 ## Knowledge Gaps
-- **40 isolated node(s):** `Guest`, `Message`, `Valora Impact`, `recommendation-v1`, `INSYFEST 2026` (+35 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 41 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **3 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **41 node(s) with at most one connection:** `O09 Impact correction`, `O11 operations and deployment`, `Completed Transfers`, `Estimated Transfer Weight`, `OpenAPI contract`. These may indicate documentation gaps.
+- Communities retain the original snapshot grouping; product context was updated on 8 November 2026.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
@@ -116,4 +117,4 @@ _Questions this graph is uniquely positioned to answer:_
 - **Why does `Assessment` connect `Assessment dan Score` to `Transaction dan Impact`, `Listing dan Offer`, `Passport dan Privasi`, `Empat Jalur MVP`?**
   _High betweenness centrality (0.166) - this node is a cross-community bridge._
 - **What connects `Guest`, `Message`, `Valora Impact` to the rest of the system?**
-  _40 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _41 weakly-connected nodes found - possible documentation gaps or missing edges._

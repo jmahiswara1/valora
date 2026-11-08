@@ -2,7 +2,7 @@
 
 **Versi:** 1.28
 **Tanggal:** 16 Oktober 2026  
-**Status:** Karya INSYFEST 2026; arah produk disepakati, spesifikasi MVP ada di `docs/`, dan implementasi tahap 1 dicatat pada `docs/15-stage1-implementation.md`  
+**Status:** Pengembangan produk Valora; arah produk disepakati, spesifikasi MVP ada di `docs/`, dan implementasi tahap 1 dicatat pada `docs/15-stage1-implementation.md`  
 **Tagline:** *Keep Things Valuable*  
 **Platform:** Web application  
 **Tema:** Kesadaran lingkungan melalui circular economy
@@ -27,8 +27,8 @@
 16. Warna Forest/Green dipertahankan dengan White sebagai permukaan utama, Cream sebagai aksen, dan Sage sebagai bidang pendukung. Tipografi memakai `Plus Jakarta Sans`: teks medium 500, label/tombol semibold 600, dan judul bold 700. Token implementasi baru tercatat pada `apps/web/DESIGN.md`; batas migrasi ada di `docs/08-design-system.md`. Badge “TERVERIFIKASI” tidak dipakai tanpa jenis verifikasi yang benar-benar dilakukan dan dijelaskan.
 17. Setelah ownership berpindah, owner baru menerima ringkasan Repair historis yang relevan. Foto bukti dan catatan rinci pemilik lama hanya ikut bila pemilik lama sengaja membagikannya; biaya privat, kontak, alamat, dan chat tidak ikut.
 18. Moderasi kategori memakai tiga perlakuan yang dibedakan secara eksplisit: kondisi yang ditetapkan terlarang tidak boleh dipublikasikan, kasus meragukan memerlukan tinjauan admin, dan kondisi yang diperbolehkan harus diungkapkan dengan jelas. Listing dengan informasi keselamatan wajib yang belum lengkap ditahan sampai diperjelas. Semua Listing tetap melalui review admin sebelum aktif.
-19. Valora dibuat sebagai proyek lomba **INSYFEST 2026**. Dokumen membedakan target karya dan demonstrasi MVP dari keputusan pengoperasian platform untuk transaksi nyata; kategori, tenggat, format pengumpulan, serta kriteria penilaian lomba mengikuti panduan resmi ketika tersedia. Matriks kasus moderasi awal per kategori pada `docs/09-moderation-policy-draft.md` telah disetujui sebagai kebijakan MVP; formulir dan kasus uji MVP tercatat pada `docs/06-category-rubric-draft.md`.
-20. Panduan lomba resmi tidak diperlukan untuk melanjutkan rencana MVP Valora saat ini. Bila ketentuan lomba diberikan kemudian, kebutuhan pengumpulan dapat disesuaikan secara eksplisit tanpa menganggap rincian lomba yang belum diketahui sebagai fakta.
+19. Valora dikembangkan sebagai produk untuk menjaga nilai dan memperpanjang usia pakai barang. Dokumen membedakan target pengembangan dan demonstrasi MVP dari keputusan pengoperasian platform untuk transaksi nyata. Matriks kasus moderasi awal per kategori pada `docs/09-moderation-policy-draft.md` telah disetujui sebagai kebijakan MVP; formulir dan kasus uji MVP tercatat pada `docs/06-category-rubric-draft.md`.
+20. Spesifikasi dan implementasi MVP mengikuti kebutuhan produk Valora yang sudah disepakati. Perubahan ruang lingkup dicatat secara eksplisit dalam dokumen dan log keputusan.
 21. Rincian operasional O04–O09 yang sebelumnya terbuka ditetapkan sebagai baseline spesifikasi MVP pada `docs/10-mvp-implementation-decisions.md`, lalu diturunkan ke model data, API, dan skenario penerimaan. Rincian baru tersebut adalah keputusan rancangan pra-kode; perubahan setelah review dilakukan lewat revisi dokumen dan versi aturan, bukan perubahan diam-diam pada data historis. O11 tetap keputusan terpisah sebelum operasi publik.
 22. Kanvas Pencil tetap menjadi catatan desain historis dan tidak perlu diedit. Komposisi baru mengikuti referensi pengguna; PRD serta `docs/` tetap menjadi sumber copy, status, akses, dan perilaku produk. Halaman yang belum mendapat tahap redesign mempertahankan implementasi saat ini sampai tahapnya dikerjakan.
 
@@ -36,7 +36,7 @@ Dokumen ini mengonsolidasikan PRD overview dan keputusan dalam pembahasan terbar
 
 ## 1. Ringkasan produk
 
-Valora membantu pemilik mempertahankan nilai dan memperpanjang usia pakai barang melalui evaluasi, perbaikan, penjualan kembali, pertukaran, dan donasi. Karya ini disiapkan untuk **INSYFEST 2026** dengan pasar sasaran Indonesia, nominal dalam rupiah, dan lokasi yang tampil pada area publik paling rinci setingkat kota. Pengguna mendaftarkan barang, melengkapi kondisi, menerima **Valora Score** dan rekomendasi, lalu menentukan tindakan. Peristiwa penting dicatat dalam **Valora Passport**, sedangkan aktivitas yang memenuhi syarat masuk ke **Valora Impact**.
+Valora membantu pemilik mempertahankan nilai dan memperpanjang usia pakai barang melalui evaluasi, perbaikan, penjualan kembali, pertukaran, dan donasi. Pasar sasaran Valora adalah Indonesia, dengan nominal dalam rupiah dan lokasi yang tampil pada area publik paling rinci setingkat kota. Pengguna mendaftarkan barang, melengkapi kondisi, menerima **Valora Score** dan rekomendasi, lalu menentukan tindakan. Peristiwa penting dicatat dalam **Valora Passport**, sedangkan aktivitas yang memenuhi syarat masuk ke **Valora Impact**.
 
 Valora Score adalah **indeks potensi sirkular menurut rubrik Valora**, bukan sertifikat kondisi, jaminan nilai jual, atau bukti bahwa barang telah menyelamatkan sejumlah emisi.
 
@@ -365,7 +365,7 @@ Periksa desktop 1.440 px, layar lebar 1.920 px, tablet 768 px, dan ponsel 390 px
 
 **MVP wajib:** Authentication; peran User/Admin; dashboard terpisah; Item dan foto; Assessment serta Score deterministik; Recommendation; Repair Record; Market dengan pencarian dan filter; Listing Resell/Exchange/Donate; Offer dan Counteroffer Resell; Chat serta unread count; Transaction dan koordinasi serah terima; ownership transfer; Passport; Impact; report, sengketa, dan moderasi admin; AI Explainer dengan fallback template.
 
-Untuk penilaian lomba, alur MVP harus dapat didemonstrasikan dengan akun dan data contoh yang diberi label sebagai data demo. Status transaksi, statistik, dan metrik Impact dalam demonstrasi berasal dari data aplikasi yang dijalankan, bukan angka pemasaran yang dikarang. Paket demo dan cara akses juri dirancang dari kebutuhan karya saat ini; bila panduan lomba diberikan kemudian, keduanya dapat disesuaikan. Kesiapan menerima transaksi nyata menjadi keputusan terpisah.
+Untuk validasi produk, alur MVP harus dapat didemonstrasikan dengan akun dan data contoh yang diberi label sebagai data demo. Status transaksi, statistik, dan metrik Impact dalam demonstrasi berasal dari data aplikasi yang dijalankan, bukan angka pemasaran yang dikarang. Paket demo dan cara akses peninjau dirancang dari kebutuhan pengembangan Valora. Kesiapan menerima transaksi nyata menjadi keputusan terpisah.
 
 **Future Features:** payment gateway/escrow; integrasi pengiriman; marketplace jasa repair; notifikasi email/push; lampiran chat tambahan; gamification, badge, dan community challenge; peta; tutorial repair AI interaktif berbasis konten terkurasi; estimasi harga dari data pembanding.
 

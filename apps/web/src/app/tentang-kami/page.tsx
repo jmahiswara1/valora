@@ -45,7 +45,7 @@ export default function TentangKamiPage() {
         <div>
           <h1>Kenali Valora.</h1>
           <p>Valora membantu menjaga nilai dan memperpanjang usia pakai barang melalui pencatatan, penilaian kondisi, perawatan, jual kembali, tukar, dan donasi.</p>
-          <p>Identitas barang dan riwayatnya memberi tempat bagi setiap langkah yang tercatat. Valora merupakan karya INSYFEST 2026.</p>
+          <p>Identitas barang dan riwayatnya memberi tempat bagi setiap langkah yang tercatat.</p>
           <div className="information-hero-actions"><Link href="/cara-kerja" className="button button-primary">Pelajari cara kerja<ArrowUpRight size={18} aria-hidden="true" /></Link></div>
         </div>
         <div className="information-hero-photo"><Image src="/images/editorial/passport-books.png" width={1260} height={1260} sizes="(max-width: 639px) calc(100vw - 32px), 43vw" alt="Ilustrasi buku yang dapat digunakan dan diteruskan kepada pemilik berikutnya" /></div>

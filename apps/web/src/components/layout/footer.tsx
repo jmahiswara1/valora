@@ -40,7 +40,7 @@ export function SiteFooter({ appearance = 'classic' }: { appearance?: 'classic' 
           </nav>
         </div>
       </div>
-      <div className="footer-bottom"><span>Valora · INSYFEST 2026</span><span>Barang baik punya cerita berikutnya.</span></div>
+      <div className="footer-bottom"><span>Valora</span><span>Barang baik punya cerita berikutnya.</span></div>
     </div>
   </footer>;
 }

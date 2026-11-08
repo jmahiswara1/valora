@@ -45,7 +45,7 @@ try {
       ruleVersion: rubric.ruleVersion, policyVersion: rubric.policyVersion, recommendationVersion: rubric.recommendationVersion,
       questionConfig: { questions: rubric.questions, contextPrompt: rubric.contextPrompt } as unknown as Prisma.InputJsonValue,
       safetyConfig: { safetyQuestions: rubric.safetyQuestions } as unknown as Prisma.InputJsonValue,
-      effectiveAt: new Date('2026-09-28T00:00:00.000Z'), publicationReason: 'Rubrik awal MVP Insyfest 2026',
+      effectiveAt: new Date('2026-09-28T00:00:00.000Z'), publicationReason: 'Rubrik awal MVP Valora',
     }], skipDuplicates: true });
   }
 

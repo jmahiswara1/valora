@@ -39,14 +39,22 @@ async function readPassword() {
   });
 }
 
+const localFile = resolve(process.cwd(), 'apps/api/.env.local');
+try {
+  await readFile(localFile, 'utf8');
+  console.log('Konfigurasi lokal sudah ada; tidak ada database atau kredensial yang diubah.');
+  process.exit(0);
+} catch (error) {
+  if (error.code !== 'ENOENT') throw error;
+}
+
 const password = await readPassword();
 const admin = new Client({ host: '127.0.0.1', port: 5432, database: 'postgres', user: process.env.PG_ADMIN_USER ?? 'postgres', password });
 
 try {
   await admin.connect();
-  const role = 'valora_insyfest_app';
+  const role = 'valora_app';
   const roleExists = await admin.query('SELECT 1 FROM pg_roles WHERE rolname = $1', [role]);
-  const localFile = resolve(process.cwd(), 'apps/api/.env.local');
   if (roleExists.rowCount) {
     try {
       await readFile(localFile, 'utf8');
@@ -57,14 +65,14 @@ try {
     }
   } else {
     const appPassword = randomBytes(32).toString('hex');
-    await admin.query("CREATE ROLE valora_insyfest_app LOGIN CREATEDB PASSWORD '" + appPassword + "'");
+    await admin.query("CREATE ROLE valora_app LOGIN CREATEDB PASSWORD '" + appPassword + "'");
     for (const database of ['valora_dev', 'valora_test']) {
       const exists = await admin.query('SELECT 1 FROM pg_database WHERE datname = $1', [database]);
-      if (!exists.rowCount) await admin.query('CREATE DATABASE ' + database + ' OWNER valora_insyfest_app');
+      if (!exists.rowCount) await admin.query('CREATE DATABASE ' + database + ' OWNER valora_app');
     }
     const localRoot = resolve(process.cwd(), '.local');
     await mkdir(localRoot, { recursive: true });
-    const base = 'postgresql://valora_insyfest_app:' + appPassword + '@127.0.0.1:5432/';
+    const base = 'postgresql://valora_app:' + appPassword + '@127.0.0.1:5432/';
     const text = [
       'DATABASE_URL=' + base + 'valora_dev',
       'TEST_DATABASE_URL=' + base + 'valora_test',

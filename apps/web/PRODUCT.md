@@ -12,7 +12,7 @@ Pengguna Indonesia yang ingin mencatat, merawat, menjual kembali, menukar, atau 
 
 ## Product Purpose
 
-Menjaga nilai dan memperpanjang usia pakai barang melalui pencatatan, penilaian kondisi, Repair, Resell, Exchange, dan Donate. Produk merupakan karya INSYFEST 2026.
+Menjaga nilai dan memperpanjang usia pakai barang melalui pencatatan, penilaian kondisi, Repair, Resell, Exchange, dan Donate.
 
 ## Positioning
 

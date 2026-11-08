@@ -1,14 +1,14 @@
 # Dokumentasi Valora
 
-**Status:** spesifikasi MVP dan implementasi tahap 1–6 karya INSYFEST 2026, 2 Oktober 2026. O04–O09 telah ditutup sebagai baseline rancangan K01–K06; O11 tetap khusus sebelum operasi publik. Perbedaan Pencil diselesaikan saat implementasi UI sesuai PRD/docs. [Status kode tahap 6](21-stage6-implementation.md) memisahkan fitur yang telah berjalan dari kontrak tahap berikutnya.
+**Status:** spesifikasi MVP dan implementasi tahap 1–6 Valora, 2 Oktober 2026. O04–O09 telah ditutup sebagai baseline rancangan K01–K06; O11 tetap khusus sebelum operasi publik. Perbedaan Pencil diselesaikan saat implementasi UI sesuai PRD/docs. [Status kode tahap 6](21-stage6-implementation.md) memisahkan fitur yang telah berjalan dari kontrak tahap berikutnya.
 
-Dokumen ini menerjemahkan [PRD](PRD.md) menjadi keputusan, alur, aturan, model data, kontrak API, dan skenario penerimaan yang dapat diperiksa sebelum implementasi. Valora disiapkan untuk lomba INSYFEST 2026; PRD menjadi acuan perilaku produk. Kanvas Pencil Valora menjadi referensi visual; perbedaan atau kekosongan desain dicatat dalam audit dan diselesaikan langsung dalam UI yang dikodekan.
+Dokumen ini menerjemahkan [PRD](PRD.md) menjadi keputusan, alur, aturan, model data, kontrak API, dan skenario penerimaan yang dapat diperiksa sebelum implementasi. PRD menjadi acuan perilaku produk Valora. Kanvas Pencil Valora menjadi referensi visual; perbedaan atau kekosongan desain dicatat dalam audit dan diselesaikan langsung dalam UI yang dikodekan.
 
 | Dokumen | Isi |
 | --- | --- |
 | [PRD](PRD.md) | Tujuan, cakupan, aturan produk, dan kriteria penerimaan. |
 | [Pengembangan lokal](development.md) | Setup, konfigurasi, pemeriksaan, dan fixture demo. |
-| [00 — Konteks INSYFEST 2026](00-competition-context.md) | Fakta yang sudah diketahui, rincian lomba yang perlu panduan resmi, dan rencana demonstrasi sementara. |
+| [00 — Konteks produk Valora](00-product-context.md) | Tujuan pengembangan, rencana demonstrasi, dan kriteria kesiapan MVP. |
 | [01 — Keputusan produk](01-product-decisions.md) | Keputusan pengguna D01–D20 dan D22, baseline K01–K06, serta O11 untuk operasi publik. |
 | [02 — Alur dan status](02-flows-and-states.md) | Alur empat jalur, aktor, konfirmasi, dan rancangan state machine. |
 | [03 — Domain dan penilaian](03-domain-and-scoring.md) | Data, aturan Score, Assessment parsial, Passport, Impact, serta privasi. |
@@ -32,7 +32,7 @@ Dokumen ini menerjemahkan [PRD](PRD.md) menjadi keputusan, alur, aturan, model d
 | [21 — Implementasi tahap 6](21-stage6-implementation.md) | Auth/sesi seluruh 45 halaman, reautentikasi, pemulihan tindakan, konkurensi, jobs, pagination, serta bukti verifikasi. |
 | [Graphify — laporan dan graph](../graphify-out/GRAPH_REPORT.md) | Laporan awal dan tautan ke graph interaktif untuk menelusuri dependensi lintas modul. |
 
-**Asal keputusan:** D01–D20 dan D22 berasal dari PRD/diskusi pengguna. K01–K06 adalah baseline rancangan pra-kode yang diturunkan untuk menutup celah; dapat direvisi bersama tanpa mengubah snapshot historis diam-diam. O11 menunggu keputusan saat menyiapkan operasi publik, bukan prasyarat dokumen MVP lomba.
+**Asal keputusan:** D01–D20 dan D22 berasal dari PRD/diskusi pengguna. K01–K06 adalah baseline rancangan pra-kode yang diturunkan untuk menutup celah; dapat direvisi bersama tanpa mengubah snapshot historis diam-diam. O11 menunggu keputusan saat menyiapkan operasi publik, bukan prasyarat dokumen MVP.
 
 ## Pintu masuk implementasi
 

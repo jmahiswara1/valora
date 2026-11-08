@@ -1,6 +1,6 @@
 # Keputusan rincian MVP untuk implementasi
 
-**Status:** baseline spesifikasi 28 September 2026. Dokumen ini menutup rincian O04–O09 yang belum diputuskan pada [log keputusan](01-product-decisions.md). Ketentuan yang sebelumnya disetujui pengguna dalam PRD tetap lebih tinggi prioritasnya. Rincian baru di sini adalah keputusan rancangan untuk MVP lomba; perubahan setelah review dicatat sebagai revisi, bukan diterapkan diam-diam pada data historis.
+**Status:** baseline spesifikasi 28 September 2026. Dokumen ini menutup rincian O04–O09 yang belum diputuskan pada [log keputusan](01-product-decisions.md). Ketentuan yang sebelumnya disetujui pengguna dalam PRD tetap lebih tinggi prioritasnya. Rincian baru di sini adalah keputusan rancangan untuk MVP Valora; perubahan setelah review dicatat sebagai revisi, bukan diterapkan diam-diam pada data historis.
 
 ## O04 — Siklus Listing dan pembatalan
 
@@ -34,7 +34,7 @@ Koreksi fakta publik menggunakan event `CORRECTION` yang menunjuk event lama. Pr
 
 ## O08 — Akun, unggahan, dan retensi demo
 
-MVP memakai email dan kata sandi; email harus dibuktikan lewat tautan sekali pakai sebelum akun dapat mengirim chat, Offer, Listing, atau konfirmasi Transaction. Akun belum terverifikasi masih dapat menyimpan Item draft. Tautan verifikasi berlaku 30 menit, disimpan sebagai hash, dan hanya sekali pakai. Sesi berakhir saat logout; perubahan kata sandi mencabut sesi lain. Demo lomba menggunakan akun contoh terverifikasi dan data sintetis; penyedia pengiriman email ditentukan saat deployment demo.
+MVP memakai email dan kata sandi; email harus dibuktikan lewat tautan sekali pakai sebelum akun dapat mengirim chat, Offer, Listing, atau konfirmasi Transaction. Akun belum terverifikasi masih dapat menyimpan Item draft. Tautan verifikasi berlaku 30 menit, disimpan sebagai hash, dan hanya sekali pakai. Sesi berakhir saat logout; perubahan kata sandi mencabut sesi lain. Demo produk menggunakan akun contoh terverifikasi dan data sintetis; penyedia pengiriman email ditentukan saat deployment demo.
 
 Foto Item dan Listing menerima JPEG, PNG, atau WebP, maksimum 8 MiB per berkas dan delapan foto per Item. Lampiran Repair maksimum empat foto; chat MVP hanya teks. Server memeriksa isi berkas, bukan hanya ekstensi/MIME dari browser, melakukan pemrosesan gambar dan membuang metadata lokasi sebelum publikasi. Media privat diambil melalui izin API dan URL berumur pendek; gambar publik adalah salinan yang telah diproses. Berkas sementara yang tidak ditautkan dihapus setelah 24 jam. Unggahan yang gagal tidak membuat Item atau bukti setengah jadi.
 

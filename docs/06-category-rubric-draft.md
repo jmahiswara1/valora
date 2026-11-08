@@ -1,6 +1,6 @@
 # Rubrik kategori `score-v1` untuk MVP
 
-**Status:** spesifikasi implementasi O05–O06 untuk MVP lomba, 28 September 2026. Kontrak Score berasal dari PRD; rincian formulir dan kasus batas di bawah adalah baseline rancangan. [Matriks moderasi kasus awal](09-moderation-policy-draft.md) sudah disetujui. Semua konfigurasi yang dipakai Assessment disimpan sebagai versi immutable.
+**Status:** spesifikasi implementasi O05–O06 untuk MVP Valora, 28 September 2026. Kontrak Score berasal dari PRD; rincian formulir dan kasus batas di bawah adalah baseline rancangan. [Matriks moderasi kasus awal](09-moderation-policy-draft.md) sudah disetujui. Semua konfigurasi yang dipakai Assessment disimpan sebagai versi immutable.
 
 ## Kontrak penilaian yang sudah diputuskan PRD
 

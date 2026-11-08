@@ -24,8 +24,8 @@
 | D16 | Sistem visual MVP memakai warna dan tata letak Pencil `v1`; warna teks warning diperkuat dan badge “TERVERIFIKASI” tanpa makna nyata dihapus. Tipografi diperbarui pada 3 Oktober 2026 sesuai pilihan pengguna menjadi `Plus Jakarta Sans`, dengan teks 500, label/tombol 600, dan judul 700. | PRD dan [design system](08-design-system.md) menjadi sumber token; perbedaan pada Pencil ditangani langsung saat UI dikodekan. |
 | D17 | Owner baru menerima ringkasan Repair historis; foto bukti dan catatan rinci owner lama hanya diteruskan bila sengaja dibagikan. | Field privat lama tetap pada pembuatnya dan tidak bocor lewat Passport/API owner baru. |
 | D18 | Moderasi kategori membedakan kondisi terlarang, kasus yang perlu review khusus admin, dan kondisi yang boleh ditawarkan dengan pengungkapan jelas. Informasi keselamatan wajib yang belum lengkap menahan Listing. | Setiap Listing tetap melalui review admin; Score tinggi tidak mengesampingkan larangan atau kebutuhan informasi. [Matriks kasus awal per kategori](09-moderation-policy-draft.md) sudah disetujui. |
-| D19 | Valora adalah proyek lomba INSYFEST 2026, dengan MVP dan demonstrasi sebagai target karya. | Prioritas dan paket pengumpulan mengikuti [konteks lomba](00-competition-context.md) serta panduan resmi ketika diberikan; kesiapan operasi komersial diputuskan terpisah. |
-| D20 | Panduan lomba resmi tidak menjadi syarat untuk melanjutkan spesifikasi dan implementasi MVP yang sudah disepakati. | Rincian kategori, tenggat, dan format pengumpulan yang belum diketahui tetap tidak diklaim sebagai fakta; bila panduan diberikan kemudian, penyesuaian dicatat eksplisit. |
+| D19 | Valora dikembangkan sebagai produk, dengan MVP dan demonstrasi sebagai target pengembangan. | Prioritas mengikuti [konteks produk](00-product-context.md) dan kebutuhan pengguna; kesiapan operasi komersial diputuskan terpisah. |
+| D20 | Spesifikasi dan implementasi MVP mengikuti kebutuhan produk yang sudah disepakati. | Perubahan ruang lingkup dicatat secara eksplisit dalam dokumen dan log keputusan. |
 | D22 | Kanvas Pencil tetap sebagai referensi visual dan tidak perlu diedit sebelum implementasi. | Perbedaan token, copy, layout mobile, dan state diselesaikan langsung saat UI dikodekan dengan PRD/docs sebagai acuan perilaku. |
 
 ## Batas transaksi di luar platform
@@ -51,7 +51,7 @@ Untuk Exchange, tidak ada tambahan uang dan masing-masing pihak menyerahkan satu
 | --- | --- | --- |
 | O11 | Sebelum operasi publik untuk transaksi nyata | Target kinerja, penyedia AI, hosting, backup, observabilitas, batas biaya, pemberitahuan privasi, dan review aturan perdagangan Indonesia yang berlaku. Detail deployment demo dapat dipilih dari kebutuhan karya tanpa mengklaim kesiapan operasi publik. |
 
-K01–K06 menutup keputusan operasional yang menghalangi skema dan API MVP. [Model data](11-data-model.md), [kontrak API](12-api-contract.md), serta [skenario penerimaan](13-acceptance-and-demo.md) menjadi turunan implementasi. Kanvas Pencil tidak perlu diubah; perbaikan Landing mobile, token, copy, dan state yang kurang dikerjakan saat implementasi UI berdasarkan PRD serta [audit desain](04-pencil-design-review.md). Panduan lomba tidak menghambat spesifikasi MVP.
+K01–K06 menutup keputusan operasional yang menghalangi skema dan API MVP. [Model data](11-data-model.md), [kontrak API](12-api-contract.md), serta [skenario penerimaan](13-acceptance-and-demo.md) menjadi turunan implementasi. Kanvas Pencil tidak perlu diubah; perbaikan Landing mobile, token, copy, dan state yang kurang dikerjakan saat implementasi UI berdasarkan PRD serta [audit desain](04-pencil-design-review.md).
 
 ## Keputusan implementasi tahap 4 — 1 Oktober 2026
 
