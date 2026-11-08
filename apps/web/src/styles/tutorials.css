@@ -27,13 +27,17 @@
 .tutorial-resume > svg, .tutorial-closed > svg { flex-shrink: 0; }
 .tutorial-resume > div { flex: 1; }
 .tutorial-resume p, .tutorial-closed p { margin-bottom: 12px; }
-.tutorial-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-block: 24px; }
+.tutorial-tabs { margin-block: 24px; }
 .tutorial-session-list { border-top: 1px solid var(--line); margin-block: 24px; }
 .tutorial-session-row { display: flex; align-items: center; gap: 24px; padding: 28px 12px; border-bottom: 1px solid var(--line); text-decoration: none; }
 .tutorial-session-row:hover { background: #F8F9F6; }
 .tutorial-session-row > div { flex: 1; }
 .tutorial-session-row h2 { margin-block: 8px; }
 .tutorial-session-row p { margin: 0; font-size: .875rem; }
+.account-main .tutorial-index-page { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; width: 100%; max-width: none; margin: 0; }
+.account-main .tutorial-index-page > .app-heading, .tutorial-index-page .tutorial-tabs, .tutorial-index-page .tutorial-session-list { margin: 0; }
+.tutorial-index-page .tutorial-session-row { gap: 16px; padding: 16px 0; }
+.tutorial-index-page .tutorial-session-row h2 { margin-block: 4px; }
 .tutorial-progress { display: flex; align-items: center; justify-content: space-between; gap: 24px; font-size: .875rem; margin-block: 24px 32px; }
 .tutorial-progress progress { width: 35%; max-width: 300px; height: 6px; border: none; border-radius: 4px; overflow: hidden; accent-color: var(--green); background: var(--sage); }
 .tutorial-progress progress::-webkit-progress-bar { background: var(--sage); }

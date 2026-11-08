@@ -12,6 +12,7 @@ import { AccountError } from '@/features/account/error';
 import { AccountSkeleton } from '@/features/account/skeleton';
 import { useNotificationRead, useNotificationSummary } from './hooks';
 import { NotificationRow } from './row';
+import { AccountFilters } from '@/features/account/filter-controls';
 
 const categories = [
   { value: 'all', label: 'Semua aktivitas', Icon: ListFilter },
@@ -51,18 +52,10 @@ export function NotificationsPage() {
     <section className="notifications-inbox" aria-label="Pusat notifikasi">
       <div className="notification-filters">
         <div className="notification-filter-toolbar">
-          <div className="notification-status-filters" role="group" aria-label="Status notifikasi">
-            {(['all', 'unread'] as const).map(value => <button type="button" key={value} aria-pressed={status === value} onClick={() => chooseStatus(value)}>
-              {value === 'all' ? 'Semua' : 'Belum dibaca'}{value === 'unread' && unreadCount !== undefined && <span>{unreadCount > 99 ? '99+' : unreadCount}</span>}
-            </button>)}
-          </div>
+          <AccountFilters className="notification-status-filters" label="Status notifikasi" value={status} onChange={chooseStatus} options={[{ value: 'all', label: 'Semua' }, { value: 'unread', label: 'Belum dibaca', count: unreadCount === undefined ? undefined : unreadCount > 99 ? '99+' : unreadCount }]} />
           <p className="notification-summary" role="status">{unreadCount === undefined ? summary.isError ? 'Ringkasan belum tersedia' : 'Memuat ringkasan…' : unreadCount ? `${unreadCount.toLocaleString('id-ID')} belum dibaca` : 'Semua sudah dibaca'}</p>
         </div>
-        <div className="notification-category-filters" role="group" aria-label="Kategori notifikasi">
-          {categories.map(({ value, label, Icon }) => <button type="button" key={value} aria-pressed={category === value} onClick={() => { focus.current = null; setCategory(value); }}>
-            <Icon size={16} strokeWidth={1.7} aria-hidden="true" />{label}
-          </button>)}
-        </div>
+        <AccountFilters className="notification-category-filters" variant="chips" label="Kategori notifikasi" value={category} options={categories} onChange={value => { focus.current = null; setCategory(value); }} />
       </div>
       <div className="notification-results" aria-busy={rowsQuery.isFetching}>
         {summary.isError && <AccountError retry={() => summary.refetch()}>Jumlah belum dibaca gagal dimuat.</AccountError>}

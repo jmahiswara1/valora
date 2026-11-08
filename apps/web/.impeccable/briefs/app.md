@@ -4,6 +4,8 @@ Mode Operate. Code-led expansion of the approved Valora white/forest/cream Plus 
 
 ## Direction
 
+Ruang saya controls — 2026-11-08: the five first-group navigation destinations and their descendants opt into `data-workspace="personal"` on AccountShell's main. Shared control tokens/styles live in `src/styles/personal-controls.css`; native `AccountFilters` groups serve notification status/categories and tutorial list filtering. Use 44px pill actions (14px/600, 18px icons), 48px single-line fields (16px, 10px radius), 120px textareas and 2px green keyboard focus. Small actions retain 44px targets; destructive actions keep Danger. Primary tabs use Forest/White on Cream, secondary chips use Soft Sage/Forest, and overflow stays inside the filter group. Heading sizes are 32px/26px desktop/mobile. Textareas in tutorial catalog/questions/review consume the existing textarea class. Field label/hint spacing no longer compounds page-specific margins. Existing layouts, session/API/validation rules and confirmation flows remain in place. Public/admin and Aktivitas Market destinations do not opt in. Source-level and browser comparisons cover main/nested pages, shared selected styles, keyboard filtering, form validation, Impact selection, disabled/hover behavior, and 320/390/768/1440px layouts.
+
 Unframed white workspace with a Cream fixed sidebar, shadowless sticky toolbar, flat rounded photos and task panels. Plus Jakarta Sans retains the established 500/600/700 weights and brand colors. Fixed task headings, readable 16px fields, explicit statuses, and one primary action per group. The implementation carries the existing visual world into the account area.
 
 ## First viewport

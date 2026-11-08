@@ -906,6 +906,12 @@ Radii tersebut mengikuti peran selector yang dikirim. Advisory 10/14/9/5px adala
 
 ## Components
 
+### Ruang saya controls
+
+Ringkasan, Notifikasi, Barang saya, Panduan saya, Impact saya, dan halaman turunannya memakai `data-workspace="personal"` pada konten AccountShell. `src/styles/personal-controls.css` menjadi sumber gaya kontrol dalam scope ini: tombol pill dengan target minimal 44px, teks 14px/600, ikon 18px, field satu baris 48px dengan radius 10px dan teks 16px, serta fokus keyboard hijau 2px. Primary memakai Forest/White, secondary White/Line, quiet transparan dengan hover Soft Sage, dan destructive tetap memakai Danger. Tombol kecil mempertahankan target 44px dengan padding lebih ringkas. Textarea minimal 120px. Judul utama 32px pada desktop dan 26px melalui 600px.
+
+`AccountFilters` di `src/features/account/filter-controls.tsx` dipakai oleh status Notifikasi, kategori Notifikasi, dan filter Panduan. Varian `tabs` memakai track Cream dan pilihan Forest/White; varian `chips` memakai pilihan Soft Sage/Forest untuk filter sekunder. Keduanya memakai tombol native dengan `aria-pressed`, target 44px, label 14px/600 dan overflow horizontal dalam kelompok. Semantik tetap kelompok filter, dengan perilaku Tab/Enter/Space native. Layout halaman, API, payload, validasi, serta konfirmasi tindakan tetap mengikuti implementasinya. Header publik, admin, dan kelompok Aktivitas Market tidak menerima scope ini.
+
 ### Buttons
 
 Aksi ringkas dengan bentuk pill, bobot label, dan teks Indonesia yang jelas. Token komponen menentukan latar, warna teks, serta padding.

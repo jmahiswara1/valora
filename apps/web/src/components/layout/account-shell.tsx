@@ -82,6 +82,7 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
   if (session.state === 'UNAVAILABLE') return <div className="account-gate"><Notice kind="error">Koneksi sesi belum tersedia.</Notice><Button onClick={() => session.refresh()}>Coba lagi</Button></div>;
   if (session.state !== 'AUTHENTICATED' || session.verifiedPath !== pathname || !me.data) return <div className="account-gate" role="status">Menyiapkan akun…</div>;
   const user = me.data;
+  const personalWorkspace = pathname === '/app' || sections[0].entries.some(({ href }) => href !== '/app' && (pathname === href || pathname.startsWith(href + '/')));
   return <div className={`account-shell${pathname === '/app/pesan' || pathname.startsWith('/app/pesan/') ? ' account-shell-messages' : ''}`}>
     <a className="account-skip" href="#account-main">Langsung ke konten</a>
     <aside className="account-sidebar"><Link href="/" className="wordmark">valora</Link><AccountNavigation /><div className="account-sidebar-bottom">
@@ -90,7 +91,7 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
       <button type="button" className="account-profile-link" onClick={() => session.logout()}><LogOut size={18} />Keluar</button>
     </div></aside>
     <div className="account-workspace"><header className="account-toolbar"><div className="account-toolbar-start"><AccountDrawer onOpen={() => setAccountMenuOpen(false)} /><Breadcrumbs /><Link href="/app" className="wordmark account-mobile-wordmark">valora</Link></div><div className="account-toolbar-end"><Link href="/market" className="account-market-link" aria-label="Market" title="Market" onClick={() => setAccountMenuOpen(false)}><span>Market</span> <ArrowUpRight className="account-market-arrow" size={16} aria-hidden="true" /><Store className="account-market-icon" size={19} aria-hidden="true" /></Link><HeaderAccountActions context="account" open={accountMenuOpen} onOpenChange={setAccountMenuOpen} /></div></header>
-      <main id="account-main" className="account-main" tabIndex={-1}>{!user.emailVerifiedAt && <div className="account-verification"><Notice>Alamat email belum diverifikasi. <Link href={`/verifikasi-email?email=${encodeURIComponent(user.email)}`}>Kirim ulang tautan</Link>. Kamu tetap bisa menyimpan barang.</Notice></div>}{children}</main>
+      <main id="account-main" className="account-main" data-workspace={personalWorkspace ? 'personal' : undefined} tabIndex={-1}>{!user.emailVerifiedAt && <div className="account-verification"><Notice>Alamat email belum diverifikasi. <Link href={`/verifikasi-email?email=${encodeURIComponent(user.email)}`}>Kirim ulang tautan</Link>. Kamu tetap bisa menyimpan barang.</Notice></div>}{children}</main>
     </div>
   </div>;
 }

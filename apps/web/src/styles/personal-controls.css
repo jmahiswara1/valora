@@ -1,0 +1,63 @@
+/* Shared control language for the five Ruang saya destinations and their children. */
+.account-main[data-workspace="personal"] {
+  --control-height: 44px;
+  --control-field-height: 48px;
+  --control-radius: 999px;
+  --control-field-radius: 10px;
+  --control-font-size: .875rem;
+  --control-line: #CAD4C7;
+  --control-hover: #EDF1EA;
+}
+.account-main[data-workspace="personal"] .button {
+  min-height: var(--control-height); padding: 10px 18px; gap: 8px; border: 1px solid transparent;
+  border-radius: var(--control-radius); font-size: var(--control-font-size); font-weight: 600; line-height: 1.4;
+  text-decoration: none; box-shadow: none;
+}
+.account-main[data-workspace="personal"] .button > svg { width: 18px; height: 18px; flex-shrink: 0; }
+.account-main[data-workspace="personal"] .button-small { min-height: var(--control-height); padding-inline: 14px; }
+.account-main[data-workspace="personal"] .button-primary { background: var(--forest); color: white; }
+.account-main[data-workspace="personal"] .button-primary:hover { background: var(--green); }
+.account-main[data-workspace="personal"] .button-secondary { border-color: var(--control-line); background: white; color: var(--forest); }
+.account-main[data-workspace="personal"] .button-secondary:hover { border-color: var(--green); background: var(--control-hover); }
+.account-main[data-workspace="personal"] .button-quiet { background: transparent; color: var(--forest); }
+.account-main[data-workspace="personal"] .button-quiet:hover { background: var(--control-hover); text-decoration: none; }
+.account-main[data-workspace="personal"] .button-danger { background: var(--danger); color: white; }
+.account-main[data-workspace="personal"] .button-danger:hover { background: #842D21; }
+.account-main[data-workspace="personal"] .button:disabled { opacity: .55; cursor: not-allowed; }
+.account-main[data-workspace="personal"] :is(.input, .select, .textarea) {
+  min-height: var(--control-field-height); border-radius: var(--control-field-radius); border-color: var(--control-line);
+  background-color: white; color: var(--forest); font-size: 1rem; line-height: 1.5; padding: 11px 14px;
+}
+.account-main[data-workspace="personal"] .textarea { min-height: 120px; resize: vertical; }
+.account-main[data-workspace="personal"] :is(.input, .textarea)::placeholder { color: var(--muted); }
+.account-main[data-workspace="personal"] :is(.input, .select, .textarea):focus { border-color: var(--green); box-shadow: none; }
+.account-main[data-workspace="personal"] :is(.input, .select, .textarea)[aria-invalid="true"] { border-color: var(--danger); }
+.account-main[data-workspace="personal"] :is(.button, .input, .select, .textarea):focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+.account-main[data-workspace="personal"] .field > label { margin: 0; font-size: .875rem; font-weight: 600; }
+.account-main[data-workspace="personal"] :is(.field-hint, .field-error) { margin: 0; font-size: .8125rem; line-height: 1.6; }
+.account-main[data-workspace="personal"] .form-stack > .field + .field { margin-top: 0; }
+.account-main[data-workspace="personal"] :is(.app-heading, .account-page-heading, .notifications-heading, .item-detail-heading) h1 { font-size: 2rem; line-height: 1.2; letter-spacing: -.03em; }
+.account-main[data-workspace="personal"] :is(.app-heading, .account-page-heading, .notifications-heading) p { margin-top: 9px; font-size: .9375rem; line-height: 1.6; }
+.account-main[data-workspace="personal"] .account-page-heading h1 { margin: 0; }
+.account-main[data-workspace="personal"] input[type="file"] { max-width: 100%; color: var(--muted); font-size: var(--control-font-size); }
+.account-main[data-workspace="personal"] input[type="file"]::file-selector-button { min-height: var(--control-height); margin-right: 12px; padding: 10px 14px; border: 1px solid var(--control-line); border-radius: var(--control-radius); background: white; color: var(--forest); font: inherit; font-weight: 600; line-height: 1.4; cursor: pointer; }
+.account-main[data-workspace="personal"] input[type="file"]::file-selector-button:hover { border-color: var(--green); background: var(--control-hover); }
+.account-main[data-workspace="personal"] .input[type="file"] { padding: 6px; }
+.account-main[data-workspace="personal"] .account-filters { display: flex; align-items: center; gap: 4px; width: max-content; max-width: 100%; padding: 4px; overflow-x: auto; border-radius: var(--control-radius); background: var(--cream); scrollbar-width: thin; scrollbar-color: var(--control-line) transparent; }
+.account-main[data-workspace="personal"] .account-filters > button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; flex-shrink: 0; min-height: var(--control-height); padding: 10px 16px; border: 1px solid transparent; border-radius: var(--control-radius); background: transparent; color: var(--muted); font: inherit; font-size: var(--control-font-size); font-weight: 600; line-height: 1.4; white-space: nowrap; }
+.account-main[data-workspace="personal"] .account-filters > button > svg { flex-shrink: 0; }
+.account-main[data-workspace="personal"] .account-filters > button:hover { background: var(--control-hover); color: var(--forest); }
+.account-main[data-workspace="personal"] .account-filters > button[aria-pressed="true"] { background: var(--forest); color: white; }
+.account-main[data-workspace="personal"] .account-filters > button:focus-visible { outline: 2px solid var(--green); outline-offset: -3px; }
+.account-main[data-workspace="personal"] .account-filters--chips { background: transparent; padding: 0; }
+.account-main[data-workspace="personal"] .account-filters--chips > button[aria-pressed="true"] { background: var(--control-hover); color: var(--forest); }
+.account-main[data-workspace="personal"] .account-filter-count { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; min-height: 22px; padding-inline: 6px; border-radius: var(--control-radius); background: var(--sage); color: var(--forest); font-size: .75rem; font-variant-numeric: tabular-nums; }
+@media (max-width: 600px) {
+  .account-main[data-workspace="personal"] :is(.app-heading, .account-page-heading, .notifications-heading, .item-detail-heading) h1 { font-size: 1.625rem; }
+}
+@media (forced-colors: active) {
+  .account-main[data-workspace="personal"] .account-filters > button[aria-pressed="true"] { outline: 2px solid Highlight; outline-offset: -3px; color: Highlight; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .account-main[data-workspace="personal"] :is(.button, .input, .select, .textarea) { transition: none; }
+}
