@@ -60,7 +60,7 @@ body:has(.valora-surface) { background: var(--white); }
 .valora-surface .wordmark span { margin: 0; font-size: 9px; letter-spacing: .06em; max-width: 80px; line-height: 1.45; }
 .valora-surface .header-nav { gap: 28px; font-size: 13px; }
 .valora-surface .header-nav a[aria-current="page"] { font-weight: 700; text-decoration: underline; text-underline-offset: 6px; }
-.valora-surface .header-icon-link::before, .valora-surface .header-menu-button::before { border-color: var(--surface-line); }
+:where(.valora-surface) .header-icon-link::before, :where(.valora-surface) .header-menu-button::before { border-color: var(--surface-line); }
 .valora-surface .header-menu-button { border-radius: var(--radius-pill); }
 .valora-surface .header-mobile-nav { gap: 6px; padding-bottom: 18px; }
 .valora-surface .header-mobile-nav a { padding: 11px 15px; border: 0; border-radius: var(--radius-control); background: var(--surface-subtle); font-size: 14px; }

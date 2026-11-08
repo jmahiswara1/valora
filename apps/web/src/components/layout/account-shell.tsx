@@ -1,7 +1,7 @@
 'use client';
 
-import { NotificationBell } from '@/features/notifications/bell';
-import { Search, BookOpen, LayoutDashboard, Bell, Heart, Package, Leaf, Store, Handshake, ReceiptText, MessageCircle, Menu, X, Settings, ShieldCheck, LogOut, ChevronRight, ArrowUpRight, ChevronDown } from 'lucide-react';
+import { HeaderAccountActions } from './header-account-actions';
+import { Search, BookOpen, LayoutDashboard, Bell, Heart, Package, Leaf, Store, Handshake, ReceiptText, MessageCircle, Menu, X, Settings, ShieldCheck, LogOut, ChevronRight, ArrowUpRight } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useSession, useMe } from '@/lib/session';
@@ -48,7 +48,7 @@ function AccountNavigation({ onNavigate }: { onNavigate?: () => void }) {
   </div>)}</nav>;
 }
 
-function AccountDrawer() {
+function AccountDrawer({ onOpen }: { onOpen: () => void }) {
   const pathname = usePathname(); const session = useSession(); const me = useMe();
   const [openPath, setOpenPath] = useState<string | null>(null);
   const dialog = useRef<HTMLDialogElement>(null); const trigger = useRef<HTMLButtonElement>(null);
@@ -59,7 +59,7 @@ function AccountDrawer() {
   }, [open]);
   useEffect(() => { const media = window.matchMedia('(min-width: 1024px)'); const close = () => { if (media.matches) setOpenPath(null); }; media.addEventListener('change', close); return () => media.removeEventListener('change', close); }, []);
   return <>
-    <button ref={trigger} type="button" className="account-icon-button account-menu-trigger" aria-label="Buka navigasi akun" aria-expanded={open} aria-controls="account-drawer" onClick={() => setOpenPath(pathname)}><Menu size={22} /></button>
+    <button ref={trigger} type="button" className="account-icon-button account-menu-trigger" aria-label="Buka navigasi akun" aria-expanded={open} aria-controls="account-drawer" onClick={() => { onOpen(); setOpenPath(pathname); }}><Menu size={22} /></button>
     <dialog ref={dialog} id="account-drawer" className="account-drawer" aria-labelledby="account-drawer-title" onCancel={(event) => { event.preventDefault(); setOpenPath(null); }} onClick={(event) => { if (event.target === event.currentTarget) { const bounds = event.currentTarget.getBoundingClientRect(); if (event.clientX > bounds.right || event.clientY > bounds.bottom || event.clientY < bounds.top) setOpenPath(null); } }}>
       <div className="account-drawer-top"><Link href="/app" className="wordmark" id="account-drawer-title" onClick={() => setOpenPath(null)}>valora</Link><button type="button" className="account-icon-button" aria-label="Tutup navigasi" onClick={() => setOpenPath(null)}><X size={21} /></button></div>
       <AccountNavigation onNavigate={() => setOpenPath(null)} /><Link href="/market" className="account-profile-link account-drawer-market" onClick={() => setOpenPath(null)}><Store size={19} aria-hidden="true" />Jelajahi Market</Link>
@@ -75,6 +75,7 @@ function Breadcrumbs() {
 
 export function AccountShell({ children }: { children: React.ReactNode }) {
   const router = useRouter(); const pathname = usePathname(); const session = useSession(); const me = useMe();
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   useEffect(() => { if (session.state === 'GUEST') router.replace('/masuk?next=' + encodeURIComponent(pathname)); }, [session.state, pathname, router]);
   if (session.state === 'LOGOUT_PENDING') return <div className="account-gate"><Notice>Permintaan keluar belum terkonfirmasi. Data privat disembunyikan.</Notice><Button disabled={session.logoutBusy} onClick={() => session.logout()}>Coba keluar lagi</Button></div>;
   if (session.state === 'RESTRICTED') return <div className="account-gate"><Notice kind="error">Akun ini tidak dapat digunakan.</Notice><Button onClick={() => session.logout()}>Keluar</Button></div>;
@@ -88,7 +89,7 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
       {user.role === 'ADMIN' && <Link href="/app/admin" className="account-profile-link"><ShieldCheck size={18} />Area admin</Link>}
       <button type="button" className="account-profile-link" onClick={() => session.logout()}><LogOut size={18} />Keluar</button>
     </div></aside>
-    <div className="account-workspace"><header className="account-toolbar"><div className="account-toolbar-start"><AccountDrawer /><Breadcrumbs /><Link href="/app" className="wordmark account-mobile-wordmark">valora</Link></div><div className="account-toolbar-end"><Link href="/market" className="account-market-link" aria-label="Market" title="Market"><span>Market</span> <ArrowUpRight className="account-market-arrow" size={16} aria-hidden="true" /><Store className="account-market-icon" size={19} aria-hidden="true" /></Link><NotificationBell appearance="account" onOpen={() => document.getElementById('account-user-menu')?.hidePopover()} /><Link href="/app/favorit" className="account-icon-button" prefetch={false} aria-label="Favorit" title="Favorit" aria-current={pathname === '/app/favorit' ? 'page' : undefined}><Heart size={19} strokeWidth={1.7} aria-hidden="true" /></Link><button type="button" className="account-user-trigger" popoverTarget="account-user-menu" aria-label="Buka menu akun"><ProfileAvatar photoUrl={user.profilePhotoUrl} displayName={user.displayName} className="account-avatar" /><ChevronDown size={15} aria-hidden="true" /></button><div id="account-user-menu" className="account-user-menu" popover="auto"><p>{user.displayName}</p><Link href="/app/profil" onClick={() => document.getElementById('account-user-menu')?.hidePopover()}><Settings size={17} />Profil saya</Link><button type="button" onClick={() => session.logout()}><LogOut size={17} />Keluar</button></div></div></header>
+    <div className="account-workspace"><header className="account-toolbar"><div className="account-toolbar-start"><AccountDrawer onOpen={() => setAccountMenuOpen(false)} /><Breadcrumbs /><Link href="/app" className="wordmark account-mobile-wordmark">valora</Link></div><div className="account-toolbar-end"><Link href="/market" className="account-market-link" aria-label="Market" title="Market" onClick={() => setAccountMenuOpen(false)}><span>Market</span> <ArrowUpRight className="account-market-arrow" size={16} aria-hidden="true" /><Store className="account-market-icon" size={19} aria-hidden="true" /></Link><HeaderAccountActions context="account" open={accountMenuOpen} onOpenChange={setAccountMenuOpen} /></div></header>
       <main id="account-main" className="account-main" tabIndex={-1}>{!user.emailVerifiedAt && <div className="account-verification"><Notice>Alamat email belum diverifikasi. <Link href={`/verifikasi-email?email=${encodeURIComponent(user.email)}`}>Kirim ulang tautan</Link>. Kamu tetap bisa menyimpan barang.</Notice></div>}{children}</main>
     </div>
   </div>;

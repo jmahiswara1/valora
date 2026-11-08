@@ -22,15 +22,10 @@
 .account-workspace { grid-column: 2; }
 .account-toolbar { height: 76px; padding-inline: 24px; position: sticky; top: 0; z-index: 30; display: flex; justify-content: space-between; align-items: center; gap: 16px; background: #fff; border: 0; box-shadow: none; }
 .account-toolbar-start, .account-toolbar-end { display: flex; align-items: center; gap: 18px; }
+.account-toolbar-end { --line: var(--account-line); flex-shrink: 0; }
 .account-breadcrumbs { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; font-size: .8125rem; color: var(--muted); }
 .account-breadcrumbs [aria-current] { color: var(--forest); }
 .account-market-link { display: flex; align-items: center; gap: 6px; font-size: .875rem; }
-.account-user-trigger { display: flex; align-items: center; gap: 7px; padding: 4px; border: 0; background: transparent; border-radius: 100px; cursor: pointer; }
-.account-user-trigger:hover { background: #EDF1EA; }
-.account-user-menu { position: fixed; inset: 68px 24px auto auto; margin: 0; width: 240px; padding: 10px; background: #fff; border: 1px solid #E2E8DF; border-radius: 14px; color: #1B3A28; }
-.account-user-menu p { padding: 8px 10px 12px; font-size: .875rem; overflow-wrap: anywhere; }
-.account-user-menu a, .account-user-menu button { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 10px; background: transparent; border: 0; border-radius: 8px; color: inherit; font: inherit; font-size: .875rem; text-align: left; text-decoration: none; }
-.account-user-menu :is(a, button):hover { background: #EDF1EA; }
 .account-icon-button { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 50%; background: transparent; color: #1B3A28; cursor: pointer; }
 .account-icon-button:hover { background: #EDF1EA; }
 .account-menu-trigger, .account-mobile-wordmark { display: none; }
@@ -302,8 +297,6 @@ body:has(.account-shell) .transaction-dialog .input { border-radius: 10px; font-
   .account-breadcrumbs { display: none; }
   .account-mobile-wordmark { display: inline; font-size: 1.6rem; }
   .account-market-link { font-size: .8125rem; gap: 3px; }
-  .account-user-trigger > svg { display: none; }
-  .account-user-menu { right: 16px; }
   .account-main { padding: 20px 16px 40px; }
   .account-main .app-heading { flex-direction: column; align-items: start; gap: 18px; }
   .account-main .app-heading h1 { font-size: 1.625rem; }

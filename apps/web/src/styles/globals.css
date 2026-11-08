@@ -97,13 +97,13 @@ small, .mono, .meta { font-family: var(--font-ui); font-size: .74rem; letter-spa
 .header-icon-link:focus-visible, .header-menu-button:focus-visible { outline: 3px solid var(--green); outline-offset: 3px; }
 .header-account { position: relative; }
 .header-account-trigger[aria-expanded="true"]::before { border-color: var(--green); background: var(--cream); }
-.header-account-popover { position: absolute; top: calc(100% + 10px); right: 0; z-index: 60; display: grid; gap: 8px; width: min(280px, calc(100vw - 32px)); padding: 10px; border: 1px solid var(--line); border-radius: 16px; background: var(--white); color: var(--forest); }
+.header-account-popover { position: absolute; top: calc(100% + 10px); right: 0; z-index: 60; display: grid; gap: 8px; width: min(280px, calc(100vw - 32px)); max-height: calc(100dvh - 96px); overflow-y: auto; overscroll-behavior: contain; padding: 10px; border: 1px solid var(--line); border-radius: 16px; background: var(--white); color: var(--forest); }
 .header-account-popover[hidden] { display: none; }
 .account-menu-identity { display: grid; gap: 4px; padding: 12px; border-radius: 11px; background: var(--cream); }
-.account-menu-identity strong { font-size: .9rem; font-weight: 600; }
+.account-menu-identity strong { font-size: .9rem; font-weight: 600; overflow-wrap: anywhere; }
 .account-menu-identity span { color: var(--muted); font-size: .75rem; line-height: 1.5; overflow-wrap: anywhere; }
 .account-menu-actions { display: grid; gap: 2px; }
-.account-menu-actions a, .account-menu-actions button { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 42px; padding: 10px 12px; border: 0; border-radius: 10px; background: transparent; color: inherit; font: inherit; font-size: .86rem; text-align: left; text-decoration: none; cursor: pointer; }
+.account-menu-actions a, .account-menu-actions button { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 10px 12px; border: 0; border-radius: 10px; background: transparent; color: inherit; font: inherit; font-size: .86rem; text-align: left; text-decoration: none; cursor: pointer; }
 .account-menu-actions a:hover, .account-menu-actions button:hover { background: var(--sage); text-decoration: none; }
 .account-menu-actions a:focus-visible, .account-menu-actions button:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
 .account-menu-actions button:disabled { opacity: .56; cursor: not-allowed; }
@@ -325,7 +325,7 @@ small, .mono, .meta { font-family: var(--font-ui); font-size: .74rem; letter-spa
 }
 
 @media (max-width: 370px) {
-  .header-account-popover { right: -48px; }
+  .site-header .header-account-popover { right: -48px; }
   .actions-grid { grid-template-columns: 1fr; }
   .action-tile { border-right: 0; border-bottom: 1px solid var(--line); min-height: 0; }
 }

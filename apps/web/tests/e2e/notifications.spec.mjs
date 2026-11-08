@@ -9,13 +9,13 @@ const seed = count => Array.from({ length: count }, (_, i) => ({ id: id(i + 10),
   title: i % 2 ? 'Pengingat serah terima' : 'Penawaran baru', message: i % 2 ? 'Periksa serah terima dan konfirmasi.' : 'Ada penawaran yang menunggu tanggapanmu.',
   itemTitle: `Barang ${i + 1}`, target: { kind: i % 2 ? 'TRANSACTION' : 'OFFER', id: id(100 + i) }, createdAt: new Date(Date.UTC(2026, 9, 5, 12, 0, -i)).toISOString(), readAt: null }));
 async function mock(page, count = 6, guest = false) {
-  const state = { rows: seed(count), guest, userId: user.id, requests: [], failSummary: false, failList: false, failMore: false, failMutation: false, commitThenFail: false, delay: 0, csrfDelay: 0 };
+  const state = { rows: seed(count), guest, userId: user.id, profile: {}, requests: [], failSummary: false, failList: false, failMore: false, failMutation: false, commitThenFail: false, delay: 0, csrfDelay: 0 };
   const ok = (route, data, meta) => route.fulfill({ json: { data, ...(meta ? { meta } : {}) } });
   const fail = route => route.fulfill({ status: 503, json: { error: { code: 'DEPENDENCY_UNAVAILABLE', message: 'Koneksi notifikasi terputus.' } } });
   await page.route('**/api/v1/**', async route => {
     const request = route.request(), url = new URL(request.url()), path = url.pathname.slice('/api/v1'.length), method = request.method();
     state.requests.push({ path, method, search: url.search, csrf: request.headers()['x-csrf-token'] });
-    if (path === '/auth/session') return ok(route, { state: state.guest ? 'GUEST' : 'AUTHENTICATED', reason: null, serverTime: new Date().toISOString(), sessionId: state.guest ? null : state.userId, user: state.guest ? null : { ...user, id: state.userId }, expiresAt: new Date(Date.now() + 86400000).toISOString(), reauthenticatedUntil: null });
+    if (path === '/auth/session') return ok(route, { state: state.guest ? 'GUEST' : 'AUTHENTICATED', reason: null, serverTime: new Date().toISOString(), sessionId: state.guest ? null : state.userId, user: state.guest ? null : { ...user, ...state.profile, id: state.userId }, expiresAt: new Date(Date.now() + 86400000).toISOString(), reauthenticatedUntil: null });
     if (path === '/auth/csrf') { if (state.csrfDelay) await new Promise(done => setTimeout(done, state.csrfDelay)); return ok(route, { token: 'notification-fixture-csrf' }); }
     if (path === '/auth/logout') { state.guest = true; return ok(route, null); }
     if (path === '/me/notifications/summary') return state.failSummary ? fail(route) : ok(route, { unreadCount: state.rows.filter(row => !row.readAt).length, recent: state.rows.slice(0, 5) });
@@ -222,5 +222,90 @@ test('mixed states and long notification text keep independent usable controls',
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     if (width === 390 || width === 1440) await page.screenshot({ path: resolve(`../../.local/notifications/mixed-${testInfo.project.name}-${width}.png`) });
+  }
+});
+
+for (const [surface, path, menuId] of [['Home', '/', 'header-account-menu'], ['app', '/app/notifikasi', 'account-user-menu']]) {
+  test(`shared account actions on ${surface} coordinate menus, focus and navigation`, async ({ page }) => {
+    await mock(page); await page.goto(path);
+    await expect(bell(page)).toBeVisible();
+    const trigger = page.getByRole('button', { name: 'Menu akun', exact: true }), menu = page.locator(`#${menuId}`);
+    await trigger.click(); await expect(menu).toBeVisible(); await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    await expect(menu).toContainText(user.displayName); await expect(menu).toContainText(user.email);
+    await expect(menu.getByRole('link', { name: 'Ringkasan' })).toHaveAttribute('href', '/app');
+    await expect(menu.getByRole('link', { name: 'Profil saya' })).toHaveAttribute('href', '/app/profil');
+    await page.keyboard.press('Tab'); await expect(menu.getByRole('link', { name: 'Ringkasan' })).toBeFocused();
+    await page.keyboard.press('Tab'); await expect(menu.getByRole('link', { name: 'Profil saya' })).toBeFocused();
+    await page.keyboard.press('Tab'); await expect(menu.getByRole('button', { name: 'Keluar', exact: true })).toBeFocused();
+    await page.keyboard.press('Escape'); await expect(menu).toBeHidden(); await expect(trigger).toBeFocused();
+    await trigger.click(); await page.mouse.click(2, 400); await expect(menu).toBeHidden();
+    await trigger.click(); await bell(page).click(); await expect(menu).toBeHidden(); await expect(page.locator('.notification-popover')).toBeVisible();
+    await trigger.click(); await expect(menu).toBeVisible(); await expect(page.locator('.notification-popover')).toHaveCount(0);
+    if (page.viewportSize().width <= 700) {
+      const drawer = surface === 'Home' ? page.getByRole('button', { name: 'Buka menu', exact: true }) : page.getByRole('button', { name: 'Buka navigasi akun' });
+      await drawer.click(); await expect(menu).toBeHidden();
+      if (surface === 'Home') { await expect(page.locator('#public-mobile-navigation')).toBeVisible(); await trigger.click(); await expect(page.locator('#public-mobile-navigation')).toHaveCount(0); }
+      else { await expect(page.locator('#account-drawer')).toBeVisible(); await page.keyboard.press('Escape'); await trigger.click(); }
+    }
+    await menu.getByRole('link', { name: 'Ringkasan' }).click(); await expect(page).toHaveURL(/\/app$/);
+    await expect(page.locator('.header-account-popover')).toBeHidden();
+    if (page.viewportSize().width > 700) {
+      await page.getByRole('link', { name: 'Penawaran saya', exact: true }).click(); await expect(page).toHaveURL(/\/app\/penawaran$/);
+      await expect(page.locator('.header-activity-link')).toHaveAttribute('aria-current', 'page');
+    }
+    await page.locator('.header-favorite-link').click(); await expect(page).toHaveURL(/\/app\/favorit$/);
+    await expect(page.locator('.header-favorite-link')).toHaveAttribute('aria-current', 'page');
+  });
+}
+
+test('shared account menu logs out from app and clears private notifications', async ({ page }) => {
+  const state = await mock(page); await page.goto('/app/notifikasi');
+  await page.getByRole('button', { name: 'Menu akun', exact: true }).click();
+  await page.locator('#account-user-menu').getByRole('button', { name: 'Keluar', exact: true }).click();
+  await expect(page).toHaveURL(/\/masuk\?next=%2Fapp%2Fnotifikasi/);
+  await expect(bell(page)).toHaveCount(0); await expect(page.locator('.notification-popover')).toHaveCount(0);
+  expect(state.requests.filter(row => row.path === '/auth/logout')).toEqual([expect.objectContaining({ method: 'POST', csrf: 'notification-fixture-csrf' })]);
+});
+
+test('shared guest account actions keep login links without private requests', async ({ page }) => {
+  const state = await mock(page, 6, true); await page.goto('/');
+  await page.getByRole('button', { name: 'Menu akun', exact: true }).click();
+  const menu = page.locator('#header-account-menu');
+  await expect(menu.getByRole('link', { name: 'Masuk', exact: true })).toHaveAttribute('href', '/masuk');
+  await expect(menu.getByRole('link', { name: 'Daftar', exact: true })).toHaveAttribute('href', '/daftar');
+  await expect(bell(page)).toHaveCount(0); await expect(page.locator('.header-activity-link')).toHaveCount(0);
+  expect(state.requests.some(row => row.path.startsWith('/me/notifications'))).toBe(false);
+  await page.locator('.header-favorite-link').click(); await expect(page).toHaveURL(/\/masuk\?next=%2Fapp%2Ffavorit/);
+});
+
+test('shared account navbar and long identity fit supported widths', async ({ page }, info) => {
+  const state = await mock(page);
+  state.profile = { displayName: 'Pengguna dengan nama lengkap yang panjang untuk pemeriksaan navbar', email: 'nama.pengguna.sangat.panjang.untuk.pemeriksaan@demo.valora.local' };
+  await mkdir(resolve('../../.local/navbar'), { recursive: true });
+  for (const width of [320, 390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    const styles = [];
+    for (const [surface, path] of [['home', '/'], ['app', '/app/notifikasi']]) {
+      await page.goto(path); await expect(bell(page)).toBeVisible();
+      const icons = page.locator('.header-icon-nav');
+      await expect(icons.locator('.header-icon-link:visible')).toHaveCount(width <= 700 ? 3 : 4);
+      for (const icon of await icons.locator('.header-icon-link:visible').all()) {
+        const box = await icon.boundingBox(); expect(box.width).toBeGreaterThanOrEqual(44); expect(box.height).toBeGreaterThanOrEqual(44);
+      }
+      styles.push(await page.locator('.header-account-trigger').evaluate(el => {
+        const circle = getComputedStyle(el, '::before'), svg = el.querySelector('svg');
+        return { border: circle.borderColor, background: circle.backgroundColor, radius: circle.borderRadius, inset: circle.inset, size: svg.getAttribute('width'), stroke: svg.getAttribute('stroke-width') };
+      }));
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      if (width === 390 || width === 1440) await page.screenshot({ path: resolve(`../../.local/navbar/${surface}-${info.project.name}-${width}.png`), clip: { x: 0, y: 0, width, height: 400 } });
+      await page.getByRole('button', { name: 'Menu akun', exact: true }).click();
+      const menu = page.locator('.header-account-popover'); await expect(menu).toBeVisible();
+      const box = await menu.boundingBox(); expect(box.x).toBeGreaterThanOrEqual(0); expect(box.x + box.width).toBeLessThanOrEqual(width);
+      expect(await menu.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+      if (width === 390 || width === 1440) await page.screenshot({ path: resolve(`../../.local/navbar/${surface}-menu-${info.project.name}-${width}.png`), clip: { x: 0, y: 0, width, height: 400 } });
+    }
+    expect(styles[1]).toEqual(styles[0]);
+    await page.goto(`/app/penawaran/${id(100)}`); await expect(page.locator('.account-toolbar')).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
 });
