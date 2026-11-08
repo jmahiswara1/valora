@@ -8,13 +8,13 @@ import { api } from '@/lib/api';
 import { useSession } from '@/lib/session';
 import { AccountSkeleton } from '@/features/account/skeleton';
 import { AccountError } from '@/features/account/error';
-import { useNotificationRead, notificationHref } from './hooks';
+import { NotificationRow } from './row';
 
 export function DashboardNotifications() {
-  const userId = useSession().session?.user?.id, { read } = useNotificationRead();
+  const userId = useSession().session?.user?.id;
   const rows = useQuery({ queryKey: ['notification-center', userId, 'dashboard'], queryFn: () => api<NotificationCenterDto[]>('/me/notifications?status=unread&limit=3'), enabled: Boolean(userId), refetchInterval: 30000, refetchOnWindowFocus: true });
-  return <section className="account-activity" aria-labelledby="dashboard-notifications"><div className="account-activity-heading"><h2 id="dashboard-notifications">Kabar terbaru</h2><Bell size={19} aria-hidden="true" /></div>
-    {rows.isPending ? <AccountSkeleton /> : rows.isError ? <AccountError retry={() => rows.refetch()}>Notifikasi gagal dimuat.</AccountError> : rows.data?.length ? <ul>{rows.data.map(row => <li key={row.id}><Link href={notificationHref(row)} onClick={() => read(row.id)}><strong>{row.title}</strong><small>{row.itemTitle}</small></Link></li>)}</ul> : <p>Belum ada kabar baru. Perkembangan penawaran dan transaksi akan muncul di sini.</p>}
-    <Link className="account-activity-footer" href="/app/notifikasi">Lihat semua notifikasi <ChevronRight size={15} aria-hidden="true" /></Link>
+  return <section className="dashboard-notifications" aria-labelledby="dashboard-notifications"><div className="dashboard-news-heading"><div className="dashboard-section-title"><Bell size={20} aria-hidden="true" /><h2 id="dashboard-notifications">Kabar terbaru</h2></div></div>
+    {rows.isPending ? <AccountSkeleton /> : rows.isError ? <AccountError retry={() => rows.refetch()}>Notifikasi gagal dimuat.</AccountError> : rows.data?.length ? <ul className="dashboard-news-list">{rows.data.map(row => <NotificationRow key={row.id} row={row} compact />)}</ul> : <div className="dashboard-empty dashboard-news-empty"><Bell size={21} aria-hidden="true" /><div><strong>Belum ada kabar baru.</strong><p>Perkembangan penawaran dan transaksi akan muncul di sini.</p></div></div>}
+    <Link className="dashboard-news-footer" href="/app/notifikasi">Lihat semua notifikasi <ChevronRight size={15} aria-hidden="true" /></Link>
   </section>;
 }

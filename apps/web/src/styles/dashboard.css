@@ -1,0 +1,75 @@
+/* The overview keeps account components and all other routes unchanged. */
+.dashboard-page { display: grid; gap: 32px; width: 100%; }
+.account-main .dashboard-page > .app-heading { margin: 0; }
+.dashboard-page > .app-heading > .button { flex-shrink: 0; white-space: nowrap; }
+.dashboard-workspace { display: grid; gap: 32px; }
+.dashboard-activity-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); align-items: start; gap: 24px; }
+.dashboard-page .account-activity { padding: 20px; background: white; border: 1px solid var(--account-line); }
+.dashboard-page .dashboard-offers { background: var(--cream); border-color: transparent; }
+.dashboard-page .account-activity-heading { margin-bottom: 16px; }
+.dashboard-section-title { display: flex; align-items: center; gap: 10px; }
+.dashboard-section-title > svg { flex-shrink: 0; color: var(--green); }
+.account-main .dashboard-section-title h2 { font-size: 1.125rem; }
+.dashboard-page .dashboard-task-list > li { display: block; padding: 0; }
+.dashboard-page .dashboard-task-list > li > a { display: grid; align-items: center; gap: 16px; min-height: 72px; padding: 16px 0; }
+.dashboard-page .dashboard-task-list .dashboard-offer-link { grid-template-columns: minmax(0, 1fr) auto; }
+.dashboard-offer-copy { display: grid; gap: 6px; }
+.dashboard-offer-copy > strong { font-size: 1rem; line-height: 1.5; overflow-wrap: anywhere; }
+.dashboard-offer-terms { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; font-size: .875rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.dashboard-offer-terms > span, .dashboard-offer-copy > time { font-size: .75rem; font-weight: 500; color: var(--muted); line-height: 1.6; }
+.dashboard-page .dashboard-task-list .dashboard-message-link { grid-template-columns: 36px minmax(0, 1fr) auto; gap: 12px; }
+.dashboard-participant { width: 36px; height: 36px; font-size: .8125rem; background: var(--cream); color: var(--forest); }
+.dashboard-message-link > span:not(.profile-avatar) { display: grid; gap: 4px; }
+.dashboard-message-link strong { font-size: .875rem; line-height: 1.5; overflow-wrap: anywhere; }
+.dashboard-message-link small { line-height: 1.5; }
+.dashboard-message-count { color: var(--green); font-size: .75rem; font-weight: 600; }
+.dashboard-page .account-activity-footer { min-height: 44px; margin-top: 12px; padding: 0; }
+.dashboard-empty { display: flex; align-items: flex-start; gap: 12px; padding-block: 12px; }
+.dashboard-empty > svg { flex-shrink: 0; margin-top: 2px; color: var(--muted); }
+.dashboard-empty strong { font-size: .875rem; font-weight: 600; line-height: 1.6; }
+.dashboard-empty p { margin-top: 4px; color: var(--muted); font-size: .8125rem; line-height: 1.7; max-width: 65ch; }
+.dashboard-notifications { display: flex; flex-direction: column; grid-column: 1 / -1; padding-block: 20px; }
+.dashboard-news-heading, .dashboard-page .account-recent-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+.dashboard-news-footer, .dashboard-page .account-recent-header > a { display: inline-flex; align-items: center; flex-shrink: 0; gap: 6px; min-height: 44px; font-size: .8125rem; font-weight: 600; }
+.dashboard-news-footer { margin-top: 12px; align-self: flex-start; }
+.dashboard-news-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; list-style: none; margin: 0; padding: 0; }
+.dashboard-page .dashboard-news-list .notification-entry { align-items: flex-start; border-block: 1px solid var(--account-line); background: transparent; }
+.dashboard-page .dashboard-news-list .notification-entry-link { padding: 18px 0; gap: 12px; min-height: 44px; }
+.dashboard-page .dashboard-news-list .notification-entry-link:hover { background: transparent; }
+.dashboard-page .dashboard-news-list .notification-entry-link:hover strong { text-decoration: underline; text-underline-offset: 3px; }
+.dashboard-page .dashboard-news-list .notification-category-icon { width: 32px; height: 32px; background: var(--cream); }
+.dashboard-page .dashboard-news-list .notification-entry-title strong { font-size: .8125rem; line-height: 1.5; }
+.dashboard-page .dashboard-news-list .notification-item-title { font-size: .8125rem; line-height: 1.6; }
+.dashboard-page .dashboard-news-list .notification-unread-label { display: none; }
+.dashboard-page .dashboard-news-list time { line-height: 1.6; }
+.dashboard-news-empty { border-top: 1px solid var(--account-line); padding-block: 16px; }
+.dashboard-page .account-skeleton-list { gap: 12px; }
+.dashboard-page .account-skeleton-list .account-skeleton { padding: 12px; border-radius: 8px; }
+.dashboard-page .notice { border: 1px solid #DFC2B8; border-radius: 12px; }
+@container (min-width: 340px) { .account-main .dashboard-page .item-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@container (min-width: 760px) { .account-main .dashboard-page .item-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@container (min-width: 1000px) {
+  .account-main .dashboard-page .item-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .dashboard-workspace { grid-template-columns: minmax(0, 2.25fr) minmax(0, 1fr); grid-template-rows: auto 1fr; column-gap: 20px; align-items: start; }
+  .dashboard-workspace > .dashboard-activity-grid { grid-column: 1; grid-row: 1; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 20px; }
+  .dashboard-workspace > .dashboard-recent { grid-column: 1; grid-row: 2; }
+  .dashboard-workspace > .dashboard-notifications { grid-column: 2; grid-row: 1 / span 2; }
+  .dashboard-workspace:not(:has(> .dashboard-recent)) { grid-template-rows: auto; }
+  .dashboard-workspace:not(:has(> .dashboard-recent)) > .dashboard-notifications { grid-row: 1; }
+  .dashboard-news-list { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .dashboard-page .dashboard-news-list .notification-entry { border-bottom: 0; }
+}
+@container (max-width: 700px) {
+  .dashboard-activity-grid { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .dashboard-news-list { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .dashboard-page .dashboard-news-list .notification-entry + .notification-entry { border-top: 0; }
+  .dashboard-page .dashboard-news-list .notification-entry-link { padding-block: 16px; }
+}
+@media (max-width: 600px) {
+  .dashboard-page, .dashboard-workspace { gap: 28px; }
+  .dashboard-page .account-activity { padding: 20px 16px; }
+  .dashboard-news-heading, .dashboard-page .account-recent-header { align-items: flex-start; flex-wrap: wrap; gap: 4px 12px; }
+  .dashboard-news-heading p { font-size: .8125rem; }
+  .dashboard-page .item-card-body { padding: 12px 6px 10px; }
+  .dashboard-page .item-card h3 { font-size: .875rem; }
+}
