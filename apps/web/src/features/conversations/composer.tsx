@@ -1,18 +1,23 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 import { ImagePlus, X, RotateCw } from 'lucide-react';
 import type { MessageDto } from '@valora/contracts';
 import { api, ApiClientError } from '@/lib/api';
 import { Button, Notice } from '@/components/ui/primitives';
 
-type DraftPhoto = { id: string; file: File; preview: string; state: 'uploading' | 'ready' | 'error'; ticketId?: string; error?: string };
-type Intent = { clientMessageId: string; body: string; ticketIds: string[] };
+import { useChatDraft, type DraftPhoto } from './drafts';
 export function ChatComposer({ id, onSent }: { id: string; onSent: () => Promise<void> }) {
-  const [body, setBody] = useState(''), [photos, setPhotos] = useState<DraftPhoto[]>([]), [error, setError] = useState(''), [busy, setBusy] = useState(false), [uncertain, setUncertain] = useState(false);
-  const input = useRef<HTMLInputElement>(null), photoRef = useRef(photos), intent = useRef<Intent | null>(null), running = useRef(false), active = useRef(true);
-  useEffect(() => { photoRef.current = photos; }, [photos]);
-  useEffect(() => { active.current = true; return () => { active.current = false; for (const photo of photoRef.current) URL.revokeObjectURL(photo.preview); }; }, []);
+  const { body, setBody, photos, setPhotos, error, setError, busy, setBusy, uncertain, setUncertain, intent, running, active } = useChatDraft(id);
+  const input = useRef<HTMLInputElement>(null);
+  const textarea = useRef<HTMLTextAreaElement>(null);
+  useLayoutEffect(() => {
+    const element = textarea.current;
+    if (!element) return;
+    element.style.height = 'auto';
+    const maximum = Number.parseFloat(getComputedStyle(element).maxHeight);
+    element.style.height = `${Math.min(maximum, element.scrollHeight + 2)}px`;
+  }, [body]);
   async function upload(photo: DraftPhoto) {
     setPhotos(rows => rows.map(row => row.id === photo.id ? { ...row, state: 'uploading', error: undefined } : row));
     try {
@@ -62,7 +67,7 @@ export function ChatComposer({ id, onSent }: { id: string; onSent: () => Promise
     {uncertain && <Button type="button" variant="secondary" disabled={busy} onClick={recover}>{busy ? 'Memeriksa…' : 'Periksa status pesan'}</Button>}
     <form onSubmit={send} className="chat-photo-composer" aria-busy={busy}>
       {!!photos.length && <ul className="chat-draft-photos">{photos.map((photo, index) => <li key={photo.id}>
-        {/* Local previews never leave this session's component. */}
+        {/* Local previews remain in this session's in-memory draft store. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={photo.preview} alt={`Pratinjau foto ${index + 1}`} />
         <button type="button" className="chat-icon-button draft-remove" aria-label={`Hapus foto ${index + 1}`} disabled={locked} onClick={() => { URL.revokeObjectURL(photo.preview); setPhotos(rows => rows.filter(row => row.id !== photo.id)); intent.current = null; }}><X size={17} /></button>
@@ -71,7 +76,7 @@ export function ChatComposer({ id, onSent }: { id: string; onSent: () => Promise
       </li>)}</ul>}
       <div className="chat-composer"><input ref={input} type="file" accept="image/jpeg,image/png,image/webp" multiple className="sr-only" tabIndex={-1} aria-label="Pilih foto pesan" disabled={locked} onChange={event => { pick(event.target.files); event.target.value = ''; }} />
         <button type="button" className="chat-icon-button chat-add-photo" aria-label="Tambahkan foto" title="Tambahkan hingga tiga foto" disabled={locked || photos.length >= 3} onClick={() => input.current?.click()}><ImagePlus size={22} /></button>
-        <label className="sr-only" htmlFor="message-body">Pesan</label><textarea id="message-body" value={body} disabled={locked} onChange={event => { setBody(event.target.value); intent.current = null; }} maxLength={2000} placeholder="Tulis pesan…" />
+        <label className="sr-only" htmlFor="message-body">Pesan</label><textarea ref={textarea} id="message-body" rows={1} value={body} disabled={locked} onChange={event => { setBody(event.target.value); intent.current = null; }} maxLength={2000} placeholder="Tulis pesan…" />
         <Button type="submit" disabled={locked || photos.some(photo => photo.state !== 'ready') || (!body.trim() && !photos.length)}>{busy ? 'Mengirim…' : 'Kirim'}</Button>
       </div><p className="chat-photo-hint">Hingga 3 foto · JPG, PNG, WebP · maks. 8 MiB per foto</p>
     </form>

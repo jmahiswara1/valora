@@ -46,22 +46,22 @@ test('Matriks seluruh halaman: Guest, User, Admin, email belum terverifikasi dan
     if (role === 'Unavailable') await page.route('**/api/v1/auth/session', (route) => route.abort('failed'));
     try {
       for (const route of routes) {
-        await page.goto(route); const privateRoute = route.startsWith('/app'); const adminRoute = route.startsWith('/app/admin');
+        await page.goto(route); const privateRoute = route.startsWith('/app') || route === '/pesan' || route.startsWith('/pesan/'); const adminRoute = route.startsWith('/app/admin');
         if (privateRoute && ['Guest', 'Revoked', 'Expired'].includes(role)) await expect(page).toHaveURL(/\/masuk\?next=/);
-        else if (privateRoute && role === 'Unavailable') { await expect(page.getByText('Koneksi sesi belum tersedia.')).toBeVisible(); await expect(page.locator('.app-main, #account-main')).toHaveCount(0); }
-        else if (privateRoute && ['Suspended', 'Closed'].includes(role)) { await expect(page.getByText('Akun ini tidak dapat digunakan.')).toBeVisible(); await expect(page.locator('.app-main, #account-main')).toHaveCount(0); }
-        else if (adminRoute && ['User', 'Unverified'].includes(role)) { await expect(page.getByText('Halaman ini hanya untuk admin.')).toBeVisible(); await expect(page.locator('.app-main, #account-main')).toHaveCount(0); }
-        else if (privateRoute) { await expect(page.locator('.app-main, #account-main')).toBeVisible(); if (role === 'Unverified') await expect(page.getByText('Alamat email belum diverifikasi.', { exact: false })).toBeVisible(); }
+        else if (privateRoute && role === 'Unavailable') { await expect(page.getByText('Koneksi sesi belum tersedia.')).toBeVisible(); await expect(page.locator('.app-main, #account-main, main.chat-surface')).toHaveCount(0); }
+        else if (privateRoute && ['Suspended', 'Closed'].includes(role)) { await expect(page.getByText('Akun ini tidak dapat digunakan.')).toBeVisible(); await expect(page.locator('.app-main, #account-main, main.chat-surface')).toHaveCount(0); }
+        else if (adminRoute && ['User', 'Unverified'].includes(role)) { await expect(page.getByText('Halaman ini hanya untuk admin.')).toBeVisible(); await expect(page.locator('.app-main, #account-main, main.chat-surface')).toHaveCount(0); }
+        else if (privateRoute) { await expect(page.locator('.app-main, #account-main, main.chat-surface')).toBeVisible(); if (role === 'Unverified') await expect(page.getByText('Alamat email belum diverifikasi.', { exact: false })).toBeVisible(); }
         else { await expect(page.locator('body')).not.toBeEmpty(); }
         const checks = ['direct'];
         if (['User', 'Admin'].includes(role)) {
           await page.reload();
           if (privateRoute && adminRoute && role === 'User') await expect(page.getByText('Halaman ini hanya untuk admin.')).toBeVisible();
-          else if (privateRoute) await expect(page.locator('.app-main, #account-main')).toBeVisible();
+          else if (privateRoute) await expect(page.locator('.app-main, #account-main, main.chat-surface')).toBeVisible();
           checks.push('refresh');
           if (privateRoute) {
             await page.goto('/cara-kerja'); await page.goBack();
-            if (adminRoute && role === 'User') await expect(page.getByText('Halaman ini hanya untuk admin.')).toBeVisible(); else await expect(page.locator('.app-main, #account-main')).toBeVisible();
+            if (adminRoute && role === 'User') await expect(page.getByText('Halaman ini hanya untuk admin.')).toBeVisible(); else await expect(page.locator('.app-main, #account-main, main.chat-surface')).toBeVisible();
             await page.goForward(); await expect(page).toHaveURL(/\/cara-kerja$/);
             checks.push('back-forward');
           }
@@ -80,15 +80,15 @@ test('Sesi antartab, login next, offline logout, respons lama, refresh dan histo
   const first = await context.newPage(); const second = await context.newPage();
   try {
     await first.goto('/app/profil'); await expect(first.getByRole('heading', { name: 'Sesi aktif' })).toBeVisible();
-    await second.goto('/app'); await expect(second.locator('.app-main, #account-main')).toBeVisible();
+    await second.goto('/app'); await expect(second.locator('.app-main, #account-main, main.chat-surface')).toBeVisible();
     await logoutFrom(first);
-    await expect(first).toHaveURL(/\/masuk/); await expect(second).toHaveURL(/\/masuk/); await expect(second.locator('.app-main, #account-main')).toHaveCount(0);
+    await expect(first).toHaveURL(/\/masuk/); await expect(second).toHaveURL(/\/masuk/); await expect(second.locator('.app-main, #account-main, main.chat-surface')).toHaveCount(0);
     await first.getByLabel('Email', { exact: true }).fill(b.user.email); await first.getByLabel('Kata sandi', { exact: true }).fill(credentials.password); await first.getByRole('button', { name: 'Masuk', exact: true }).click();
     await expect(first).toHaveURL(/\/app\/profil/); await expect(second.getByText('Kamu sudah masuk.', { exact: false })).toBeVisible();
     await first.reload(); await expect(first.getByRole('heading', { name: 'Profil saya' })).toBeVisible();
-    await first.goto('/app/barang'); await expect(first.locator('.app-main, #account-main')).toBeVisible(); await first.goBack(); await expect(first.getByRole('heading', { name: 'Profil saya' })).toBeVisible(); await first.goForward(); await expect(first.locator('.app-main, #account-main')).toBeVisible();
+    await first.goto('/app/barang'); await expect(first.locator('.app-main, #account-main, main.chat-surface')).toBeVisible(); await first.goBack(); await expect(first.getByRole('heading', { name: 'Profil saya' })).toBeVisible(); await first.goForward(); await expect(first.locator('.app-main, #account-main, main.chat-surface')).toBeVisible();
     await first.route('**/api/v1/auth/logout', (route) => route.abort('failed'));
-    await logoutFrom(first); await expect(first.getByText('Permintaan keluar belum terkonfirmasi.', { exact: false })).toBeVisible(); await expect(first.locator('.app-main, #account-main')).toHaveCount(0);
+    await logoutFrom(first); await expect(first.getByText('Permintaan keluar belum terkonfirmasi.', { exact: false })).toBeVisible(); await expect(first.locator('.app-main, #account-main, main.chat-surface')).toHaveCount(0);
     await expect(first.getByRole('button', { name: 'Coba keluar lagi' })).toBeEnabled(); await first.unroute('**/api/v1/auth/logout'); await first.getByRole('button', { name: 'Coba keluar lagi' }).click(); await expect(first).toHaveURL(/\/masuk/);
     await first.goto('/masuk?next=https://evil.example'); await first.getByLabel('Email', { exact: true }).fill(a.user.email); await first.getByLabel('Kata sandi', { exact: true }).fill(credentials.password); await first.getByRole('button', { name: 'Masuk', exact: true }).click(); await expect(first).toHaveURL(/\/app$/);
     await first.goto('/app/profil'); await fits(first); await mkdir(resolve('../../.local/stage6-evidence'), { recursive: true }); await first.screenshot({ path: '../../.local/stage6-evidence/sessions-' + info.project.name + '.png', fullPage: true });
@@ -104,10 +104,10 @@ test('Pencabutan, expiry tujuh hari dan reautentikasi 15 menit pada profil', asy
     await page.goto('/app/profil'); await expect(page.getByRole('heading', { name: 'Profil saya' })).toBeVisible();
     await page.getByRole('button', { name: 'Cabut semua sesi lain' }).click(); const confirm = page.getByRole('dialog'); await confirm.getByRole('checkbox').check(); await confirm.getByRole('button', { name: 'Cabut sesi', exact: true }).click();
     const reauth = page.getByRole('dialog').filter({ has: page.getByRole('heading', { name: 'Verifikasi kata sandi' }) }); await expect(reauth).toBeVisible();
-    await reauth.getByLabel('Kata sandi saat ini').fill('incorrect'); await reauth.getByRole('button', { name: 'Verifikasi', exact: true }).click(); await expect(reauth.getByText('Kata sandi salah.')).toBeVisible(); await expect(page.locator('.app-main, #account-main')).toBeVisible();
+    await reauth.getByLabel('Kata sandi saat ini').fill('incorrect'); await reauth.getByRole('button', { name: 'Verifikasi', exact: true }).click(); await expect(reauth.getByText('Kata sandi salah.')).toBeVisible(); await expect(page.locator('.app-main, #account-main, main.chat-surface')).toBeVisible();
     await reauth.getByLabel('Kata sandi saat ini').fill(credentials.password); await reauth.getByRole('button', { name: 'Verifikasi', exact: true }).click(); await expect(reauth).not.toBeVisible(); await confirm.getByRole('button', { name: 'Cabut sesi', exact: true }).click(); await expect(confirm).not.toBeVisible();
     await db.session.update({ where: { id: meta.sessionId }, data: { revokedAt: new Date() } });
-    await page.evaluate(() => window.dispatchEvent(new Event('online'))); await expect(page).toHaveURL(/\/masuk/); await expect(page.locator('.app-main, #account-main')).toHaveCount(0);
+    await page.evaluate(() => window.dispatchEvent(new Event('online'))); await expect(page).toHaveURL(/\/masuk/); await expect(page.locator('.app-main, #account-main, main.chat-surface')).toHaveCount(0);
     const expired = await actor(); const expiredContext = await contextFor(browser, expired.account, info.project.use.viewport); const expiredPage = await expiredContext.newPage();
     try { const expiredMeta = check(await expired.account.request('/auth/session'), 200, 'Expiry fixture'); await db.session.update({ where: { id: expiredMeta.sessionId }, data: { expiresAt: new Date(Date.now() - 1) } }); for (const route of (await inventory()).filter((r) => r.startsWith('/app'))) { await expiredPage.goto(route); await expect(expiredPage).toHaveURL(/\/masuk\?next=/); } } finally { await expiredContext.close(); }
   } finally { await context.close(); }
@@ -120,9 +120,9 @@ test('Verifikasi email dan reset password memperbarui sesi antartab', async ({ b
   try {
     await second.goto('/app/profil'); await expect(second.getByText('Alamat email belum diverifikasi.', { exact: false })).toBeVisible();
     await first.goto('/verifikasi-email?token=' + await tokenFor('EMAIL_VERIFY')); await first.getByRole('button', { name: 'Verifikasi email', exact: true }).click();
-    await expect(first.getByText('Email berhasil diverifikasi.', { exact: false })).toBeVisible(); await expect(second.getByText('Alamat email belum diverifikasi.', { exact: false })).toHaveCount(0); await expect(second.locator('.app-main, #account-main')).toBeVisible();
+    await expect(first.getByText('Email berhasil diverifikasi.', { exact: false })).toBeVisible(); await expect(second.getByText('Alamat email belum diverifikasi.', { exact: false })).toHaveCount(0); await expect(second.locator('.app-main, #account-main, main.chat-surface')).toBeVisible();
     await first.goto('/reset-password?token=' + await tokenFor('PASSWORD_RESET')); await first.getByLabel('Kata sandi baru', { exact: true }).fill('Stage6-browser-new-password'); await first.getByLabel('Ulangi kata sandi', { exact: true }).fill('Stage6-browser-new-password'); await first.getByRole('button', { name: 'Simpan kata sandi', exact: true }).click();
-    await expect(first).toHaveURL(/\/masuk\?reset=success$/); await expect(first.getByText('Kata sandi diperbarui.', { exact: false })).toBeVisible(); await expect(second).toHaveURL(/\/masuk/); await expect(second.locator('.app-main, #account-main')).toHaveCount(0);
+    await expect(first).toHaveURL(/\/masuk\?reset=success$/); await expect(first.getByText('Kata sandi diperbarui.', { exact: false })).toBeVisible(); await expect(second).toHaveURL(/\/masuk/); await expect(second.locator('.app-main, #account-main, main.chat-surface')).toHaveCount(0);
     expect(await db.session.count({ where: { userId: a.user.id, revokedAt: null } })).toBe(0);
   } finally { await context.close(); }
 });
@@ -136,7 +136,7 @@ test('Akses bukti dibersihkan ketika grant lima menit berakhir', async ({ browse
     await page.goto('/app/admin/laporan/' + report.id); await page.getByLabel('Alasan tindakan').fill('Membaca bukti sintetis untuk menguji batas waktu akses.');
     await page.getByRole('button', { name: 'Buka isi laporan', exact: true }).click(); const dialog = page.getByRole('dialog'); await dialog.getByRole('checkbox').check(); await dialog.getByRole('button', { name: 'Simpan tindakan', exact: true }).click();
     await expect(page.getByText('Bukti privat harus hilang setelah grant')).toBeVisible();
-    await page.clock.fastForward(310000); await expect(page.getByText('Bukti privat harus hilang setelah grant')).toHaveCount(0); await expect(page.getByRole('button', { name: 'Buka isi laporan', exact: true })).toBeVisible(); await expect(page.locator('.app-main, #account-main')).toBeVisible();
+    await page.clock.fastForward(310000); await expect(page.getByText('Bukti privat harus hilang setelah grant')).toHaveCount(0); await expect(page.getByRole('button', { name: 'Buka isi laporan', exact: true })).toBeVisible(); await expect(page.locator('.app-main, #account-main, main.chat-surface')).toBeVisible();
   } finally { await context.close(); }
 });
 
@@ -150,7 +150,7 @@ test('Respons privat akun lama diabaikan setelah logout dan pergantian identitas
     try { await route.fulfill({ response }); } catch { /* Logout cancels the old browser request. */ }
   });
   try {
-    await page.goto('/app/barang'); await started; await expect(page.locator('.app-main, #account-main')).toBeVisible();
+    await page.goto('/app/barang'); await started; await expect(page.locator('.app-main, #account-main, main.chat-surface')).toBeVisible();
     await logoutFrom(page); await expect(page).toHaveURL(/\/masuk/);
     await page.getByLabel('Email', { exact: true }).fill(b.user.email); await page.getByLabel('Kata sandi', { exact: true }).fill(credentials.password); await page.getByRole('button', { name: 'Masuk', exact: true }).click(); await expect(page).toHaveURL(/\/app\/barang/);
     release(); await expect(page.getByText('Belum ada barang', { exact: false })).toBeVisible(); await expect(page.getByText(title)).toHaveCount(0);

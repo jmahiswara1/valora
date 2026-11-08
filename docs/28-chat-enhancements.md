@@ -19,8 +19,7 @@ Pembuatan pesan, konsumsi tiket dan notifikasi berada dalam satu transaksi.
 Identitas `clientMessageId` unik per percakapan/pengirim; pengulangan dengan isi
 berbeda ditolak 409. Setelah respons tidak pasti, tombol Periksa status pesan
 memeriksa pesan milik pengirim. Draf baru dibersihkan setelah server memastikan
-pesan tersimpan. Tidak ada pengiriman ulang otomatis. Draf berada dalam memori
-halaman dan dibersihkan saat meninggalkan sesi/halaman.
+pesan tersimpan. Tidak ada pengiriman ulang otomatis. Draf berada dalam memori sesi per percakapan, bertahan saat modal ditutup atau diperluas, dan dibersihkan pada perubahan sesi atau muat ulang penuh.
 
 ## Foto privat dan bukti
 
@@ -59,7 +58,7 @@ dan detail diperbarui setiap lima detik; daftar/notifikasi mempertahankan pollin
 
 ## Notifikasi Pesan
 
-`MESSAGE_RECEIVED` menargetkan `CONVERSATION` dan membuka `/app/pesan/:id`.
+`MESSAGE_RECEIVED` menargetkan `CONVERSATION` dan membuka modal chat; tautan kanonisnya `/pesan/:id`.
 Pesan baru memperbarui satu baris belum dibaca per percakapan/penerima, termasuk
 urutan pesan terbaru dan waktu. Setelah baris dibaca, pesan berikutnya membuat
 baris baru; riwayat notifikasi lama tetap ada. Payload tidak berisi isi pesan
@@ -113,3 +112,10 @@ respons hilang, tab tersembunyi, pagination, tautan profil, dialog dan fokus.
   perbaikan composer sticky dan kontras placeholder terselesaikan.
 
 Migrasi telah diterapkan secara aditif pada database lokal dan pengujian.
+
+
+## Akses chat global — 8 November 2026
+
+Chat dipisahkan dari sidebar dan shell akun. Halaman kanonis adalah /pesan dan /pesan/:id; rute lama di /app/pesan mengalihkan untuk menjaga tautan yang sudah tersimpan. Desktop mulai 1200px menggunakan tombol melayang. Tablet dan ponsel menggunakan ikon navbar. Semua pemicu membuka modal pada halaman asal, dengan tombol expand ke halaman penuh. Tautan kontekstual dari Market, transaksi, notifikasi dan ringkasan memakai pola yang sama; membuka tab baru tetap mengarah ke halaman kanonis.
+
+Modal mengunci scroll halaman asal, memulihkan fokus saat ditutup, dan mendukung dialog foto/laporan di atasnya. Cursor baca hanya maju untuk pesan terlihat pada dialog teratas atau halaman aktif. Draf per percakapan dan status respons kirim tidak pasti bertahan selama sesi yang sama ketika modal ditutup atau diperluas. Perubahan akun/sesi serta muat ulang penuh membuang data dalam memori. Kontrak API, batas foto dan otorisasi peserta tetap berlaku.

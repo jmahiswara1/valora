@@ -1,19 +1,22 @@
 'use client';
 
 import Link from 'next/link';
+import { useChat } from '@/features/conversations/context';
+import { isPlainClick } from '@/features/conversations/link';
 import { ArrowUpRight, MessageCircle, Search, Bell, Check, Handshake, ReceiptText } from 'lucide-react';
 import type { NotificationCenterDto } from '@valora/contracts';
 import { notificationHref, useNotificationRead } from './hooks';
 
 export function NotificationRow({ row, compact = false, onNavigate, onRead }: { row: NotificationCenterDto; compact?: boolean; onNavigate?: () => void; onRead?: () => void }) {
   const { read, pending } = useNotificationRead();
+  const chat = useChat();
   const Icon = row.category === 'messages' ? MessageCircle : row.category === 'market' ? Search : row.type === 'HANDOVER_REMINDER' ? Bell : row.category === 'offers' ? Handshake : ReceiptText;
   const category = row.category === 'messages' ? 'Pesan' : row.category === 'market' ? 'Market' : row.category === 'offers' ? 'Penawaran' : 'Transaksi';
   const fullTime = new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(row.createdAt));
   function markRead() { if (!row.readAt) { onRead?.(); read(row.id, row.latestMessageSequence); } }
   return <li className={`notification-entry${!row.readAt ? ' is-unread' : ''}${compact ? ' is-compact' : ''}`} data-notification-id={row.id}>
     <Link className="notification-entry-link" href={notificationHref(row)} prefetch={false} onClick={event => {
-      if (!event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey) { markRead(); onNavigate?.(); }
+      if (isPlainClick(event)) { markRead(); onNavigate?.(); if (row.target.kind === 'CONVERSATION') { event.preventDefault(); chat.open(row.target.id); } }
     }}>
       <span className="notification-category-icon"><Icon size={19} strokeWidth={1.7} aria-hidden="true" /></span>
       <div className="notification-entry-content"><div className="notification-entry-title"><strong>{row.title}</strong>{!row.readAt && <span className="notification-unread-label">Baru</span>}</div>

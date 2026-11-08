@@ -1,6 +1,6 @@
 'use client';
 import { useId, useState } from 'react';
-import Link from 'next/link';
+import { ChatLink } from '@/features/conversations/link';
 import { CalendarClock, MessageCircle, ChevronRight, ArrowUpRight } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import type { HandoverDto, TransactionDto } from '@valora/contracts';
@@ -25,7 +25,7 @@ export function HandoverPanel({ transaction }: { transaction: TransactionDto }) 
       {data.permissions.canPropose && <button type="button" className="handover-coordination-option" aria-labelledby={optionsId + '-form'} aria-describedby={optionsId + '-form-description'} disabled={action.pending || action.hasSaved()} onClick={() => setMode({ type: 'propose' })}>
         <CalendarClock size={21} strokeWidth={1.7} aria-hidden="true" /><span className="handover-option-copy"><strong id={optionsId + '-form'}>{data.agreed ? 'Usulkan perubahan' : 'Atur serah terima'}</strong><span id={optionsId + '-form-description'}>Lewat formulir: usulkan metode, jadwal, dan detail serah terima.</span></span><ChevronRight size={18} aria-hidden="true" />
       </button>}
-      {transaction.conversationId ? <Link className="handover-coordination-option" href={`/app/pesan/${transaction.conversationId}`} prefetch={false} aria-labelledby={optionsId + '-chat'} aria-describedby={optionsId + '-chat-description'}>{chatContent}</Link> : <button type="button" className="handover-coordination-option" disabled aria-labelledby={optionsId + '-chat'} aria-describedby={optionsId + '-chat-description'}>{chatContent}</button>}
+      {transaction.conversationId ? <ChatLink className="handover-coordination-option" conversationId={transaction.conversationId} prefetch={false} aria-labelledby={optionsId + '-chat'} aria-describedby={optionsId + '-chat-description'}>{chatContent}</ChatLink> : <button type="button" className="handover-coordination-option" disabled aria-labelledby={optionsId + '-chat'} aria-describedby={optionsId + '-chat-description'}>{chatContent}</button>}
     </div>}
     {data.agreed ? <div className="handover-section"><h3>Kesepakatan saat ini</h3><ProposalDetails proposal={data.agreed} transaction={transaction} /></div> : <p>Belum ada jadwal yang disepakati. Atur pertemuan atau pengiriman bersama pihak lain. Konfirmasi barang tetap dapat dilakukan ketika serah terima sudah terjadi.</p>}
     {data.pending && <div className="handover-section handover-pending"><div className="handover-heading"><h3>Usulan dari {partyName(transaction, data.pending.proposedById)}</h3><span className="badge">Menunggu tanggapan</span></div>{data.agreed && <p className="meta">Kesepakatan saat ini tetap berlaku sampai perubahan disetujui.</p>}<ProposalDetails proposal={data.pending} transaction={transaction} /><div className="form-actions">{data.permissions.canRespond && <><Button disabled={action.pending || action.hasSaved()} onClick={() => setMode({ type: 'accept', proposal: data.pending! })}>Tinjau usulan</Button><Button variant="quiet" disabled={action.pending || action.hasSaved()} onClick={() => setMode({ type: 'reject', proposal: data.pending! })}>Tolak usulan</Button></>}{data.permissions.canWithdraw && <Button variant="quiet" disabled={action.pending || action.hasSaved()} onClick={() => setMode({ type: 'withdraw', proposal: data.pending! })}>Tarik usulan</Button>}</div></div>}

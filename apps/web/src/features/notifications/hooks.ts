@@ -12,7 +12,7 @@ export function useNotificationSummary() {
 }
 
 export function notificationHref(row: NotificationCenterDto) {
-  return row.target.kind === 'CONVERSATION' ? `/app/pesan/${row.target.id}` : row.target.kind === 'LISTING' ? `/market/${row.target.id}` : row.target.kind === 'OFFER' ? `/app/penawaran/${row.target.id}` : `/app/transaksi/${row.target.id}`;
+  return row.target.kind === 'CONVERSATION' ? `/pesan/${row.target.id}` : row.target.kind === 'LISTING' ? `/market/${row.target.id}` : row.target.kind === 'OFFER' ? `/app/penawaran/${row.target.id}` : `/app/transaksi/${row.target.id}`;
 }
 
 export function useNotificationRead() {

@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { CircleUserRound, Heart, LayoutDashboard, LogOut, ShoppingCart } from 'lucide-react';
 import { useSession } from '@/lib/session';
+import { ChatTrigger } from '@/features/conversations/trigger';
 import { NotificationBell } from '@/features/notifications/bell';
 
 export function HeaderAccountActions({ open, onOpenChange, onInteract, context = 'public' }: {
@@ -37,6 +38,7 @@ export function HeaderAccountActions({ open, onOpenChange, onInteract, context =
 
   return <nav className="header-icon-nav" aria-label="Akun dan aktivitas">
     {signedIn && <>
+      <ChatTrigger onOpen={close} />
       <NotificationBell onOpen={close} />
       <Link className="header-icon-link header-activity-link" href="/app/penawaran" prefetch={false} aria-label="Penawaran saya" title="Penawaran saya" aria-current={active('/app/penawaran')} onClick={close}><ShoppingCart size={19} strokeWidth={1.6} aria-hidden="true" /></Link>
     </>}

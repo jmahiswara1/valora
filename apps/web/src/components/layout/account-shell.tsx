@@ -1,7 +1,7 @@
 'use client';
 
 import { HeaderAccountActions } from './header-account-actions';
-import { Search, BookOpen, LayoutDashboard, Bell, Heart, Package, Leaf, Store, Handshake, ReceiptText, MessageCircle, Menu, X, Settings, ShieldCheck, LogOut, ChevronRight, ArrowUpRight } from 'lucide-react';
+import { Search, BookOpen, LayoutDashboard, Bell, Heart, Package, Leaf, Store, Handshake, ReceiptText, Menu, X, Settings, ShieldCheck, LogOut, ChevronRight, ArrowUpRight } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useSession, useMe } from '@/lib/session';
@@ -23,7 +23,7 @@ const sections = [
     { href: '/app/listings', label: 'Listing saya', Icon: Store },
     { href: '/app/penawaran', label: 'Penawaran', Icon: Handshake },
     { href: '/app/transaksi', label: 'Transaksi', Icon: ReceiptText },
-    { href: '/app/pesan', label: 'Pesan', Icon: MessageCircle },
+
   ] },
 ];
 
@@ -83,7 +83,7 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
   if (session.state !== 'AUTHENTICATED' || session.verifiedPath !== pathname || !me.data) return <div className="account-gate" role="status">Menyiapkan akun…</div>;
   const user = me.data;
   const personalWorkspace = pathname === '/app' || sections[0].entries.some(({ href }) => href !== '/app' && (pathname === href || pathname.startsWith(href + '/')));
-  return <div className={`account-shell${pathname === '/app/pesan' || pathname.startsWith('/app/pesan/') ? ' account-shell-messages' : ''}`}>
+  return <div className="account-shell">
     <a className="account-skip" href="#account-main">Langsung ke konten</a>
     <aside className="account-sidebar"><Link href="/" className="wordmark">valora</Link><AccountNavigation /><div className="account-sidebar-bottom">
       <Link href="/app/profil" className="account-sidebar-person" aria-current={pathname === '/app/profil' ? 'page' : undefined}><ProfileAvatar photoUrl={user.profilePhotoUrl} displayName={user.displayName} className="account-avatar" /><div><strong>{user.displayName}</strong><span>{user.city.name}</span></div><Settings size={17} aria-hidden="true" /></Link>

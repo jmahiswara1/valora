@@ -13,7 +13,9 @@ export function useVisibleMessages(id: string, root: RefObject<HTMLElement | nul
     const visible = new Map<Element, number>();
     let timer: ReturnType<typeof setTimeout> | undefined, sending = false, active = true;
     const read = async () => {
-      if (!active || sending || document.visibilityState !== 'visible' || !visible.size || document.querySelector('dialog[open]')) return;
+      if (!active || sending || document.visibilityState !== 'visible' || !visible.size) return;
+      const dialogs = [...document.querySelectorAll<HTMLDialogElement>('dialog[open]')];
+      if (dialogs.length && !dialogs.at(-1)?.contains(root.current)) return;
       const actuallyVisible = [...visible].filter(([element]) => { const rect = element.getBoundingClientRect(); return rect.bottom > 0 && rect.top < innerHeight && rect.right > 0 && rect.left < innerWidth; });
       if (!actuallyVisible.length) return;
       const throughSequence = Math.max(...actuallyVisible.map(([, sequence]) => sequence));

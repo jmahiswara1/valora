@@ -1,3 +1,3 @@
-import { ConversationsPage } from '@/features/conversations/list';
+import { redirect } from 'next/navigation';
 
-export default function Page() { return <ConversationsPage />; }
+export default function Page() { redirect('/pesan'); }

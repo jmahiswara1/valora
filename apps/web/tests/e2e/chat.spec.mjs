@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const id = n => '00000000-0000-4000-8000-' + String(n).padStart(12, '0');
@@ -7,7 +8,7 @@ const user = { id: id(1), email: 'chat@demo.valora.local', displayName: 'Penggun
 const attachments = Array.from({ length: 3 }, (_, i) => ({ id: id(20 + i), mime: 'image/webp', bytes: 100, width: 800, height: 600, orderIndex: i }));
 const message = (n, mine = false, photos = []) => ({ id: id(100 + n), conversationId: id(3), senderId: mine ? user.id : id(2), body: photos.length ? '' : `Pesan ${n}: barang masih berfungsi dan siap digunakan kembali.`, clientMessageId: id(200 + n), sequence: n, attachments: photos, sentAt: '2026-10-06T10:00:00Z' });
 async function mock(page, count = 5) {
-  const state = { rows: Array.from({ length: count }, (_, i) => message(i + 1, i % 2 === 1, i === count - 1 ? attachments : [])), read: 0, peerRead: 0, requests: [], commitFail: false, uploadFail: false, hidden: false, missingList: false, historyFailure: false, otherConversations: [], transactionId: null, listingTitle: 'Kamera untuk cerita berikutnya', listFailure: false, detailFailure: false, emailVerified: true };
+  const state = { rows: Array.from({ length: count }, (_, i) => message(i + 1, i % 2 === 1, i === count - 1 ? attachments : [])), read: 0, peerRead: 0, requests: [], commitFail: false, uploadFail: false, hidden: false, missingList: false, historyFailure: false, otherConversations: [], transactionId: null, listingTitle: 'Kamera untuk cerita berikutnya', listFailure: false, detailFailure: false, emailVerified: true, guest: false };
   await page.addInitScript(() => {
     const original = window.EventSource;
     window.__chatStreams = 0;
@@ -20,9 +21,10 @@ async function mock(page, count = 5) {
   await page.route('**/api/v1/**', async route => {
     const req = route.request(), url = new URL(req.url()), path = url.pathname.slice(7), method = req.method(), body = method === 'POST' ? req.postDataJSON() : null;
     state.requests.push({ path, method, body, search: url.search });
-    if (path === '/auth/session') return ok(route, { state: 'AUTHENTICATED', sessionId: id(9), user: { ...user, emailVerifiedAt: state.emailVerified ? user.emailVerifiedAt : null }, serverTime: new Date().toISOString(), expiresAt: new Date(Date.now() + 86400000).toISOString() });
+    if (path === '/auth/session') return ok(route, { state: state.guest ? 'GUEST' : 'AUTHENTICATED', sessionId: state.guest ? null : id(9), user: state.guest ? null : { ...user, emailVerifiedAt: state.emailVerified ? user.emailVerifiedAt : null }, serverTime: new Date().toISOString(), expiresAt: new Date(Date.now() + 86400000).toISOString() });
     if (path === '/auth/csrf') return ok(route, { token: 'chat-csrf' });
     if (path === '/conversations/stream') return route.fulfill({ status: 503, body: '' });
+    if (path === '/conversations/unread-count') return ok(route, { count: conversation().unreadCount + state.otherConversations.reduce((n, row) => n + row.unreadCount, 0) });
     if (path === '/conversations') return state.listFailure ? route.fulfill({ status: 503, json: { error: { code: 'DEPENDENCY_UNAVAILABLE', message: 'Daftar gagal dimuat.' } } }) : ok(route, state.missingList ? [] : [conversation(), ...state.otherConversations]);
     if (path === `/conversations/${id(3)}`) return state.detailFailure ? route.fulfill({ status: 503, json: { error: { code: 'DEPENDENCY_UNAVAILABLE', message: 'Detail gagal dimuat.' } } }) : ok(route, conversation());
     const other = state.otherConversations.find(row => path === `/conversations/${row.id}`);
@@ -44,7 +46,90 @@ async function mock(page, count = 5) {
   });
   return state;
 }
-const payload = n => ({ name: `foto-${n}.webp`, mimeType: 'image/webp', buffer: Buffer.from('browser-upload-fixture') });
+const payload = n => ({ name: `foto-${n}.webp`, mimeType: 'image/webp', buffer: readFileSync(resolve('public/images/keyboard.webp')) });
+
+test('global chat opens a dialog, keeps drafts and expands outside the account workspace', async ({ page }, info) => {
+  const state = await mock(page);
+  state.transactionId = id(600);
+  await page.goto('/tentang-kami');
+  const trigger = page.locator(info.project.name === 'desktop' ? '.chat-launcher' : '.chat-navbar-trigger');
+  await expect(trigger).toBeVisible(); await expect(trigger).toHaveAttribute('aria-label', 'Buka pesan, 3 belum dibaca');
+  expect(state.read).toBe(0);
+  await trigger.click();
+  const dialog = page.getByRole('dialog', { name: 'Pesan', exact: true });
+  await expect(dialog).toBeVisible(); await expect(page).toHaveURL(/\/tentang-kami$/);
+  await expect(dialog.locator('.conversation-row')).toHaveCount(1); expect(state.read).toBe(0);
+  await dialog.locator('.conversation-row').click();
+  await expect(dialog.getByRole('heading', { name: 'Kamera untuk cerita berikutnya' })).toBeVisible();
+  await expect.poll(() => state.read).toBe(5);
+  const history = await dialog.locator('.chat-messages').boundingBox();
+  expect(history.height).toBeGreaterThanOrEqual(info.project.name === 'desktop' ? 500 : 400);
+  if (info.project.name === 'desktop') expect(history.width).toBeGreaterThanOrEqual(900);
+  const initialComposer = await dialog.getByRole('textbox', { name: 'Pesan', exact: true }).boundingBox();
+  expect(initialComposer.height).toBeLessThanOrEqual(52);
+  const photo = dialog.getByRole('button', { name: 'Buka foto 1 dari 3' });
+  await photo.click(); await expect(page.getByRole('dialog', { name: 'Foto dalam percakapan' })).toBeVisible();
+  await page.keyboard.press('Escape'); await expect(dialog).toBeVisible(); await expect(photo).toBeFocused();
+  await dialog.getByRole('textbox', { name: 'Pesan', exact: true }).fill('Draf tetap tersedia saat diperluas.');
+  await dialog.getByLabel('Pilih foto pesan').setInputFiles(payload(1));
+  await expect(dialog.getByText('Siap', { exact: true })).toHaveCount(1);
+  await expect(page.locator('.account-sidebar')).toHaveCount(0);
+  await page.keyboard.press('Escape'); await expect(dialog).toHaveCount(0); await expect(trigger).toBeFocused();
+  await trigger.click(); await dialog.locator('.conversation-row').click();
+  await expect(dialog.getByRole('textbox', { name: 'Pesan', exact: true })).toHaveValue('Draf tetap tersedia saat diperluas.');
+  await expect(dialog.getByText('Siap', { exact: true })).toHaveCount(1);
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  const folder = resolve('.impeccable/review/chat'); await mkdir(folder, { recursive: true });
+  await page.screenshot({ path: resolve(folder, `global-dialog-${info.project.name}.png`), fullPage: false });
+  await dialog.getByRole('link', { name: 'Buka halaman chat penuh' }).click();
+  await expect(page).toHaveURL(new RegExp(`/pesan/${id(3)}$`)); await expect(dialog).toHaveCount(0);
+  await expect(page.locator('.account-sidebar, .account-main')).toHaveCount(0);
+  await expect(page.getByRole('textbox', { name: 'Pesan', exact: true })).toHaveValue('Draf tetap tersedia saat diperluas.');
+  await expect(page.getByText('Siap', { exact: true })).toHaveCount(1);
+  await page.getByRole('button', { name: 'Kirim', exact: true }).click();
+  await expect(page.getByRole('textbox', { name: 'Pesan', exact: true })).toHaveValue('');
+  expect(state.rows.at(-1).body).toBe('Draf tetap tersedia saat diperluas.'); expect(state.rows.at(-1).attachments).toHaveLength(1);
+  expect(state.requests.filter(r => r.path.endsWith('/messages') && r.method === 'POST')).toHaveLength(1);
+  await expectWorkspaceFits(page);
+});
+
+test('launcher switches between floating desktop and navbar on tablet and phone', async ({ page }) => {
+  await mock(page); await page.goto('/tentang-kami');
+  for (const width of [320, 390, 768, 1024, 1199, 1200, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    const visible = width >= 1200 ? '.chat-launcher' : '.chat-navbar-trigger';
+    const hidden = width >= 1200 ? '.chat-navbar-trigger' : '.chat-launcher';
+    await expect(page.locator(visible)).toBeVisible(); await expect(page.locator(hidden)).toBeHidden();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+  await page.goto('/app');
+  await expect(page.locator('.account-nav a[href="/pesan"], .account-nav a[href="/app/pesan"]')).toHaveCount(0);
+  await page.setViewportSize({ width: 768, height: 900 });
+  await page.locator('.chat-navbar-trigger').click();
+  await expect(page.getByRole('dialog', { name: 'Pesan', exact: true })).toBeVisible();
+  await expect(page).toHaveURL(/\/app$/);
+});
+
+test('standalone chat protects access, supports old links and clears drafts when the session changes', async ({ page }, info) => {
+  const state = await mock(page); state.guest = true;
+  await page.goto('/pesan/' + id(3));
+  await expect(page).toHaveURL(new RegExp('/masuk\\?next=%2Fpesan%2F' + id(3)));
+  expect(state.requests.some(row => row.path === '/conversations' || row.path.endsWith('/messages'))).toBe(false);
+  state.guest = false; await page.goto('/app/pesan/' + id(3));
+  await expect(page).toHaveURL(new RegExp(`/pesan/${id(3)}$`));
+  await expect(page.locator('.chat-messages')).toBeVisible();
+  await page.getByRole('textbox', { name: 'Pesan', exact: true }).fill('Draf privat sesi sebelumnya.');
+  await page.goto('/tentang-kami');
+  const trigger = page.locator(info.project.name === 'desktop' ? '.chat-launcher' : '.chat-navbar-trigger');
+  await trigger.click(); await page.locator('.conversation-row').click();
+  await page.getByRole('dialog', { name: 'Pesan', exact: true }).getByRole('textbox', { name: 'Pesan', exact: true }).fill('Draf privat sesi sebelumnya.');
+  state.guest = true; await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+  await expect(page.getByRole('dialog', { name: 'Pesan', exact: true })).toHaveCount(0);
+  await expect(trigger).toHaveCount(0);
+  state.guest = false; await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+  await trigger.click(); await page.locator('.conversation-row').click();
+  await expect(page.getByRole('textbox', { name: 'Pesan', exact: true })).toHaveValue('');
+});
 
 function fillInbox(state, count = 35) {
   state.otherConversations = Array.from({ length: count }, (_, i) => ({ id: id(800 + i), listingId: id(900 + i), listingTitle: `Barang pilihan ${i + 1}`, transactionId: null, participant: { id: id(1000 + i), displayName: `Anggota ${i + 1}`, profilePhotoUrl: null }, lastMessage: message(1), unreadCount: i % 2 ? 0 : 2, readSequence: 0, peerReadSequence: 0, messageSequence: 65, updatedAt: '2026-10-06T10:00:00Z' }));
@@ -68,7 +153,7 @@ async function expectLatestInHistory(page, sequence) {
 
 test('photos, receipt, profile, lightbox keyboard and responsive composition', async ({ page }, info) => {
   const state = await mock(page); state.peerRead = 4; state.missingList = true;
-  await page.goto('/app/pesan/' + id(3));
+  await page.goto('/pesan/' + id(3));
   await expect(page.getByRole('heading', { name: 'Kamera untuk cerita berikutnya' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Buka profil Nadia Putri' })).toHaveAttribute('href', '/profil/' + id(2));
   await expect(page.getByRole('img', { name: 'Dibaca', exact: true }).first()).toBeVisible();
@@ -95,16 +180,16 @@ test('photos, receipt, profile, lightbox keyboard and responsive composition', a
   if (info.project.name === 'mobile') { await page.setViewportSize({ width: 320, height: 844 }); await page.evaluate(() => window.scrollTo(0, 0)); await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true); await page.screenshot({ path: resolve(folder, 'mobile-320.png'), fullPage: true }); }
 });
 test('upload errors preserve draft and uncertain commits recover without duplicate send', async ({ page }) => {
-  const state = await mock(page); await page.goto('/app/pesan/' + id(3)); state.uploadFail = true;
-  await page.getByLabel('Pesan', { exact: true }).fill('Ini foto kondisinya.'); await page.getByLabel('Pilih foto pesan').setInputFiles(payload(1));
+  const state = await mock(page); await page.goto('/pesan/' + id(3)); state.uploadFail = true;
+  await page.getByRole('textbox', { name: 'Pesan', exact: true }).fill('Ini foto kondisinya.'); await page.getByLabel('Pilih foto pesan').setInputFiles(payload(1));
   await expect(page.getByText('Unggah gagal', { exact: true })).toBeVisible(); await expect(page.getByRole('button', { name: 'Kirim', exact: true })).toBeDisabled();
   state.uploadFail = false; await page.getByRole('button', { name: 'Coba lagi', exact: true }).click(); await expect(page.getByText('Siap', { exact: true })).toBeVisible();
-  state.commitFail = true; await page.getByRole('button', { name: 'Kirim', exact: true }).click(); await expect(page.getByRole('button', { name: 'Periksa status pesan' })).toBeVisible(); await expect(page.getByLabel('Pesan', { exact: true })).toHaveValue('Ini foto kondisinya.');
-  await page.getByRole('button', { name: 'Periksa status pesan' }).click(); await expect(page.getByLabel('Pesan', { exact: true })).toHaveValue(''); expect(state.requests.filter(r => r.path.endsWith('/messages') && r.method === 'POST')).toHaveLength(1);
+  state.commitFail = true; await page.getByRole('button', { name: 'Kirim', exact: true }).click(); await expect(page.getByRole('button', { name: 'Periksa status pesan' })).toBeVisible(); await expect(page.getByRole('textbox', { name: 'Pesan', exact: true })).toHaveValue('Ini foto kondisinya.');
+  await page.getByRole('button', { name: 'Periksa status pesan' }).click(); await expect(page.getByRole('textbox', { name: 'Pesan', exact: true })).toHaveValue(''); expect(state.requests.filter(r => r.path.endsWith('/messages') && r.method === 'POST')).toHaveLength(1);
 });
 test('read waits for visible loaded messages and history pagination preserves position', async ({ page }) => {
   const state = await mock(page, 65); state.historyFailure = true;
-  await page.goto('/app/pesan/' + id(3)); await expect(page.getByText('Histori pesan gagal dimuat.')).toBeVisible(); expect(state.read).toBe(0);
+  await page.goto('/pesan/' + id(3)); await expect(page.getByText('Histori pesan gagal dimuat.')).toBeVisible(); expect(state.read).toBe(0);
   await page.evaluate(() => { window.__chatVisibility = 'hidden'; document.dispatchEvent(new Event('visibilitychange')); }); state.historyFailure = false;
   await page.getByRole('button', { name: 'Coba lagi', exact: true }).click(); await expect(page.locator('[data-sequence="65"]')).toBeVisible(); expect(state.read).toBe(0);
   await page.evaluate(() => { window.__chatVisibility = 'visible'; document.dispatchEvent(new Event('visibilitychange')); }); await expect.poll(() => state.read).toBe(65);
@@ -116,7 +201,7 @@ test('long inbox and history scroll independently with a compact agreement and v
   const state = await mock(page, 65); fillInbox(state); state.transactionId = id(600);
   state.listingTitle = 'Perlengkapan menggambar dasar untuk berkarya bersama dengan judul barang yang sangat panjang dan tetap mudah dibaca';
   state.emailVerified = false;
-  await page.goto('/app/pesan/' + id(3));
+  await page.goto('/pesan/' + id(3));
   await expect(page.locator('[data-sequence="65"]')).toBeAttached();
   await expectWorkspaceFits(page); await expectLatestInHistory(page, 65);
   const agreement = page.getByRole('link', { name: 'Buka kesepakatan', exact: true });
@@ -157,7 +242,7 @@ test('long inbox and history scroll independently with a compact agreement and v
 
 test('inbox search and unread filter compose without affecting the open thread', async ({ page }, info) => {
   const state = await mock(page); fillInbox(state, 6);
-  await page.goto('/app/pesan');
+  await page.goto('/pesan');
   const list = page.locator('.conversation-list'); await expect(list.locator('.conversation-row')).toHaveCount(7);
   const search = page.getByRole('searchbox', { name: 'Cari percakapan' });
   await search.focus(); await page.keyboard.type('aNGGota'); await expect(list.locator('.conversation-row')).toHaveCount(6);
@@ -191,7 +276,7 @@ test('inbox loading, empty and retry states stay inside the message workspace', 
   let release;
   const pending = new Promise(resolve => { release = resolve; });
   await page.route('**/api/v1/conversations', async route => { await pending; await route.fallback(); });
-  await page.goto('/app/pesan');
+  await page.goto('/pesan');
   await expect(page.locator('.conversation-scroll .account-skeleton').first()).toBeVisible();
   release();
   await expect(page.getByText('Percakapan gagal dimuat.')).toBeVisible();
@@ -201,7 +286,7 @@ test('inbox loading, empty and retry states stay inside the message workspace', 
   await expect(page.getByRole('link', { name: 'Jelajahi Market' })).toHaveAttribute('href', '/market');
   await expectWorkspaceFits(page);
   state.detailFailure = true;
-  await page.goto('/app/pesan/' + id(3));
+  await page.goto('/pesan/' + id(3));
   await expect(page.getByText('Percakapan gagal dimuat.')).toBeVisible();
   state.detailFailure = false;
   await page.getByRole('button', { name: 'Coba lagi', exact: true }).click();

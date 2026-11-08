@@ -23,7 +23,7 @@ test('real photo message, grouped notification, visible read receipt and private
     const response = await buyerAccount.request(`/listings/${listing.id}/conversations`, { method: 'POST' }); expect(response.status).toBe(201); const conversation = response.payload.data;
     async function cookies(context, account) { await context.addCookies(account.cookieHeader().split('; ').map(cookie => { const split = cookie.indexOf('='); return { name: cookie.slice(0, split), value: cookie.slice(split + 1), domain: '127.0.0.1', path: '/', httpOnly: true, sameSite: 'Lax' }; })); }
     await cookies(page.context(), buyerAccount);
-    await page.goto('/app/pesan/' + conversation.id);
+    await page.goto('/pesan/' + conversation.id);
     const imagePath = resolve('public/images/keyboard.webp'); await page.getByLabel('Pilih foto pesan').setInputFiles([imagePath, imagePath, imagePath]); await expect(page.getByText('Siap', { exact: true })).toHaveCount(3);
     await page.getByLabel('Pesan', { exact: true }).fill('Tiga foto kondisi barang.'); await page.getByRole('button', { name: 'Kirim', exact: true }).click();
     await expect(page.locator('.chat-message-mine').getByRole('img', { name: 'Terkirim', exact: true })).toBeVisible();
@@ -36,7 +36,7 @@ test('real photo message, grouped notification, visible read receipt and private
     await ownerPage.getByRole('button', { name: 'Pesan', exact: true }).click(); await expect(ownerPage.locator('.notification-entry')).toHaveCount(1); await ownerPage.getByRole('link', { name: /Pesan baru/ }).click();
     await expect(ownerPage.getByText('Tiga foto kondisi barang.', { exact: true })).toBeVisible(); await expect.poll(async () => { const row = await db.conversation.findUniqueOrThrow({ where: { id: conversation.id } }); return row.participantAId === owner.id ? row.readSequenceA : row.readSequenceB; }).toBe(2);
     await expect(page.getByRole('img', { name: 'Dibaca', exact: true })).toHaveCount(2);
-    const trigger = ownerPage.getByRole('button', { name: 'Buka foto 1 dari 3' }); await trigger.click(); await expect(ownerPage.getByRole('dialog').locator('img')).toBeVisible(); await ownerPage.keyboard.press('Escape'); await expect(trigger).toBeFocused();
+    const trigger = ownerPage.getByRole('button', { name: 'Buka foto 1 dari 3' }); await trigger.click(); await expect(ownerPage.getByRole('dialog', { name: 'Foto dalam percakapan' }).locator('img')).toBeVisible(); await ownerPage.keyboard.press('Escape'); await expect(trigger).toBeFocused();
     await expect(ownerPage.getByRole('link', { name: 'Buka profil Pemilik Chat' })).toHaveAttribute('href', '/profil/' + buyer.id);
     expect(await db.inAppNotification.count({ where: { conversationId: conversation.id, userId: owner.id, readAt: null } })).toBe(0);
   } finally { await ownerContext?.close(); await db.$disconnect(); }

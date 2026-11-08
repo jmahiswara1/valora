@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { ChatLink } from '@/features/conversations/link';
 import { ArrowUpRight, CheckCheck, ChevronRight, Handshake, MessageCircle, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -40,8 +41,8 @@ export default function Dashboard() {
         <Link className="account-activity-footer" href="/app/penawaran">Lihat penawaran <ChevronRight size={15} aria-hidden="true" /></Link>
       </section>
       <section className="account-activity dashboard-messages" aria-labelledby="dashboard-messages"><div className="account-activity-heading"><div className="dashboard-section-title"><MessageCircle size={20} aria-hidden="true" /><h2 id="dashboard-messages">Pesan baru</h2></div></div>
-        {messages.isPending ? <AccountSkeleton /> : messages.isError ? <AccountError retry={() => messages.refetch()}>Pesan gagal dimuat.</AccountError> : unreadMessages.length ? <ul className="dashboard-task-list">{unreadMessages.slice(0, 3).map(row => <li key={row.id}><Link className="dashboard-message-link" href={`/app/pesan/${row.id}`}><ProfileAvatar photoUrl={null} displayName={row.participant.displayName} className="dashboard-participant" /><span><strong>{row.participant.displayName}</strong><small>{row.listingTitle}</small><span className="dashboard-message-count">{row.unreadCount} belum dibaca</span></span><ChevronRight size={16} aria-hidden="true" /></Link></li>)}</ul> : <div className="dashboard-empty"><MessageCircle size={22} aria-hidden="true" /><div><strong>Belum ada pesan baru.</strong><p>Percakapanmu tetap tersimpan di halaman Pesan.</p></div></div>}
-        <Link className="account-activity-footer" href="/app/pesan">Buka pesan <ChevronRight size={15} aria-hidden="true" /></Link>
+        {messages.isPending ? <AccountSkeleton /> : messages.isError ? <AccountError retry={() => messages.refetch()}>Pesan gagal dimuat.</AccountError> : unreadMessages.length ? <ul className="dashboard-task-list">{unreadMessages.slice(0, 3).map(row => <li key={row.id}><ChatLink className="dashboard-message-link" conversationId={row.id}><ProfileAvatar photoUrl={null} displayName={row.participant.displayName} className="dashboard-participant" /><span><strong>{row.participant.displayName}</strong><small>{row.listingTitle}</small><span className="dashboard-message-count">{row.unreadCount} belum dibaca</span></span><ChevronRight size={16} aria-hidden="true" /></ChatLink></li>)}</ul> : <div className="dashboard-empty"><MessageCircle size={22} aria-hidden="true" /><div><strong>Belum ada pesan baru.</strong><p>Percakapanmu tetap tersimpan di halaman Pesan.</p></div></div>}
+        <ChatLink className="account-activity-footer">Buka pesan <ChevronRight size={15} aria-hidden="true" /></ChatLink>
       </section>
     </div>
     <DashboardNotifications />

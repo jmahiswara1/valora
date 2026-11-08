@@ -27,6 +27,12 @@ colors:
   account-dialog-backdrop: "rgb(15 34 22 / 40%)"
   account-danger-hover: "#842d21"
 typography:
+  wordmark-compact:
+    fontFamily: "Plus Jakarta Sans, Arial, sans-serif"
+    fontSize: "1.2rem"
+    fontWeight: 700
+    lineHeight: 1
+    letterSpacing: "-0.04em"
   display:
     fontFamily: "\"Plus Jakarta Sans\", Arial, sans-serif"
     fontSize: "clamp(42px, 4.6vw, 62px)"
@@ -995,7 +1001,7 @@ Ringkasan menampilkan jenis, kategori, judul lengkap, harga/tujuan, kota, kondis
 
 ListingActions memisahkan pemeriksaan sesi, sesi gagal dengan Coba lagi, tamu, email belum terverifikasi, dan sesi terverifikasi. Tamu menuju /masuk dengan next detail yang sama; safeNext menerima /market dan detail UUID yang valid serta mempertahankan guard tujuan /app dan admin. Email belum terverifikasi menyediakan tautan verifikasi dengan email. Aksi primer terverifikasi membuka form inline dan memfokuskan field pertama yang aktif; penutupan mengembalikan fokus ke pemicu. Form RESELL memakai nominal, EXCHANGE memakai pilihan barang dengan recovery kosong/gagal, dan DONATE memakai pesan opsional. Label/helper, required native, teks 16px, aria-busy, fieldset disabled, dan label pending mengikuti state nyata.
 
-Guard pending sinkron melindungi penawaran dan chat dari permintaan ganda. Retry payload penawaran yang identik mempertahankan clientRequestId; perubahan payload menghasilkan ID baru. Perubahan versi/revision mereset state aksi. STATE_CONFLICT memberi Muat ulang detail; EMAIL_UNVERIFIED memberi recovery verifikasi; keberhasilan menampilkan status Sage dan tautan /app/penawaran. Chat membuka /app/pesan/[id] dengan error/retry yang terlihat. Endpoint/payload dan pemeriksaan kelayakan, pemilik, atau blokir tetap mengikuti kontrak backend; DTO publik tidak menambahkan ownerId.
+Guard pending sinkron melindungi penawaran dan chat dari permintaan ganda. Retry payload penawaran yang identik mempertahankan clientRequestId; perubahan payload menghasilkan ID baru. Perubahan versi/revision mereset state aksi. STATE_CONFLICT memberi Muat ulang detail; EMAIL_UNVERIFIED memberi recovery verifikasi; keberhasilan menampilkan status Sage dan tautan /app/penawaran. Chat membuka modal pada halaman asal, dengan expand ke /pesan/[id] dan error/retry yang terlihat. Endpoint/payload dan pemeriksaan kelayakan, pemilik, atau blokir tetap mengikuti kontrak backend; DTO publik tidak menambahkan ownerId.
 
 Loading memakai status dan placeholder statis 4:3; 400/404/410 menawarkan kembali ke Market, gangguan transport memberi retry. RESERVED menampilkan status kesepakatan tanpa galeri, pemilik, atau aksi penawaran. RelatedListings meminta kategori yang sama, menyaring ACTIVE, mengecualikan Listing saat ini, dan membatasi empat MarketCard. Loading/error memiliki status/retry; hasil kosong menyembunyikan section. Preview sidecar menunjukkan form terbuka secara statis; sesi, fokus, submit, retry, dan navigasi dijalankan komponen aplikasi.
 
@@ -1015,7 +1021,7 @@ Badge memakai Soft Sage/Forest; variant warning memakai Account Warning Surface/
 
 Listing pemilik, penawaran, transaksi, dan koreksi peserta mempertahankan status, revisi/version, pemulihan konflik, idempotency, akses sesuai peran, reservasi, bukti privat, dan konfirmasi kritis yang sudah diterapkan. Dialog konfirmasi membatasi lebar min(560px, calc(100vw - 32px)) dan tinggi calc(100dvh - 32px), padding 26px/22px hingga 600px, border Surface Line, radius card, serta backdrop Account Dialog Backdrop. Checkbox persetujuan required dan pending guard tetap tersedia. Area Admin memakai cabang lama; override pengguna tidak menjadi token Admin.
 
-Composer chat sticky bottom 0 memakai textarea fleksibel min-height 52px/maksimum 140px, resize vertical, gap 12px/8px hingga 600px. Kirim memiliki width auto dan flex 0 0 auto agar ruang ketik tetap terbaca; inset horizontal tombol ponsel 15px. Histori Cream berpadding 20px/14px ponsel, lebar bubble maksimum min(85%, 65ch)/92% ponsel, teks 15px, dan secondary metadata Account Secondary Text. Bubble lawan putih, bubble sendiri Sage, dan arah sudut kecil berbeda. Memuat riwayat mempertahankan posisi scroll; pending dan retry tidak membuang draft atau mengganti ID retry identik.
+Composer chat berada pada footer intrinsik dalam dialog global atau halaman /pesan, memakai textarea fleksibel min-height 52px/maksimum 140px, resize vertical, gap 12px/8px hingga 600px. Kirim memiliki width auto dan flex 0 0 auto agar ruang ketik tetap terbaca; inset horizontal tombol ponsel 15px. Histori Cream berpadding 20px/14px ponsel, lebar bubble maksimum min(85%, 65ch)/92% ponsel, teks 15px, dan secondary metadata Account Secondary Text. Bubble lawan putih, bubble sendiri Sage, dan arah sudut kecil berbeda. Memuat riwayat mempertahankan posisi scroll; pending dan retry tidak membuang draft atau mengganti ID retry identik.
 
 Passport pemilik memakai summary Cream dan foto contain, timeline dengan sumber/asal peristiwa, serta status publik yang tetap dijelaskan. Impact pengguna menampilkan periode Asia/Jakarta, satuan rupiah/kg, sumber, coverage berat, dan Belum tersedia tanpa angka pengganti. Profil memisahkan informasi/foto/sesi dari kata sandi dan penutupan akun; password toggle 42px berlabel dengan aria-pressed, pencabutan sesi memakai konfirmasi native, dan penutupan meminta teks TUTUP. Foto profil mempertahankan crop/zoom serta status unggah yang sudah ada.
 
@@ -1120,3 +1126,13 @@ minimal 44 px. Phone menyusun aksi vertikal. Fokus awal pada tombol tutup,
 Escape mengembalikan fokus, dan pergantian akun membersihkan dialog. PNG
 1024 px berisi QR URL publik saja, bukan data privat barang. Detail ada pada
 `.impeccable/briefs/passport-qr.md` dan `docs/25-passport-qr.md`.
+
+
+## Chat global (8 November 2026)
+
+Chat memakai [brief chat](.impeccable/briefs/chat.md). Desktop mulai 1200px menyediakan tombol melayang Forest di kanan bawah; ponsel/tablet memakai ikon navbar dengan badge pesan belum dibaca. Klik membuka modal native dengan tutup dan expand menuju halaman mandiri /pesan atau /pesan/[id], tanpa sidebar akun. Rute /app/pesan lama hanya mengalihkan. Draf teks/foto dan pemulihan kirim berada dalam memori sesi yang sama, termasuk saat expand. Modal dan halaman berbagi chat-surface, dengan scroll panel/histori terpisah, kontrol 44px, serta fokus dan Escape yang membedakan dialog chat dari dialog foto/konfirmasi di atasnya.
+
+
+### Proporsi modal chat
+
+Modal chat desktop memakai lebar min(1280px, 100vw - 32px) dan tinggi 100dvh - 32px, dengan inset kanan/bawah 16px. Pada ponsel hingga 600px modal memakai seluruh viewport dinamis dan safe area. Toolbar 56px, panel percakapan 280px (260px pada container menengah), dan padding yang lebih rapat memberi ruang utama untuk histori. Composer mulai satu baris dan tumbuh otomatis hingga 120px; foto draf 80px. Ukuran kontrol tetap minimal 44px.

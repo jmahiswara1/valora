@@ -288,7 +288,7 @@ test('shared account navbar and long identity fit supported widths', async ({ pa
     for (const [surface, path] of [['home', '/'], ['app', '/app/notifikasi']]) {
       await page.goto(path); await expect(bell(page)).toBeVisible();
       const icons = page.locator('.header-icon-nav');
-      await expect(icons.locator('.header-icon-link:visible')).toHaveCount(width <= 700 ? 3 : 4);
+      await expect(icons.locator('.header-icon-link:visible')).toHaveCount(width <= 700 ? 4 : width < 1200 ? 5 : 4);
       for (const icon of await icons.locator('.header-icon-link:visible').all()) {
         const box = await icon.boundingBox(); expect(box.width).toBeGreaterThanOrEqual(44); expect(box.height).toBeGreaterThanOrEqual(44);
       }

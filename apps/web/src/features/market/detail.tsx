@@ -7,6 +7,7 @@ import { CashEditor, cashDraft, cashValue } from '@/features/exchange/cash';
 import type { PublicListingDto, OfferDto, ConversationDto } from '@valora/contracts';
 import { useState, useRef } from 'react';
 import { ImageOff, ArrowUpRight, MessageCircle, Check, X, ArrowLeft, PackageCheck, MapPin } from 'lucide-react';
+import { useChat } from '@/features/conversations/context';
 import { useSession } from '@/lib/session';
 import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
@@ -42,6 +43,7 @@ function ListingGallery({ listing }: { listing: ActiveListing }) {
 
 function ListingActions({ listing, reload }: { listing: ActiveListing; reload: () => void }) {
   const session = useSession();
+  const chat = useChat();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [price, setPrice] = useState(listing.revision.askingPriceIdr?.toString() ?? '');
@@ -88,7 +90,7 @@ function ListingActions({ listing, reload }: { listing: ActiveListing; reload: (
   async function openChat() {
     if (pending.current || !verified) return;
     pending.current = true; setBusy('chat'); setError(''); setErrorCode('');
-    try { const conversation = await api<ConversationDto>(`/listings/${listing.id}/conversations`, { method: 'POST' }); router.push(`/app/pesan/${conversation.id}`); }
+    try { const conversation = await api<ConversationDto>(`/listings/${listing.id}/conversations`, { method: 'POST' }); chat.open(conversation.id); }
     catch (cause) { handleError(cause); }
     finally { pending.current = false; setBusy(null); }
   }

@@ -66,7 +66,7 @@ test('overview keeps real previews, private recent photos and direct routes', as
   await expect(offersPanel(page).locator('li')).toHaveCount(3); await expect(messagesPanel(page).locator('li')).toHaveCount(3);
   await expect(offersPanel(page)).toContainText('Rp 250.000'); await expect(offersPanel(page)).toContainText('Tukar barang'); await expect(offersPanel(page)).toContainText('Permintaan donasi');
   await expect(offersPanel(page).locator('li a').first()).toHaveAttribute('href', `/app/penawaran/${id(30)}`);
-  await expect(messagesPanel(page).locator('li a').first()).toHaveAttribute('href', `/app/pesan/${id(50)}`);
+  await expect(messagesPanel(page).locator('li a').first()).toHaveAttribute('href', `/pesan/${id(50)}`);
   await expect(page.getByRole('link', { name: 'Tambah barang', exact: true })).toHaveAttribute('href', '/app/barang/baru');
   await expect(page.locator('.item-card img')).toHaveCount(4);
   expect(state.requests.find(row => row.path === '/items').search).toBe('?limit=4');

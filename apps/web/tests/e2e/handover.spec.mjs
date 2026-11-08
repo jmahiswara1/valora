@@ -55,12 +55,13 @@ for (const actor of [2, 3]) {
     const form = choices.getByRole('button', { name: 'Atur serah terima', exact: true });
     await expect(form).toBeVisible();
     const chat = choices.getByRole('link', { name: 'Langsung ke chat', exact: true });
-    await expect(chat).toHaveAttribute('href', `/app/pesan/${id(88)}`);
+    await expect(chat).toHaveAttribute('href', `/pesan/${id(88)}`);
     await expect(choices).toContainText(`Diskusikan serah terima dengan ${actor === 2 ? 'Bima' : 'Dara'}.`);
-    await chat.click(); await expect(page).toHaveURL(new RegExp(`/app/pesan/${id(88)}$`));
+    await chat.click(); await expect(page).toHaveURL(new RegExp(`/app/transaksi/${id(10)}$`));
+    await expect(page.getByRole('dialog', { name: 'Pesan', exact: true })).toBeVisible();
     await expect(page.getByRole('link', { name: `Buka profil ${actor === 2 ? 'Bima' : 'Dara'}`, exact: true })).toHaveAttribute('href', `/profil/${id(actor === 2 ? 3 : 2)}`);
     await expect(page.locator('.chat-listing-title')).toHaveText('Keyboard mekanik');
-    await expect(page.getByRole('dialog')).toHaveCount(0);
+    await expect(page.getByRole('dialog', { name: 'Pesan', exact: true })).toHaveCount(1);
     expect(state.writes).toHaveLength(0); expect(state.pending).toBeNull();
     expect(state.requests.some(request => request.method === 'POST' && request.path.endsWith('/messages'))).toBe(false);
     await page.getByRole('link', { name: 'Buka kesepakatan', exact: true }).click();

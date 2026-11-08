@@ -79,7 +79,7 @@ test('disabled buttons and hover keep their shape and scope excludes other works
   await remove.click(); const confirm = page.getByRole('dialog').getByRole('button', { name: 'Hapus foto', exact: true });
   await expect(confirm).toBeDisabled(); expect((await buttonStyle(confirm)).minHeight).toBe('44px');
   await page.keyboard.press('Escape'); await expect(remove).toBeFocused();
-  for (const path of ['/app/listings', '/app/penawaran', '/app/pesan', '/app/profil', '/market', '/']) {
+  for (const path of ['/app/listings', '/app/penawaran', '/pesan', '/app/profil', '/market', '/']) {
     await page.goto(path); await expect(page.locator('[data-workspace="personal"]')).toHaveCount(0);
     if (!path.startsWith('/app')) await expect(page.locator('.header-account-trigger')).toBeVisible();
   }
