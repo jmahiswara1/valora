@@ -1,0 +1,178 @@
+.launcher {
+  position: fixed;
+  right: max(24px, env(safe-area-inset-right));
+  bottom: max(24px, env(safe-area-inset-bottom));
+  z-index: 40;
+
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border: 1px solid #456d53;
+  border-radius: 50%;
+
+  color: #fff;
+  background: #28563d;
+  box-shadow: 0 4px 14px rgb(24 56 37 / 20%);
+  cursor: pointer;
+  transition: background 150ms ease, transform 150ms ease;
+}
+
+.launcherLabel {
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.06em;
+}
+
+/* Pada desktop, beri ruang untuk tombol Pesan jika tombol itu tampil. */
+@media (min-width: 1200px) {
+  :global(body:has(.chat-launcher)) .launcher {
+    bottom: calc(max(24px, env(safe-area-inset-bottom)) + 68px);
+  }
+}
+
+/* Valora menyembunyikan tombol Pesan melayang pada perangkat sentuh. */
+@media (hover: none) and (pointer: coarse) {
+  :global(body:has(.chat-launcher)) .launcher {
+    bottom: max(24px, env(safe-area-inset-bottom));
+  }
+}
+
+@media (hover: hover) {
+  .launcher:hover {
+    background: #1e4731;
+    transform: translateY(-2px);
+  }
+}
+
+.launcher:focus-visible,
+.closeButton:focus-visible {
+  outline: 3px solid #78a887;
+  outline-offset: 4px;
+}
+
+.panel {
+  position: fixed;
+  inset: auto max(20px, env(safe-area-inset-right))
+    max(20px, env(safe-area-inset-bottom)) auto;
+  box-sizing: border-box;
+  width: min(420px, calc(100vw - 32px));
+  max-width: none;
+  max-height: min(680px, calc(100dvh - 40px));
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+
+  border: 1px solid #d4dfd5;
+  border-radius: 20px;
+  background: #fff;
+  color: #21372a;
+  box-shadow: 0 16px 56px rgb(20 45 30 / 22%);
+}
+
+.panel[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.panel::backdrop {
+  background: rgb(16 32 22 / 16%);
+}
+
+.header {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px 12px 18px;
+  border-bottom: 1px solid #e1e9e1;
+  background: #fff;
+}
+
+.identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.headerIcon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 11px;
+  background: #e6f0e4;
+  color: #28563d;
+}
+
+.title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.closeButton {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  color: #34503e;
+  background: transparent;
+  cursor: pointer;
+}
+
+.closeButton:hover {
+  background: #eef3ed;
+}
+
+.content {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Formulir lama memiliki jarak dan bingkai inline untuk versi beranda. */
+.content > section {
+  margin: 0 !important;
+  padding: 20px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+}
+
+.content > section h2 {
+  font-size: 1.25rem;
+}
+
+@media (max-width: 639px) {
+  .launcher {
+    right: max(16px, env(safe-area-inset-right));
+    bottom: max(16px, env(safe-area-inset-bottom));
+  }
+
+  .panel {
+    right: max(8px, env(safe-area-inset-right));
+    bottom: max(8px, env(safe-area-inset-bottom));
+    left: max(8px, env(safe-area-inset-left));
+    width: auto;
+    max-height: calc(100dvh - 24px);
+    border-radius: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .launcher {
+    transition: none;
+  }
+}
