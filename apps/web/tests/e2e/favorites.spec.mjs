@@ -61,12 +61,17 @@ async function mock(page, { guest = false, count = 3, saved = false } = {}) {
   return state;
 }
 
-test('guest opens login without a private Favorite request', async ({ page }) => {
+test('guest sees no Favorite controls and makes no private Favorite request', async ({ page }) => {
   const state = await mock(page, { guest: true });
   await page.goto('/market');
-  const heart = page.locator('.market-card .favorite-button').first();
-  await expect(heart).toBeEnabled(); await heart.click();
-  await expect(page).toHaveURL(/\/masuk\?next=%2Fmarket%2F/);
+  await expect(page.locator('.market-card').first()).toBeVisible();
+  await expect(page.locator('.favorite-button')).toHaveCount(0);
+  await expect(page.locator('.header-favorite-link')).toHaveCount(0);
+  await page.locator('.market-card-link').first().click();
+  await expect(page.getByRole('heading', { name: 'Barang Favorit 11', exact: true })).toBeVisible();
+  await expect(page.locator('.favorite-button')).toHaveCount(0);
+  await expect(page.locator('.detail-favorite')).toHaveCount(0);
+  await expect(page.locator('.header-favorite-link')).toHaveCount(0);
   expect(state.requests.some(row => row.path.startsWith('/me/favorites'))).toBe(false);
 });
 
@@ -167,8 +172,8 @@ test('logout and account switch clear the personal membership cache', async ({ p
   await expect(heart).toHaveAttribute('aria-pressed', 'false');
   await page.getByRole('button', { name: 'Menu akun', exact: true }).click();
   await page.locator('#header-account-menu').getByRole('button', { name: 'Keluar', exact: true }).click();
-  await expect(heart).toBeEnabled(); await expect(heart).not.toHaveAttribute('aria-pressed');
-  await heart.click(); await expect(page).toHaveURL(/\/masuk/);
+  await expect(page.locator('.favorite-button')).toHaveCount(0);
+  await expect(page.locator('.header-favorite-link')).toHaveCount(0);
 });
 
 test('wishlist and navbar fit all target viewports', async ({ page }, testInfo) => {

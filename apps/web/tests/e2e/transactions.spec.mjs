@@ -48,7 +48,8 @@ test('Exchange, pemulihan jaringan, bukti privat dan putusan admin', async ({ br
   for (const page of [sellerPage, buyerPage, adminPage]) page.on('pageerror', (e) => errors.push(e.message));
   try {
     await sellerPage.goto('/app/penawaran');
-    const card = sellerPage.locator('.offer-card').filter({ hasText: exchange.item.title });
+    await sellerPage.locator('.offer-list-row').filter({ hasText: exchange.item.title }).getByRole('link', { name: 'Tinjau penawaran' }).click();
+    const card = sellerPage.locator('.offer-card');
     await card.getByRole('button', { name: 'Terima penawaran', exact: true }).click();
     await approveDialog(sellerPage, 'Terima dan reservasi barang');
     await sellerPage.waitForURL(/\/app\/transaksi\/[^/]+$/);

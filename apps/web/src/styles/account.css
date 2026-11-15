@@ -11,14 +11,15 @@
 .account-nav-group { display: grid; gap: 4px; }
 .account-nav a, .account-profile-link { display: flex; align-items: center; gap: 12px; min-height: 46px; padding: 11px 14px; border: 0; border-radius: 12px; background: transparent; color: var(--forest); text-align: left; font: inherit; font-size: .875rem; text-decoration: none; }
 .account-nav a:hover, .account-profile-link:hover { background: #E9EDE4; text-decoration: none; }
-.account-nav a[aria-current="page"] { background: #1B3A28; color: #fff; }
-.account-sidebar-bottom { margin-top: auto; display: grid; gap: 5px; padding-top: 24px; }
-.account-sidebar-person { display: flex; align-items: center; gap: 10px; padding: 11px 9px; border-radius: 12px; text-decoration: none; }
+.account-nav a[aria-current="page"], .account-sidebar-person[aria-current="page"] { background: #1B3A28; color: #fff; }
+.account-sidebar-bottom { margin-top: auto; display: grid; gap: 4px; padding-top: 12px; border-top: 1px solid var(--line); }
+.account-sidebar-person { min-height: 64px; }
 .account-sidebar-person > div { flex: 1; display: grid; gap: 3px; overflow: hidden; }
-.account-sidebar-person strong { font-size: .8125rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.account-sidebar-person > div > span { font-size: .75rem; color: var(--muted); }
-.account-sidebar-person:hover, .account-sidebar-person[aria-current="page"] { background: #E9EDE4; text-decoration: none; }
-.account-avatar { width: 36px; height: 36px; flex-shrink: 0; font-size: .875rem; }
+.account-sidebar-person strong { font-size: .875rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.account-sidebar-person > div > span { font-size: .75rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.account-sidebar-person > svg { flex-shrink: 0; }
+.account-sidebar-person[aria-current="page"] > div > span { color: inherit; }
+.account-avatar { width: 32px; height: 32px; flex-shrink: 0; font-size: .875rem; }
 .account-workspace { grid-column: 2; }
 .account-toolbar { height: 76px; padding-inline: 24px; position: sticky; top: 0; z-index: 30; display: flex; justify-content: space-between; align-items: center; gap: 16px; background: #fff; border: 0; box-shadow: none; }
 .account-toolbar-start, .account-toolbar-end { display: flex; align-items: center; gap: 18px; }

@@ -62,33 +62,42 @@ test('offers prioritize the current responder and combine activity, direction, t
   await page.getByLabel('Cari penawaran', { exact: true }).fill('TIDAK ADA'); await expect(page.getByRole('heading', { name: 'Tidak ada penawaran yang cocok.' })).toBeVisible();
   await page.getByRole('button', { name: 'Reset filter', exact: true }).click(); await expect(page.locator('.offer-list-row')).toHaveCount(6);
   await page.getByRole('button', { name: 'Selesai', exact: true }).click(); await expect(page.locator('.offer-list-row')).toHaveCount(3);
-  await expect(row(page, 15)).toContainText('Tenggat terlewati.'); await expect(row(page, 15).getByRole('button')).toHaveCount(0);
+  await expect(row(page, 15)).toContainText('Tenggat tanggapan sudah lewat.'); await expect(row(page, 15).getByRole('button')).toHaveCount(0);
   await expect(row(page, 14).getByRole('link', { name: 'Buka transaksi', exact: true })).toHaveAttribute('href', `/app/transaksi/${id(99)}`);
 });
 
-test('counteroffer stays inline, validates its amount and updates the response turn', async ({ page }) => {
+test('review opens the detail before a counteroffer, validates its amount and updates the response turn', async ({ page }) => {
   const state = await mock(page); await page.goto('/app/penawaran'); const target = row(page, 12);
-  await target.getByRole('button', { name: 'Buat counteroffer' }).click();
-  await target.getByLabel('Nominal counteroffer').fill('0'); await target.getByRole('button', { name: 'Kirim counteroffer' }).click(); expect(state.writes).toHaveLength(0);
-  await target.getByLabel('Nominal counteroffer').fill('230000'); await target.getByLabel('Pesan (opsional)').fill('Bisa di nominal ini.');
-  await target.getByRole('button', { name: 'Kirim counteroffer' }).click(); await expect(target).toContainText('Status penawaran diperbarui.');
+  await expect(target.getByRole('button')).toHaveCount(0);
+  await target.getByRole('link', { name: 'Tinjau penawaran' }).click();
+  await expect(page.getByRole('heading', { name: 'Detail penawaran', exact: true })).toBeVisible();
+  await expect(page.locator('.offer-list-row')).toHaveCount(0); expect(state.writes).toHaveLength(0);
+  await target.getByRole('button', { name: 'Ajukan tawaran balik' }).click();
+  await target.getByLabel('Nominal tawaran baru').fill('0'); await target.getByRole('button', { name: 'Kirim tawaran balik' }).click(); expect(state.writes).toHaveLength(0);
+  await target.getByLabel('Nominal tawaran baru').fill('230000'); await target.getByLabel('Pesan (opsional)').fill('Bisa di nominal ini.');
+  await target.getByRole('button', { name: 'Kirim tawaran balik' }).click(); await expect(target).toContainText('Status penawaran diperbarui.');
   expect(state.writes[0]).toMatchObject({ path: `/offers/${id(12)}/counter`, body: { expectedVersion: 7, priceIdr: 230000, message: 'Bisa di nominal ini.' }, csrf: 'collections-csrf' });
+  await page.getByRole('link', { name: 'Semua penawaran', exact: true }).click();
   await page.getByRole('button', { name: 'Perlu tanggapan', exact: true }).click(); await expect(row(page, 12)).toHaveCount(0);
   await page.getByRole('button', { name: 'Menunggu pihak lain', exact: true }).click(); await expect(row(page, 12)).toBeVisible();
 });
 
 test('reject and withdraw remain available only to the right participant', async ({ page }) => {
   const state = await mock(page); await page.goto('/app/penawaran');
+  await row(page, 12).getByRole('link', { name: 'Tinjau penawaran' }).click();
   await expect(row(page, 12).getByRole('button', { name: 'Tarik penawaran' })).toHaveCount(0);
+  await row(page, 12).getByRole('button', { name: 'Tolak penawaran', exact: true }).click(); await expect(row(page, 12).locator('.badge')).toHaveText('Ditolak');
+  await page.getByRole('link', { name: 'Semua penawaran', exact: true }).click();
+  await row(page, 11).getByRole('link', { name: 'Lihat detail' }).click();
   await expect(row(page, 11).getByRole('button', { name: 'Terima penawaran' })).toHaveCount(0);
-  await row(page, 12).getByRole('button', { name: 'Tolak', exact: true }).click(); await expect(row(page, 12).locator('.collection-status')).toHaveText('Ditolak');
-  await row(page, 11).getByRole('button', { name: 'Tarik penawaran' }).click(); await expect(row(page, 11).locator('.collection-status')).toHaveText('Ditarik');
+  await row(page, 11).getByRole('button', { name: 'Tarik penawaran' }).click(); await expect(row(page, 11).locator('.badge')).toHaveText('Ditarik');
   expect(state.writes).toHaveLength(2); expect(state.writes.every(write => write.body.expectedVersion === 7 && write.csrf === 'collections-csrf')).toBe(true);
 });
 
 test('exchange summary keeps bundle sizes, cash direction and accept consent payload', async ({ page }) => {
   const state = await mock(page); await page.goto('/app/penawaran'); const target = row(page, 13);
-  await expect(target).toContainText('Pemilik Listing: 2 barang · Penawar: 1 barang'); await expect(target).toContainText('Pihak lain menambah Rp');
+  await expect(target).toContainText('Dari kamu: 1 barang · Dari pihak lain: 2 barang'); await expect(target).toContainText('Tambahan dari pihak lain');
+  await target.getByRole('link', { name: 'Tinjau penawaran' }).click();
   await target.getByRole('button', { name: 'Terima penawaran', exact: true }).click(); const dialog = page.getByRole('dialog');
   await expect(dialog.getByRole('button', { name: 'Terima dan reservasi barang' })).toBeDisabled(); expect(state.writes).toHaveLength(0);
   await dialog.getByRole('checkbox').check(); await dialog.getByRole('button', { name: 'Terima dan reservasi barang' }).click();
@@ -96,13 +105,51 @@ test('exchange summary keeps bundle sizes, cash direction and accept consent pay
   expect(state.writes[0].body).toEqual({ expectedVersion: 7, offerRevisionId: id(313), listingRevisionId: id(213), exchangeTermsHash: 'a'.repeat(64) }); expect(state.writes[0].key).toBeTruthy();
 });
 
-test('failed inline counter preserves its draft and offer detail keeps its existing presentation', async ({ page }) => {
+test('failed counteroffer preserves its draft in the detail and permits a retry', async ({ page }) => {
   const state = await mock(page, { failMutation: true }); await page.goto('/app/penawaran'); const target = row(page, 12);
-  await target.getByRole('button', { name: 'Buat counteroffer' }).click(); await target.getByLabel('Nominal counteroffer').fill('240000');
-  await target.getByRole('button', { name: 'Kirim counteroffer' }).click(); await expect(target).toContainText('Koneksi belum tersedia.'); await expect(target.getByLabel('Nominal counteroffer')).toHaveValue('240000');
-  state.failMutation = false; await target.getByRole('button', { name: 'Kirim counteroffer' }).click(); await expect(target).toContainText('Status penawaran diperbarui.');
-  await target.getByRole('link', { name: /Lihat seluruh kesepakatan/ }).click(); await expect(page.getByRole('heading', { name: 'Detail penawaran', exact: true })).toBeVisible();
+  await target.getByRole('link', { name: 'Tinjau penawaran' }).click();
+  await target.getByRole('button', { name: 'Ajukan tawaran balik' }).click(); await target.getByLabel('Nominal tawaran baru').fill('240000');
+  await target.getByRole('button', { name: 'Kirim tawaran balik' }).click(); await expect(target).toContainText('Koneksi belum tersedia.'); await expect(target.getByLabel('Nominal tawaran baru')).toHaveValue('240000');
+  state.failMutation = false; await target.getByRole('button', { name: 'Kirim tawaran balik' }).click(); await expect(target).toContainText('Status penawaran diperbarui.');
   await expect(page.locator('.offer-list-row')).toHaveCount(0); await expect(page.locator('.offer-card')).toHaveCount(1);
+});
+
+test('offer rows separate informational status from explicit next-step buttons', async ({ page }) => {
+  const entries = [...offers(), offer(17, { status: 'ACCEPTED' }), offer(18, { currentRevision: null }), offer(19, { status: 'EXPIRED', endReason: 'LISTING_CHANGED' })];
+  const state = await mock(page, { offers: entries }); await page.goto('/app/penawaran');
+  await expect(page.locator('.offer-list-row')).toHaveCount(9);
+  await expect(page.locator('.offer-list-row button, .offer-list-row h2 a, .offer-list-row .notice')).toHaveCount(0);
+  await expect(row(page, 12).getByRole('link', { name: 'Tinjau penawaran' })).toHaveClass(/button-primary/);
+  await expect(row(page, 11).getByRole('link', { name: 'Lihat detail' })).toHaveClass(/button-secondary/);
+  await expect(row(page, 14).getByRole('link', { name: 'Buka transaksi' })).toHaveClass(/button-primary/);
+  await expect(row(page, 14).locator('time')).toHaveCount(0);
+  await expect(row(page, 15).locator('.offer-row-status')).toHaveText('Kedaluwarsa');
+  await expect(row(page, 17).getByRole('link', { name: 'Buka transaksi' })).toHaveCount(0);
+  await expect(row(page, 17).getByRole('link', { name: 'Lihat detail' })).toBeVisible();
+  await expect(row(page, 18)).toContainText('Rincian belum tersedia');
+  await expect(row(page, 19)).toContainText('Penawaran sudah berakhir dan tidak dapat ditanggapi.');
+  for (const link of await page.locator('.offer-row-actions a').all()) {
+    await expect(link).toHaveClass(/\bbutton\b/);
+    expect((await link.boundingBox()).height).toBeGreaterThanOrEqual(44);
+  }
+  expect(state.writes).toHaveLength(0);
+  await row(page, 12).getByRole('link', { name: 'Tinjau penawaran' }).focus();
+  await page.keyboard.press('Enter'); await expect(page).toHaveURL(new RegExp(`/app/penawaran/${id(12)}$`));
+  await expect(page.getByRole('group', { name: 'Tanggapan penawaran' })).toBeVisible();
+  await page.getByRole('link', { name: 'Semua penawaran', exact: true }).click();
+  await row(page, 18).getByRole('link', { name: 'Lihat detail' }).click();
+  await expect(row(page, 18).locator('.badge')).toHaveText('Rincian belum tersedia');
+  await expect(page.getByRole('group', { name: 'Tanggapan penawaran' })).toHaveCount(0);
+});
+
+test('an open detail removes response actions when its deadline passes', async ({ page }) => {
+  await page.clock.install(); const entries = offers(); entries[1].expiresAt = new Date(Date.now() + 5000).toISOString();
+  const state = await mock(page, { offers: entries }); await page.goto(`/app/penawaran/${id(12)}`);
+  await expect(page.getByRole('button', { name: 'Terima penawaran', exact: true })).toBeVisible();
+  await page.clock.fastForward(20000);
+  await expect(page.getByRole('group', { name: 'Tanggapan penawaran' })).toHaveCount(0);
+  await expect(page.locator('.offer-card .badge')).toHaveText('Kedaluwarsa');
+  expect(state.writes).toHaveLength(0);
 });
 
 test('a cached pending offer stops requiring a response after its deadline', async ({ page }) => {
@@ -151,7 +198,7 @@ test('both collection layouts fit long content on supported viewport widths', as
     await page.setViewportSize({ width, height: 900 }); await page.goto(path);
     await expect(page.locator(path.endsWith('listings') ? '.owner-listing-card' : '.offer-list-row')).toHaveCount(6);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    for (const button of await page.locator('.account-collection-page button:visible').all()) expect((await button.boundingBox()).height).toBeGreaterThanOrEqual(44);
+    for (const button of await page.locator('.account-collection-page button:visible, .offer-row-actions a:visible').all()) expect((await button.boundingBox()).height).toBeGreaterThanOrEqual(44);
     if (width === 390 || width === 1440) await page.screenshot({ path: resolve(`../../.local/collections/${path.split('/').at(-1)}-${info.project.name}-${width}.png`) });
   }
 });

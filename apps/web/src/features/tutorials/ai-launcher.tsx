@@ -77,7 +77,7 @@ export function AiLauncher() {
         <button
           ref={buttonRef}
           type="button"
-          className="ai-robot-button"
+          className="floating-action ai-robot-button"
           aria-label="Buka chat dengan AI Valora"
           aria-haspopup="dialog"
           aria-expanded={isOpen}
@@ -139,31 +139,9 @@ export function AiLauncher() {
 
       <style jsx>{`
         .ai-dock {
-          position: fixed;
-          right: max(24px, env(safe-area-inset-right));
-          bottom: max(24px, env(safe-area-inset-bottom));
-          z-index: 41;
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          max-width: calc(100vw - 40px);
+          position: relative;
         }
 
-        /* Pada desktop, robot berada tepat di atas tombol Pesan. */
-        @media (min-width: 1200px) {
-          :global(body:has(.chat-launcher)) .ai-dock {
-            bottom: calc(max(24px, env(safe-area-inset-bottom)) + 68px);
-          }
-        }
-
-        /* Valora menaruh tombol Pesan di navbar pada perangkat sentuh. */
-        @media (hover: none) and (pointer: coarse) {
-          :global(body:has(.chat-launcher)) .ai-dock {
-            bottom: max(24px, env(safe-area-inset-bottom));
-          }
-        }
-
-        .ai-robot-button,
         .ai-hint-message,
         .ai-hint-close,
         .ai-close {
@@ -171,29 +149,19 @@ export function AiLauncher() {
           cursor: pointer;
         }
 
-        .ai-robot-button {
-          display: grid;
-          flex: 0 0 58px;
-          place-items: center;
-          width: 58px;
-          height: 58px;
-          padding: 0;
-          border: 2px solid #d6edd5;
-          border-radius: 20px;
-          background: #23523b;
-          color: #e8f7dc;
-          box-shadow: 0 5px 16px rgb(27 66 43 / 22%);
-        }
-
         .ai-hint {
-          position: relative;
+          position: absolute;
+          top: 50%;
+          right: calc(100% + 12px);
           display: flex;
           align-items: flex-start;
-          max-width: 228px;
+          width: 228px;
+          max-width: calc(100vw - 32px);
           border: 1px solid #c6d9c8;
           border-radius: 15px;
           background: #fff;
           box-shadow: 0 4px 16px rgb(29 59 39 / 12%);
+          transform: translateY(-50%);
         }
 
         .ai-hint::after {
@@ -347,17 +315,13 @@ export function AiLauncher() {
           min-height: 112px;
         }
 
-        .ai-dock button:focus-visible,
+        .ai-hint button:focus-visible,
         .ai-close:focus-visible {
           outline: 3px solid #669872;
           outline-offset: 3px;
         }
 
         @media (hover: hover) {
-          .ai-robot-button:hover {
-            background: #183f2c;
-          }
-
           .ai-close:hover,
           .ai-hint-close:hover {
             background: #edf3eb;
@@ -365,10 +329,19 @@ export function AiLauncher() {
         }
 
         @media (max-width: 639px) {
-          .ai-dock {
-            right: max(16px, env(safe-area-inset-right));
-            bottom: max(16px, env(safe-area-inset-bottom));
-            gap: 10px;
+          .ai-hint {
+            top: auto;
+            right: 0;
+            bottom: calc(100% + 12px);
+            transform: none;
+          }
+
+          .ai-hint::after {
+            top: auto;
+            right: 24px;
+            bottom: -6px;
+            border-top: 0;
+            border-bottom: 1px solid #c6d9c8;
           }
 
           .ai-dialog {

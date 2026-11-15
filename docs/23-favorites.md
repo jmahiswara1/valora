@@ -6,8 +6,8 @@ cakupan wajib tahap 1–6. Kontrak API bertambah menjadi OpenAPI 1.8.0.
 ## Perilaku
 
 - Favorit tersimpan privat di akun, termasuk akun aktif yang emailnya belum
-  diverifikasi. Guest diarahkan ke login, kembali ke detail listing, lalu dapat
-  menekan hati untuk menyimpan. URL tidak menjalankan penyimpanan otomatis.
+  diverifikasi. Tombol hati pada kartu, detail, dan navbar hanya tampil setelah
+  login. Guest tidak memuat status Favorit atau menjalankan mutasi Favorit.
 - Tombol hati tersedia pada katalog Market, preview Beranda, barang terkait,
   dan detail. Tombol merupakan saudara tautan kartu, bukan tombol di dalam link.
 - Ikon hati navbar publik tersedia pada desktop/mobile; notifikasi dan cart

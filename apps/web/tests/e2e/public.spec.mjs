@@ -209,7 +209,9 @@ test('jenis Listing, judul panjang, serta foto hilang dan gagal tetap terbaca', 
   await expect(page.locator('.preview-grid .market-card')).toHaveCount(3);
   await expect(page.locator('.market-card-bottom strong').nth(0)).toHaveText(/Rp\s*125\.000/);
   await expect(page.locator('.market-card-bottom strong').nth(1)).toHaveText('Tanpa biaya');
-  await expect(page.locator('.market-card-bottom strong').nth(2)).toHaveText('Tukar barang');
+  const exchangeCard = page.locator('.preview-grid .market-card').nth(2);
+  await expect(exchangeCard.locator('.market-card-kicker > span').first()).toHaveText('Tukar barang');
+  await expect(exchangeCard.locator('.market-card-bottom strong')).toHaveCount(0);
   await expect(page.locator('.preview-grid h3').first()).toHaveAttribute('title', longTitle);
   await page.locator('.preview-grid .market-card').nth(2).scrollIntoViewIfNeeded();
   await expect(page.locator('.preview-grid .market-photo-empty')).toHaveCount(2);

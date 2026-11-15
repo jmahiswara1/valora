@@ -46,7 +46,7 @@ const bell = page => page.locator('.notification-bell > button');
 
 test('guest has no bell and makes no private notification requests', async ({ page }) => {
   const state = await mock(page, 6, true); await page.goto('/market');
-  await expect(page.locator('.header-favorite-link')).toBeVisible(); await expect(bell(page)).toHaveCount(0);
+  await expect(page.locator('.header-favorite-link')).toHaveCount(0); await expect(bell(page)).toHaveCount(0);
   expect(state.requests.some(row => row.path.startsWith('/me/notifications'))).toBe(false);
   await page.goto('/app/notifikasi'); await expect(page).toHaveURL(/\/masuk\?next=%2Fapp%2Fnotifikasi/);
   expect(state.requests.some(row => row.path.startsWith('/me/notifications'))).toBe(false);
@@ -275,7 +275,7 @@ test('shared guest account actions keep login links without private requests', a
   await expect(menu.getByRole('link', { name: 'Daftar', exact: true })).toHaveAttribute('href', '/daftar');
   await expect(bell(page)).toHaveCount(0); await expect(page.locator('.header-activity-link')).toHaveCount(0);
   expect(state.requests.some(row => row.path.startsWith('/me/notifications'))).toBe(false);
-  await page.locator('.header-favorite-link').click(); await expect(page).toHaveURL(/\/masuk\?next=%2Fapp%2Ffavorit/);
+  await expect(page.locator('.header-favorite-link')).toHaveCount(0);
 });
 
 test('shared account navbar and long identity fit supported widths', async ({ page }, info) => {
