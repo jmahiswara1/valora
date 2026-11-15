@@ -25,6 +25,15 @@ try {
   check(await propose(owner, { ...proposalInput(initial.version, 'DELIVERY'), destination }), 422, 'Sender cannot supply recipient address');
   const key = randomUUID(), input = { ...proposalInput(initial.version), plannedAt: initial.deadlineAt };
   const p = check(await propose(owner, input, key), 201, 'At deadline accepted'); assert.equal(check(await propose(owner, input, key), 201, 'Replay').id, p.id);
+  const chatMessage = await db.message.findUniqueOrThrow({ where: { handoverProposalId: p.id } });
+  assert.equal(await db.message.count({ where: { handoverProposalId: p.id } }), 1, 'Replay creates one chat card');
+  assert.equal(chatMessage.senderId, owner.user.id); assert.equal(chatMessage.sequence, 1);
+  assert(!chatMessage.body.includes(input.location), 'Private meeting details are not copied into message text');
+  const chatHistory = check(await buyer.account.request(`/conversations/${chatMessage.conversationId}/messages`), 200, 'Peer reads proposal in chat');
+  assert.deepEqual(chatHistory[0].handover, { transactionId: id, proposalId: p.id });
+  assert.equal(check(await buyer.account.request(`/conversations/${chatMessage.conversationId}`), 200, 'Proposal unread').unreadCount, 1);
+  check(await outsider.account.request(`/conversations/${chatMessage.conversationId}/messages`), 404, 'No outsider chat access');
+  check(await outsider.account.request(basePath + '/proposals/' + p.id), 404, 'No outsider proposal details');
   check(await propose(owner, { ...input, location: 'Lokasi berbeda' }, key), 409, 'Replay payload mismatch');
   assert(!JSON.stringify((await db.idempotencyRequest.findFirstOrThrow({ where: { operation: 'handover-propose:' + id, key } })).responseBody).includes('Perpustakaan'));
   const status = check(await mutate(owner.account, '/me/actions/status', { operation: 'handover-propose:' + id, key }), 201, 'Recovery'); assert.equal(status.status, 'COMMITTED');
@@ -32,9 +41,13 @@ try {
   check(await propose(buyer, proposalInput(current.version)), 409, 'One pending proposal');
   check(await respond(buyer, p.id, { expectedVersion: initial.version, accept: true }), 409, 'Stale transaction version');
   check(await respond(buyer, p.id, { expectedVersion: current.version, accept: true }), 201, 'Peer accepts'); current = await get(); assert.equal(current.agreed.id, p.id);
+  assert.equal(check(await buyer.account.request(basePath + '/proposals/' + p.id), 200, 'Chat reference reflects accepted status').status, 'APPROVED');
+  assert.equal(await db.message.count({ where: { handoverProposalId: p.id } }), 1, 'Response updates the original card');
   const replacement = check(await propose(owner, proposalInput(current.version)), 201, 'Replacement'); current = await get(); assert.equal(current.agreed.id, p.id, 'Old agreement remains during replacement');
   check(await respond(buyer, replacement.id, { expectedVersion: current.version, accept: false, reason: 'Jadwal belum cocok.' }), 201, 'Reject with reason'); current = await get(); assert.equal(current.agreed.id, p.id);
   const withdrawn = check(await propose(buyer, proposalInput(current.version)), 201, 'Buyer proposes'); current = await get(); check(await mutate(owner.account, basePath + `/proposals/${withdrawn.id}/withdraw`, { expectedVersion: current.version }), 409, 'Only proposer withdraws');
+  const buyerMessage = await db.message.findUniqueOrThrow({ where: { handoverProposalId: withdrawn.id } });
+  assert.equal(buyerMessage.conversationId, chatMessage.conversationId); assert.equal(buyerMessage.senderId, buyer.user.id); assert.equal(buyerMessage.sequence, 3);
   check(await mutate(buyer.account, basePath + `/proposals/${withdrawn.id}/withdraw`, { expectedVersion: current.version }), 201, 'Withdrawal');
   current = await get(); const delivery = check(await propose(owner, proposalInput(current.version, 'DELIVERY')), 201, 'Delivery proposal'); current = await get();
   check(await respond(buyer, delivery.id, { expectedVersion: current.version, accept: true }), 422, 'Receiver address required');
@@ -54,9 +67,21 @@ try {
   const notifications = await db.inAppNotification.findMany({ where: { userId: { in: [owner.user.id, buyer.user.id] } } }); assert(!JSON.stringify(notifications.map(n => n.payload)).includes(destination.address)); assert(!JSON.stringify(notifications.map(n => n.payload)).includes('PRIVAT-001'));
   const page = await owner.account.request(`/transactions/${id}/timeline?limit=2`); assert.equal(page.payload.data.length, 2); assert(page.payload.meta.nextCursor); const more = await owner.account.request(`/transactions/${id}/timeline?limit=2&cursor=${page.payload.meta.nextCursor}`); assert(!page.payload.data.some(a => more.payload.data.some(b => a.id === b.id))); check(await owner.account.request(`/transactions/${id}/timeline?cursor=bad`), 400, 'Invalid cursor');
   current = await get(); transaction = check(await mutate(buyer.account, `/transactions/${id}/confirmations`, { expectedVersion: current.version, itemId, kind: 'RECEIVED' }), 201, 'Complete with formal confirmations'); assert.equal(transaction.status, 'COMPLETED'); current = await get(); assert.equal(current.directions[0].canRecord, false); check(await mutate(owner.account, shipPath, shipping()), 409, 'Closed tracking');
+  // Methods are constrained by the listing snapshot for both old and new agreements.
+  const legacy = await handoverTransaction(db, actors, 'RESELL', ['MEETUP']); const legacyPath = '/transactions/' + legacy.id + '/handover';
+  check(await mutate(owner.account, legacyPath + '/proposals', proposalInput(legacy.version, 'DELIVERY')), 422, 'COD-only agreement blocks delivery');
+  const oldPending = await db.handoverProposal.create({ data: { transactionId: legacy.id, proposedById: owner.user.id, method: 'DELIVERY', plannedAt: new Date(Date.now() + 86400000), timeZone: 'Asia/Jakarta', privateDetails: { location: null, note: null, responseReason: null, destinations: [] } } });
+  check(await mutate(buyer.account, legacyPath + '/proposals/' + oldPending.id + '/respond', { expectedVersion: legacy.version, accept: true, destination }), 422, 'Unsupported legacy pending proposal cannot be approved');
+  check(await mutate(buyer.account, legacyPath + '/proposals/' + oldPending.id + '/respond', { expectedVersion: legacy.version, accept: false, reason: 'Gunakan metode sesuai Listing saja.' }), 201, 'Unsupported old proposal can still be rejected');
+  const deliveryOnly = await handoverTransaction(db, actors, 'RESELL', ['DELIVERY']);
+  check(await mutate(owner.account, '/transactions/' + deliveryOnly.id + '/handover/proposals', proposalInput(deliveryOnly.version)), 422, 'Delivery-only agreement blocks COD');
+  const reportVersion = check(await buyer.account.request(legacyPath), 200, 'Version before report').version;
+  check(await buyer.account.request('/reports', { method: 'POST', body: { targetType: 'TRANSACTION', targetId: legacy.id, reasonCode: 'HANDOVER_ISSUE', details: 'Pihak lain perlu ditinjau oleh admin tanpa membuka sengketa.' } }), 201, 'Report to admin');
+  const afterReport = check(await buyer.account.request('/transactions/' + legacy.id), 200, 'Report keeps transaction state');
+  assert.equal(afterReport.status, 'AWAITING_HANDOVER'); assert.equal(afterReport.version, reportVersion); assert.equal(afterReport.disputes.length, 0);
   // Donation, concurrent proposal creation, expiration and cancellation invalidation.
   const donate = await handoverTransaction(db, actors, 'DONATE', ['MEETUP']); const donatePath = `/transactions/${donate.id}/handover`;
-  check(await mutate(owner.account, donatePath + '/proposals', proposalInput(donate.version, 'DELIVERY')), 422, 'Unavailable method');
+  check(await mutate(owner.account, donatePath + '/proposals', proposalInput(donate.version, 'TELEPORT')), 400, 'Unknown method');
   const races = await Promise.all([mutate(owner.account, donatePath + '/proposals', proposalInput(donate.version)), mutate(buyer.account, donatePath + '/proposals', proposalInput(donate.version))]); assert.deepEqual(races.map(r => r.status).sort(), [201, 409]);
   let dc = check(await owner.account.request(donatePath), 200, 'Donation pending'); await db.handoverProposal.update({ where: { id: dc.pending.id }, data: { plannedAt: new Date(now.getTime() - 1) } }); await service.jobs(now); assert.equal((await db.handoverProposal.findUniqueOrThrow({ where: { id: dc.pending.id } })).status, 'EXPIRED');
   dc = check(await owner.account.request(donatePath), 200, 'Expired version'); const dp = check(await mutate(owner.account, donatePath + '/proposals', proposalInput(dc.version)), 201, 'Replacement after expiry'); dc = check(await owner.account.request(donatePath), 200, 'Current donate');

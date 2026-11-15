@@ -18,10 +18,11 @@ async function mock(page, options = {}) {
     if (path === '/auth/session') return ok(route, { state: 'AUTHENTICATED', user: { ...user(state.actor), role: state.admin ? 'ADMIN' : 'USER' }, sessionId: id(99), serverTime: now(), expiresAt: future(), reauthenticatedUntil: future(), reason: null });
     if (path === '/me') return ok(route, { ...user(state.actor), role: state.admin ? 'ADMIN' : 'USER' }); if (path === '/auth/csrf') return ok(route, { token: 'fixture-handover-csrf' }); if (path === '/me/notifications/summary') return ok(route, { unreadCount: 0, recent: [] });
     if (path === '/me/actions/status') return ok(route, { status: state.recovery ? 'COMMITTED' : 'NOT_FOUND', completedAt: now() });
-    if (path === '/transactions/' + id(10)) return ok(route, { ...tx(), version: state.version, conversationId: state.conversationId });
+    if (path === '/transactions/' + id(10)) return ok(route, { ...tx(), requiredConfirmations: state.showConfirmations ? [{ actorId: id(2), itemId: id(20), kind: 'HANDED_OVER' }, { actorId: id(3), itemId: id(20), kind: 'RECEIVED' }] : [], snapshot: { ...tx().snapshot, handoverMethods: state.methods ?? tx().snapshot.handoverMethods }, version: state.version, conversationId: state.conversationId });
+    if (path === '/reports' && req.method() === 'POST') { state.reports ??= []; state.reports.push(req.postDataJSON()); return state.reportFail ? route.fulfill({ status: 503, json: { error: { code: 'DEPENDENCY_UNAVAILABLE', message: 'Laporan belum tersimpan. Coba lagi.' } } }) : ok(route, { id: id(90) }); }
     if (path === '/conversations') return ok(route, state.conversationId ? [conversation()] : []);
     if (state.conversationId && path === `/conversations/${state.conversationId}`) return ok(route, conversation());
-    if (state.conversationId && path === `/conversations/${state.conversationId}/messages`) return ok(route, [], { nextCursor: null });
+    if (state.conversationId && path === `/conversations/${state.conversationId}/messages`) return ok(route, state.chatMessages ?? [], { nextCursor: null });
     if (path.endsWith('/timeline') && url.searchParams.has('cursor') && state.timelineFail) return route.fulfill({ status: 503, json: { error: { code: 'DEPENDENCY_UNAVAILABLE', message: 'Halaman berikutnya gagal.' } } });
     if (path.endsWith('/timeline')) return ok(route, [{ id: url.searchParams.has('cursor') ? 'older' : 'newer', type: 'HANDOVER_APPROVED', actorId: id(3), label: url.searchParams.has('cursor') ? 'Penawaran disepakati' : 'Koordinasi serah terima disepakati', occurredAt: now(), proposalId: id(30), itemId: null }], { nextCursor: state.timelineMore && !url.searchParams.has('cursor') ? 'fixture' : null });
     if (path === `/admin/disputes/${id(77)}`) return ok(route, { id: id(77), transactionId: id(10), transactionTitle: 'Keyboard mekanik', assignedAdminId: id(2), status: 'IN_REVIEW', reason: 'Jadwal pengiriman perlu ditinjau.', version: 1, transaction: { ...tx(), status: 'DISPUTED' }, resolution: null, resolutionReason: null });
@@ -29,14 +30,14 @@ async function mock(page, options = {}) {
     if (path === `/admin/cases/${id(77)}/handover` && url.searchParams.has('cursor') && state.adminPageFail) return route.fulfill({ status: 503, json: { error: { code: 'DEPENDENCY_UNAVAILABLE', message: 'Halaman admin gagal.' } } });
     if (path === `/admin/cases/${id(77)}/handover`) return ok(route, { coordination: coordination(), history: [plan('DELIVERY')], shipments: [], accessExpiresAt: new Date(Date.now() + (state.grantMs ?? 2000)).toISOString(), nextCursor: state.adminPaging && !url.searchParams.has('cursor') ? id(31) : null, shipmentNextCursor: null });
     if (path.endsWith('/handover') && req.method() === 'GET') return state.fail ? route.fulfill({ status: 503, json: { error: { code: 'DEPENDENCY_UNAVAILABLE', message: 'Koordinasi belum tersedia.' } } }) : ok(route, coordination());
-    if (path.endsWith('/proposals/' + id(30))) return ok(route, state.agreed ?? state.pending ?? plan()); if (path.endsWith('/shipments') && req.method() === 'GET') {
+    if (path.endsWith('/proposals/' + id(30))) return state.privateDenied ? route.fulfill({ status: 404, json: { error: { code: 'NOT_FOUND', message: 'Usulan tidak tersedia.' } } }) : ok(route, state.proposalHistory ?? state.pending ?? state.agreed ?? plan()); if (path.endsWith('/shipments') && req.method() === 'GET') {
       if (state.revisionPaging) { if (url.searchParams.has('cursor') && state.revisionFail) return route.fulfill({ status: 503, json: { error: { code: 'DEPENDENCY_UNAVAILABLE', message: 'Halaman revisi gagal.' } } }); return ok(route, [{ id: url.searchParams.has('cursor') ? id(41) : id(40), proposalId: id(30), itemId: id(20), senderId: id(2), courier: 'Kurir Riwayat', trackingNumber: 'HISTORY-001', revision: url.searchParams.has('cursor') ? 1 : 2, recordedAt: now(), purgedAt: null, reason: null }], { nextCursor: url.searchParams.has('cursor') ? null : id(41) }); }
       return ok(route, state.resi ? [state.resi] : [], { nextCursor: null });
     }
     if (path.includes('/handover/') && req.method() === 'POST') {
       const body = req.postDataJSON(); state.writes.push({ path, body, key: req.headers()['idempotency-key'] }); state.version++;
       if (path.endsWith('/proposals')) state.pending = { ...plan(body.method), status: 'PENDING', plannedAt: body.plannedAt, timeZone: body.timeZone, privateDetails: { location: body.location ?? null, note: body.note ?? null, responseReason: null, destinations: [] } };
-      else if (path.endsWith('/respond')) { if (body.accept) state.agreed = { ...state.pending, status: 'APPROVED', privateDetails: { ...state.pending.privateDetails, destinations: body.destination ? [{ userId: id(state.actor), details: body.destination }] : [] } }; state.pending = null; }
+      else if (path.endsWith('/respond')) { state.proposalHistory = { ...state.pending, status: body.accept ? 'APPROVED' : 'REJECTED', privateDetails: { ...state.pending.privateDetails, responseReason: body.reason ?? null, destinations: body.destination ? [{ userId: id(state.actor), details: body.destination }] : [] } }; if (body.accept) state.agreed = state.proposalHistory; state.pending = null; }
       else if (path.includes('/shipments/')) state.resi = { id: id(40), proposalId: id(30), itemId: id(20), senderId: id(2), courier: body.courier, trackingNumber: body.trackingNumber, reason: body.reason ?? null, revision: state.resi ? 2 : 1, recordedAt: now(), purgedAt: null };
       else state.pending = null;
       if (state.recovery) return route.fulfill({ status: 503, json: { error: { code: 'DEPENDENCY_UNAVAILABLE', message: 'Respons hilang.' } } });
@@ -180,6 +181,17 @@ test('delivery proposal groups recipient details and validates before submitting
   await page.getByRole('button', { name: 'Kirim usulan', exact: true }).click(); await expect(page.getByRole('dialog')).toHaveCount(0);
   expect(state.writes[0].body.destination.recipientName).toBe('Bima'); expect(state.writes[0].body).not.toHaveProperty('location');
 });
+for (const allowed of ['MEETUP', 'DELIVERY']) {
+  test('listing snapshot keeps both methods visible and disables unsupported ' + allowed, async ({ page }) => {
+    await mock(page, { methods: [allowed] }); await page.goto('/app/transaksi/' + id(10));
+    await page.getByRole('button', { name: 'Atur serah terima', exact: true }).click();
+    const method = page.getByLabel('Metode serah terima'); await expect(method).toHaveText(allowed === 'MEETUP' ? 'Bertemu langsung' : 'Pengiriman'); await method.click();
+    await expect(page.getByRole('option', { name: allowed === 'MEETUP' ? 'Pengiriman' : 'Bertemu langsung', exact: true })).toBeDisabled();
+    await expect(page.getByRole('option', { name: allowed === 'MEETUP' ? 'Bertemu langsung' : 'Pengiriman', exact: true })).toBeEnabled();
+    await page.keyboard.press('Escape'); await expect(method).toHaveText(allowed === 'MEETUP' ? 'Bertemu langsung' : 'Pengiriman');
+  });
+}
+
 test('receiver approves delivery with own destination and compares existing plan', async ({ page }) => {
   const state = await mock(page, { actor: 3, agreed: plan(), pending: { ...plan('DELIVERY'), status: 'PENDING', privateDetails: { ...plan('DELIVERY').privateDetails, destinations: [] } } }); await page.goto(`/app/transaksi/${id(10)}`); await page.getByRole('button', { name: 'Tinjau usulan' }).click(); await expect(page.getByText('Bandingkan kesepakatan saat ini')).toBeVisible(); await page.getByLabel('Nama penerima', { exact: true }).fill('Bima'); await page.getByLabel('Nomor telepon penerima').fill('081234567890'); await page.getByLabel('Alamat lengkap').fill('Jalan Melati nomor 12, Kota Kediri'); await page.getByRole('button', { name: 'Setujui usulan', exact: true }).click(); await expect(page.getByRole('dialog')).toHaveCount(0); expect(state.writes[0].body.destination.recipientName).toBe('Bima'); await expect(page.getByText('Pengirim belum mencatat resi.')).toBeVisible();
 });
@@ -210,4 +222,93 @@ test('revision pagination failure retains private revisions and retries that pag
 });
 test('admin paging failure retains agreement and already loaded proposals', async ({ page }, info) => {
   const state = await mock(page, { admin: true, agreed: plan('DELIVERY'), adminPaging: true, adminPageFail: true, grantMs: 300000 }); await page.goto(`/app/admin/sengketa/${id(77)}`); await page.getByLabel('Alasan akses koordinasi').fill('Memeriksa riwayat koordinasi kasus.'); await page.getByRole('button', { name: 'Buka koordinasi dengan audit' }).click(); await page.getByRole('button', { name: 'Muat usulan sebelumnya' }).click(); await expect(page.getByText('Usulan sebelumnya belum dapat dimuat.')).toBeVisible(); await expect(page.getByText('Jalan Melati nomor 12, Kota Kediri').first()).toBeVisible(); await expect(page.locator('.handover-comparison')).toHaveCount(1); await capture(page, 'admin-pagination', info.project.name, page.locator('.handover-panel')); state.adminPageFail = false; await page.getByRole('button', { name: 'Coba muat usulan lagi' }).click(); await expect(page.locator('.handover-comparison')).toHaveCount(2);
+});
+
+const proposalMessage = () => ({ id: id(91), conversationId: id(88), senderId: id(2), body: 'Usulan serah terima baru.', clientMessageId: id(30), sequence: 1, attachments: [], sentAt: now(), handover: { transactionId: id(10), proposalId: id(30) } });
+async function openProposalChat(page) {
+  await page.getByRole('group', { name: 'Pilihan koordinasi serah terima' }).getByRole('link', { name: 'Langsung ke chat', exact: true }).click();
+  return page.locator('.chat-handover-card');
+}
+test('transaction layout puts coordination first and report stays separate from dispute', async ({ page }, info) => {
+  const state = await mock(page, { showConfirmations: true, reportFail: true }); await page.goto('/app/transaksi/' + id(10));
+  await expect(page.locator('.transaction-main > section').first()).toHaveClass(/handover-panel/);
+  await expect(page.getByRole('list', { name: 'Progres transaksi' })).toContainText('Disepakati');
+  await expect(page.getByRole('button', { name: 'Konfirmasi penyerahan', exact: true })).toBeVisible();
+  await fits(page); await capture(page, 'transaction-flow', info.project.name);
+  await page.getByRole('button', { name: 'Laporkan transaksi', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Laporkan transaksi', exact: true });
+  await expect(dialog).toContainText('tidak menahan penyelesaian transaksi');
+  await dialog.getByLabel('Isi laporan transaksi', { exact: true }).fill('Penjual tidak datang pada jadwal yang disepakati.');
+  await dialog.getByRole('button', { name: 'Kirim laporan transaksi', exact: true }).click();
+  await expect(dialog.getByText('Laporan belum tersimpan. Coba lagi.')).toBeVisible();
+  await expect(dialog.getByLabel('Isi laporan transaksi', { exact: true })).toHaveValue('Penjual tidak datang pada jadwal yang disepakati.');
+  state.reportFail = false;
+  await dialog.getByRole('button', { name: 'Kirim laporan transaksi', exact: true }).dblclick();
+  await expect(dialog).toContainText('Laporan terkirim untuk ditinjau admin.');
+  expect(state.reports).toHaveLength(2); expect(state.reports[1].targetType).toBe('TRANSACTION'); expect(state.writes).toHaveLength(0);
+  await capture(page, 'transaction-report', info.project.name);
+  await dialog.getByRole('button', { name: 'Tutup', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Laporkan transaksi', exact: true })).toBeFocused();
+});
+for (const method of ['MEETUP', 'DELIVERY']) {
+  test('recipient accepts ' + method + ' proposal within chat', async ({ page }, info) => {
+    const state = await mock(page, { actor: 3, pending: { ...plan(method), status: 'PENDING', privateDetails: { ...plan(method).privateDetails, destinations: [] } }, chatMessages: [proposalMessage()] });
+    await page.goto('/app/transaksi/' + id(10)); const card = await openProposalChat(page);
+    await expect(card.getByRole('button', { name: 'Terima usulan', exact: true })).toBeVisible();
+    await expect(card.getByRole('button', { name: 'Tarik usulan', exact: true })).toHaveCount(0);
+    await fits(page); await capture(page, 'chat-proposal-' + method.toLowerCase(), info.project.name);
+    await card.getByRole('button', { name: 'Terima usulan', exact: true }).click();
+    const dialog = page.getByRole('dialog', { name: 'Tinjau dan setujui usulan', exact: true });
+    if (method === 'DELIVERY') {
+      await dialog.getByLabel('Nama penerima', { exact: true }).fill('Bima'); await dialog.getByLabel('Nomor telepon penerima', { exact: true }).fill('081234567890'); await dialog.getByLabel('Alamat lengkap', { exact: true }).fill('Jalan Melati nomor 12, Kota Kediri');
+    }
+    await capture(page, 'chat-response-' + method.toLowerCase(), info.project.name);
+    await dialog.getByRole('button', { name: 'Setujui usulan', exact: true }).dblclick();
+    await expect(dialog).not.toBeVisible(); await expect(page.getByRole('dialog', { name: 'Pesan', exact: true })).toBeVisible();
+    await expect(card.getByRole('status').filter({ hasText: 'Disepakati' })).toBeVisible();
+    await expect(card.getByRole('button', { name: 'Terima usulan', exact: true })).toHaveCount(0);
+    expect(state.writes).toHaveLength(1); expect(state.writes[0].body.accept).toBe(true); expect(state.writes[0].key).toBeTruthy();
+    if (method === 'DELIVERY') expect(state.writes[0].body.destination.address).toContain('Jalan Melati');
+    await fits(page); await page.goto('/pesan/' + id(88));
+    await expect(page.locator('.chat-handover-card')).toContainText('Disepakati');
+  });
+}
+test('rejection in chat keeps prior agreement and disables historical card', async ({ page }) => {
+  const prior = { ...plan(), id: id(31), privateDetails: { ...plan().privateDetails, location: 'Jadwal semula' } };
+  const state = await mock(page, { actor: 3, agreed: prior, pending: { ...plan(), status: 'PENDING' }, chatMessages: [proposalMessage()] });
+  await page.goto('/app/transaksi/' + id(10)); const card = await openProposalChat(page);
+  await card.getByRole('button', { name: 'Tolak usulan', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Tolak usulan', exact: true });
+  await dialog.getByLabel('Alasan penolakan', { exact: true }).fill('Waktu baru belum cocok untuk saya.');
+  await dialog.getByRole('button', { name: 'Tolak usulan', exact: true }).click();
+  await expect(dialog).not.toBeVisible(); await expect(card).toContainText('Ditolak'); await expect(card).toContainText('Waktu baru belum cocok untuk saya.');
+  await expect(card.getByRole('button', { name: 'Terima usulan', exact: true })).toHaveCount(0); expect(state.agreed.id).toBe(id(31));
+});
+test('proposer cannot accept own chat proposal and child Escape keeps chat open', async ({ page }) => {
+  await mock(page, { pending: { ...plan(), status: 'PENDING' }, chatMessages: [proposalMessage()] });
+  await page.goto('/app/transaksi/' + id(10)); const card = await openProposalChat(page);
+  await expect(card.getByRole('button', { name: 'Terima usulan', exact: true })).toHaveCount(0);
+  await card.getByRole('button', { name: 'Tarik usulan', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Tarik usulan', exact: true }); await expect(dialog).toBeVisible();
+  await page.keyboard.press('Escape'); await expect(dialog).not.toBeVisible(); await expect(page.getByRole('dialog', { name: 'Pesan', exact: true })).toBeVisible();
+  await expect(card.getByRole('button', { name: 'Tarik usulan', exact: true })).toBeFocused();
+});
+test('old chat proposal reflects remote rejection and removes private data after access fails', async ({ page }) => {
+  await page.clock.install(); const state = await mock(page, { actor: 3, pending: { ...plan(), status: 'PENDING' }, chatMessages: [proposalMessage()] });
+  await page.goto('/app/transaksi/' + id(10)); const card = await openProposalChat(page);
+  await expect(card.getByRole('button', { name: 'Terima usulan', exact: true })).toBeVisible();
+  state.proposalHistory = { ...state.pending, status: 'REJECTED' }; state.pending = null; state.version++;
+  await page.clock.fastForward(16000); await expect(card).toContainText('Ditolak'); await expect(card.getByRole('button', { name: 'Terima usulan', exact: true })).toHaveCount(0);
+  state.privateDenied = true; await page.clock.fastForward(16000); await expect(card).toContainText('Detail usulan belum dapat dibuka.');
+  await expect(card).not.toContainText('Perpustakaan Kota Kediri');
+});
+
+
+test('unsupported legacy pending method can be rejected but cannot be approved', async ({ page }) => {
+  await mock(page, { actor: 3, methods: ['MEETUP'], pending: { ...plan('DELIVERY'), status: 'PENDING' } });
+  await page.goto('/app/transaksi/' + id(10)); await page.getByRole('button', { name: 'Tinjau usulan', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Tinjau dan setujui usulan', exact: true });
+  await expect(dialog.getByRole('button', { name: 'Setujui usulan', exact: true })).toBeDisabled();
+  await expect(dialog).toContainText('Metode usulan ini tidak didukung Listing.');
+  await page.keyboard.press('Escape'); await expect(page.getByRole('button', { name: 'Tolak usulan', exact: true })).toBeEnabled();
 });

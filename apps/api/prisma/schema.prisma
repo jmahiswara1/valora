@@ -936,6 +936,8 @@ model Message {
   reports         Report[]
   requestHash String? @db.VarChar(64)
   attachments MessageAttachment[]
+  handoverProposalId String? @unique @db.Uuid
+  handoverProposal HandoverProposal? @relation(fields: [handoverProposalId], references: [id], onDelete: Restrict)
 
   @@unique([conversationId, senderId, clientMessageId])
   @@unique([conversationId, sequence])
@@ -1240,6 +1242,7 @@ model HandoverProposal {
   respondedById String? @db.Uuid
   purgedAt DateTime?
   shipments ShipmentRecord[]
+  message Message?
   @@index([transactionId, createdAt, id])
   @@index([status, plannedAt])
 }

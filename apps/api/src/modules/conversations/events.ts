@@ -1,7 +1,7 @@
 import { Injectable, type MessageEvent } from '@nestjs/common';
 import { Subject, Observable, filter, map } from 'rxjs';
 
-type ChatEvent = { userId: string; conversationId: string; sequence: number; kind?: 'MESSAGE' | 'READ' };
+type ChatEvent = { userId: string; conversationId: string; sequence: number; kind?: 'MESSAGE' | 'READ' | 'HANDOVER' };
 
 @Injectable()
 export class ConversationEvents {

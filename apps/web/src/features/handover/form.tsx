@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useId, useState } from 'react';
 import { CalendarClock, MapPin, Truck, Check, Info } from 'lucide-react';
-import type { HandoverDto, HandoverProposalDto, HandoverDestination, HandoverDirectionDto, TransactionDto } from '@valora/contracts';
+import { handoverMethods, type HandoverDto, type HandoverProposalDto, type HandoverDestination, type HandoverDirectionDto, type TransactionDto } from '@valora/contracts';
 import { Field, Notice, Button } from '@/components/ui/primitives';
 import { Select } from '@/components/ui/select';
 import { ActionFeedback } from '@/components/ui/action-feedback';
@@ -15,12 +15,13 @@ function DestinationFields({ value, onChange, prefix, showHeading = true }: { va
 }
 export function HandoverForm({ transaction, coordination, actorId, mode, action, onClose }: { transaction: TransactionDto; coordination: HandoverDto; actorId: string; mode: HandoverMode; action: ReturnType<typeof useCriticalAction>; onClose: () => void }) {
   const prefix = useId(); const [version, setVersion] = useState(coordination.version);
-  const [method, setMethod] = useState(transaction.snapshot.handoverMethods[0]); const [zone, setZone] = useState<Zone>('Asia/Jakarta');
+  const [method, setMethod] = useState(transaction.snapshot.handoverMethods.includes(coordination.agreed?.method ?? 'MEETUP') ? coordination.agreed?.method ?? 'MEETUP' : transaction.snapshot.handoverMethods[0] ?? 'MEETUP'); const [zone, setZone] = useState<Zone>('Asia/Jakarta');
   const [plannedAt, setPlannedAt] = useState(''); const [location, setLocation] = useState(''); const [note, setNote] = useState(''); const [reason, setReason] = useState(''); const [destination, setDestination] = useState(emptyDestination);
   const [courier, setCourier] = useState(mode.type === 'shipment' ? mode.direction.shipment?.courier ?? '' : ''); const [trackingNumber, setTrackingNumber] = useState(mode.type === 'shipment' ? mode.direction.shipment?.trackingNumber ?? '' : '');
   useEffect(() => { const detected = Intl.DateTimeFormat().resolvedOptions().timeZone; if (detected in zones) queueMicrotask(() => setZone(detected as Zone)); }, []);
   const stale = version !== coordination.version;
-  const available = mode.type === 'propose' ? coordination.permissions.canPropose : mode.type === 'shipment' ? coordination.agreed?.id === mode.proposal.id && coordination.directions.some(item => item.itemId === mode.direction.itemId && item.canRecord) : coordination.pending?.id === mode.proposal.id && (mode.type === 'withdraw' ? coordination.permissions.canWithdraw : coordination.permissions.canRespond);
+  const unsupported = mode.type === 'accept' && !transaction.snapshot.handoverMethods.includes(mode.proposal.method);
+  const available = !unsupported && (mode.type === 'propose' ? coordination.permissions.canPropose : mode.type === 'shipment' ? coordination.agreed?.id === mode.proposal.id && coordination.directions.some(item => item.itemId === mode.direction.itemId && item.canRecord) : coordination.pending?.id === mode.proposal.id && (mode.type === 'withdraw' ? coordination.permissions.canWithdraw : coordination.permissions.canRespond));
   const receives = transaction.snapshot.items.some(item => item.toUserId === actorId);
   const needsDestination = receives && (mode.type === 'propose' ? method === 'DELIVERY' : mode.type === 'accept' && mode.proposal.method === 'DELIVERY');
   const titles = { propose: coordination.agreed ? 'Usulkan perubahan serah terima' : 'Atur serah terima', accept: 'Tinjau dan setujui usulan', reject: 'Tolak usulan', withdraw: 'Tarik usulan', shipment: 'Catat informasi pengiriman' };
@@ -35,13 +36,13 @@ export function HandoverForm({ transaction, coordination, actorId, mode, action,
     else { path = base + '/proposals/' + mode.proposal.id + (mode.type === 'withdraw' ? '/withdraw' : '/respond'); body = { expectedVersion: version, ...(mode.type !== 'withdraw' ? { accept: mode.type === 'accept', ...(mode.type === 'reject' ? { reason: reason.trim() } : {}), ...(needsDestination ? { destination } : {}) } : {}) }; }
     const result = await action.run(path, body); if (result) onClose();
   }
-  return <HandoverDialog title={titles[mode.type]} description="Detail koordinasi hanya dibagikan kepada peserta transaksi dan admin kasus yang mendapat akses dengan audit." proposal={mode.type === 'propose'} busy={action.pending} unavailable={!available || stale || action.hasSaved()} onClose={onClose} onSubmit={submit} submitLabel={mode.type === 'accept' ? 'Setujui usulan' : mode.type === 'reject' ? 'Tolak usulan' : mode.type === 'withdraw' ? 'Tarik usulan' : mode.type === 'shipment' ? 'Simpan resi' : 'Kirim usulan'} footer={<>{!available && <Notice>Usulan atau status transaksi sudah berubah. Tutup formulir dan periksa koordinasi terbaru.</Notice>}{stale && available && <Notice>Status transaksi diperbarui. Periksa detail terbaru di bawah sebelum melanjutkan.<Button type="button" variant="secondary" onClick={() => setVersion(coordination.version)}>Gunakan versi terbaru</Button></Notice>}<ActionFeedback action={action} onRecovered={onClose} /></>}>
+  return <HandoverDialog title={titles[mode.type]} description="Detail koordinasi hanya dibagikan kepada peserta transaksi dan admin kasus yang mendapat akses dengan audit." proposal={mode.type === 'propose'} busy={action.pending} unavailable={!available || stale || action.hasSaved()} onClose={onClose} onSubmit={submit} submitLabel={mode.type === 'accept' ? 'Setujui usulan' : mode.type === 'reject' ? 'Tolak usulan' : mode.type === 'withdraw' ? 'Tarik usulan' : mode.type === 'shipment' ? 'Simpan resi' : 'Kirim usulan'} footer={<>{!available && <Notice>{unsupported ? 'Metode usulan ini tidak didukung Listing. Tolak usulan dan gunakan metode yang tersedia.' : 'Usulan atau status transaksi sudah berubah. Tutup formulir dan periksa koordinasi terbaru.'}</Notice>}{stale && available && <Notice>Status transaksi diperbarui. Periksa detail terbaru di bawah sebelum melanjutkan.<Button type="button" variant="secondary" onClick={() => setVersion(coordination.version)}>Gunakan versi terbaru</Button></Notice>}<ActionFeedback action={action} onRecovered={onClose} /></>}>
     {mode.type === 'propose' ? <>
       {coordination.agreed && <details className="handover-comparison"><summary>Kesepakatan saat ini tetap berlaku</summary><ProposalDetails proposal={coordination.agreed} transaction={transaction} /></details>}
       <div className="handover-proposal-grid">
         <section className="handover-form-section" aria-labelledby={prefix + '-schedule'}>
           <div className="handover-section-heading"><CalendarClock size={19} strokeWidth={1.7} aria-hidden="true" /><h3 id={prefix + '-schedule'}>Metode dan jadwal</h3></div>
-          <Field label="Metode serah terima" htmlFor={prefix + '-method'}><Select id={prefix + '-method'} className="select" value={method} onChange={event => setMethod(event.target.value as typeof method)}>{transaction.snapshot.handoverMethods.map(option => <option key={option} value={option}>{methodLabel(option)}</option>)}</Select></Field>
+          <Field label="Metode serah terima" htmlFor={prefix + '-method'} hint="Metode mengikuti Listing saat kesepakatan dibuat. Opsi yang tidak tersedia dinonaktifkan."><Select id={prefix + '-method'} className="select" value={method} onChange={event => setMethod(event.target.value as typeof method)}>{handoverMethods.map(option => <option key={option} value={option} disabled={!transaction.snapshot.handoverMethods.includes(option)}>{methodLabel(option)}</option>)}</Select></Field>
           <fieldset className="handover-zone-fieldset"><legend>Zona waktu</legend><div className="handover-zone-choices">
             {Object.entries(zones).map(([value, item]) => <label className="handover-zone-choice" key={value}>
               <input type="radio" name={prefix + '-zone'} value={value} checked={zone === value} onChange={() => chooseZone(value as Zone)} />

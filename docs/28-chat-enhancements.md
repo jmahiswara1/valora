@@ -51,7 +51,9 @@ scroll serta viewport browser pada tab aktif. Cursor selalu naik dan tidak boleh
 melewati pesan terakhir. Pesan terkirim menampilkan Terkirim; Dibaca muncul jika
 cursor pihak lain sudah mencakup pesan tersebut. Tanda dibaca selalu aktif.
 
-Satu SSE per sesi mengirim metadata perubahan MESSAGE/READ. REST mengambil isi
+Pesan usulan serah terima memiliki referensi opsional `handover: { transactionId, proposalId }` yang hanya dibuat server. Kartu membaca detail privat dan status terbaru dari endpoint koordinasi; respons di chat memakai persetujuan kedua pihak, versi, dan pemulihan tindakan yang sama dengan halaman transaksi. Detail ada pada `docs/29-handover-coordination.md`.
+
+Satu SSE per sesi mengirim metadata perubahan MESSAGE/READ/HANDOVER. REST mengambil isi
 pesan, daftar percakapan dan notifikasi. Koneksi dibersihkan pada perubahan
 identitas; server memeriksa pencabutan sesi berkala. Jika SSE terputus, histori
 dan detail diperbarui setiap lima detik; daftar/notifikasi mempertahankan polling.

@@ -16,7 +16,11 @@ export function ConversationRealtime({ sessionId, children }: { sessionId?: stri
     source.onopen = () => { setConnected(true); invalidate(); };
     source.onerror = () => setConnected(false);
     const receive = (event: MessageEvent) => {
-      try { const data = JSON.parse(event.data) as { conversationId?: string }; if (typeof data.conversationId === 'string') invalidate(data.conversationId); } catch { /* Contents are fetched through authenticated REST. */ }
+      try {
+        const data = JSON.parse(event.data) as { conversationId?: string; kind?: string };
+        if (typeof data.conversationId === 'string') invalidate(data.conversationId);
+        if (data.kind === 'HANDOVER') for (const key of [['handover'], ['handover-proposal'], ['transaction']]) void cache.invalidateQueries({ queryKey: key });
+      } catch { /* Contents are fetched through authenticated REST. */ }
     };
     source.addEventListener('conversation', receive);
     return () => { source.removeEventListener('conversation', receive); source.close(); };
