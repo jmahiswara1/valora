@@ -5,7 +5,7 @@ import {login,createItem,createListing,approve,check} from '../../../api/scripts
 async function capture(page,name,project) {await mkdir('test-results/screenshots/owner',{recursive:true});await page.screenshot({path:'test-results/screenshots/owner/'+name+'-'+project+'.png',fullPage:true});}
 async function confirm(page,label) {const dialog=page.getByRole('dialog',{name:label,exact:true});await expect(dialog.getByRole('button',{name:label,exact:true})).toBeDisabled();await dialog.getByRole('checkbox').check();await dialog.getByRole('button',{name:label,exact:true}).dblclick();await expect(dialog).not.toBeVisible();}
 test('owner edits all listing fields and deletes listing then item',async({browser},info)=>{
- const owner=await login('owner.demo@valora.local'),admin=await login('admin.demo@valora.local');
+ const owner=await login('owner@valora.demo'),admin=await login('admin@valora.demo');
  const profile=check(await owner.request('/me'),200,'Owner');
  const fixture=await createItem(owner,'electronics','Listing kelola '+randomUUID().slice(0,8));
  const listing=await approve(admin,await createListing(owner,fixture.item,fixture.assessment,profile.city.id,'RESELL',fixture.item.title));

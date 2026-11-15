@@ -7,7 +7,7 @@ import { base, client, check, credentials, login, createItem, createListing, app
 
 if (!process.env.DATABASE_URL || !new URL(process.env.DATABASE_URL).pathname.endsWith('_test')) throw new Error('Notifikasi membutuhkan database test.');
 const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }) });
-const seed = await db.user.findUniqueOrThrow({ where: { email: 'owner.demo@valora.local' } });
+const seed = await db.user.findUniqueOrThrow({ where: { email: 'owner@valora.demo' } });
 async function actor(verified = true, role = 'USER') {
   const user = await db.user.create({ data: { email: `notifications-${randomUUID()}@demo.valora.local`, displayName: 'Fixture Notifikasi', cityId: seed.cityId, passwordHash: seed.passwordHash, emailVerifiedAt: verified ? new Date() : null, role } });
   return { user, account: await login(user.email) };

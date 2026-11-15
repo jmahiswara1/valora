@@ -77,9 +77,9 @@ async function approve(admin, listing, reason = 'Informasi Listing telah ditinja
   return published;
 }
 
-const owner = await login('owner.demo@valora.local');
-const bidder = await login('member.demo@valora.local');
-const admin = await login('admin.demo@valora.local');
+const owner = await login('owner@valora.demo');
+const bidder = await login('member@valora.demo');
+const admin = await login('admin@valora.demo');
 const guest = client();
 const ownerProfile = check(await owner.request('/me'), 200, 'Profil pemilik');
 const spec = await fetch(base + '/api/docs-json').then((response) => response.json());

@@ -14,7 +14,7 @@ test('real completed transaction publishes rating, reply and notifications', asy
   const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: config.TEST_DATABASE_URL }) });
   const contexts = [];
   try {
-    const seed = await db.user.findUniqueOrThrow({ where: { email: 'owner.demo@valora.local' } });
+    const seed = await db.user.findUniqueOrThrow({ where: { email: 'owner@valora.demo' } });
     async function actor(role = 'USER') { return db.user.create({ data: { email: `review-browser-${randomUUID()}@demo.valora.local`, displayName: 'Ulasan Browser ' + role, cityId: seed.cityId, passwordHash: seed.passwordHash, emailVerifiedAt: new Date(), role } }); }
     const owner = await actor(), buyer = await actor(), admin = await actor('ADMIN');
     const ownerAccount = await login(owner.email), buyerAccount = await login(buyer.email), adminAccount = await login(admin.email);

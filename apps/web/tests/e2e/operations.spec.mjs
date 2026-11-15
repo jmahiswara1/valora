@@ -18,7 +18,7 @@ async function fits(page) {
 }
 
 test('Passport, Impact, penjelasan, laporan dan koreksi admin', async ({ browser }, info) => {
-  const owner = await login('owner.demo@valora.local'); const member = await login('member.demo@valora.local'); const admin = await login('admin.demo@valora.local');
+  const owner = await login('owner@valora.demo'); const member = await login('member@valora.demo'); const admin = await login('admin@valora.demo');
   const ownerProfile = check(await owner.request('/me'), 200, 'Profil'); const memberProfile = check(await member.request('/me'), 200, 'Profil penerima');
   const fixture = await createItem(owner, 'electronics', `Tahap lima browser ${info.project.name} ${randomUUID().slice(0, 6)}`);
   const listing = await approve(admin, await createListing(owner, fixture.item, fixture.assessment, ownerProfile.city.id, 'RESELL', fixture.item.title));
@@ -55,7 +55,7 @@ test('Passport, Impact, penjelasan, laporan dan koreksi admin', async ({ browser
     await page.route(`**/api/v1/admin/transactions/${transaction.id}/correct`, async (route) => { if (abortOnce) { abortOnce = false; await route.fetch(); await route.abort('failed'); } else await route.continue(); });
     await page.getByRole('button', { name: 'Balikkan kepemilikan', exact: true }).click(); await confirm(page); await expect(page.getByRole('dialog').getByRole('button', { name: 'Periksa ulang tindakan', exact: true })).toBeVisible(); await page.getByRole('dialog').getByRole('button', { name: 'Periksa ulang tindakan', exact: true }).click(); await expect(page.getByRole('dialog')).not.toBeVisible(); await expect(page.getByText('Hasil: OWNERSHIP_REVERSED', { exact: false })).toBeVisible();
     const current = check(await owner.request(`/items/${fixture.item.id}`), 200, 'Owner restored'); expect(current.id).toBe(fixture.item.id);
-    await page.goto('/app/admin/pengguna'); await expect(page.getByRole('heading', { name: 'Pengguna', exact: true })).toBeVisible(); await page.getByLabel('Cari nama atau email').fill('owner.demo@valora.local'); await page.getByRole('button', { name: 'Cari', exact: true }).click(); await expect(page.getByText('owner.demo@valora.local · USER')).toBeVisible(); await fits(page);
+    await page.goto('/app/admin/pengguna'); await expect(page.getByRole('heading', { name: 'Pengguna', exact: true })).toBeVisible(); await page.getByLabel('Cari nama atau email').fill('owner@valora.demo'); await page.getByRole('button', { name: 'Cari', exact: true }).click(); await expect(page.getByText('owner@valora.demo · USER')).toBeVisible(); await fits(page);
     await page.goto('/app/admin/rubrik'); await expect(page.getByRole('heading', { name: 'Kategori, rubrik, dan acuan' })).toBeVisible(); await expect(page.getByLabel('Versi dasar untuk draft baru')).toBeVisible(); await fits(page);
     const referenceRow = page.getByRole('listitem').filter({ hasText: referenceSource });
     await referenceRow.getByText('Nonaktifkan acuan', { exact: true }).click(); await referenceRow.getByLabel('Alasan tindakan').fill('Acuan sintetis ini tidak dipakai untuk penilaian baru.'); await referenceRow.getByRole('button', { name: 'Simpan status acuan', exact: true }).click(); await confirm(page); await expect(page.getByRole('dialog')).not.toBeVisible(); await expect(referenceRow.getByText('Aktifkan kembali acuan', { exact: true })).toBeVisible();

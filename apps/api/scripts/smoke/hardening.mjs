@@ -14,7 +14,7 @@ if (!new URL(process.env.DATABASE_URL).pathname.endsWith('_test')) throw new Err
 const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }) });
 const lock = new pg.Client({ connectionString: process.env.DATABASE_URL });
 const label = 'Hardening ' + randomUUID().slice(0, 8);
-const seed = await db.user.findUniqueOrThrow({ where: { email: 'owner.demo@valora.local' } });
+const seed = await db.user.findUniqueOrThrow({ where: { email: 'owner@valora.demo' } });
 const guest = client();
 const post = (account, path, body) => account.request(path, { method: 'POST', body });
 async function actor(role = 'USER') {

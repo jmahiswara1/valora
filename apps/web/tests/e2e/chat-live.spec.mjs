@@ -14,7 +14,7 @@ test('real photo message, grouped notification, visible read receipt and private
   const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: config.TEST_DATABASE_URL }) });
   let ownerContext;
   try {
-    const seed = await db.user.findUniqueOrThrow({ where: { email: 'owner.demo@valora.local' } });
+    const seed = await db.user.findUniqueOrThrow({ where: { email: 'owner@valora.demo' } });
     async function actor(role = 'USER') { return db.user.create({ data: { email: `chat-browser-${randomUUID()}@demo.valora.local`, displayName: role === 'ADMIN' ? 'Admin Chat' : 'Pemilik Chat', cityId: seed.cityId, passwordHash: seed.passwordHash, emailVerifiedAt: new Date(), role } }); }
     const owner = await actor(), buyer = await actor(), admin = await actor('ADMIN');
     const ownerAccount = await login(owner.email), buyerAccount = await login(buyer.email), adminAccount = await login(admin.email);

@@ -59,7 +59,7 @@ const families = [
   },
 ];
 
-const owners = ['owner.demo@valora.local', 'member.demo@valora.local'];
+const owners = ['owner@valora.demo', 'member@valora.demo'];
 const definitions = families.flatMap((family, familyIndex) => family.titles.map((name, index) => {
   const globalIndex = familyIndex * family.titles.length + index;
   return {
@@ -68,7 +68,7 @@ const definitions = families.flatMap((family, familyIndex) => family.titles.map(
     image: family.image,
     categoryCode: family.categoryCode,
     subcategoryCode: family.subcategoryCode,
-    title: `Demo Market · ${family.key} · ${String(index + 1).padStart(2, '0')} · ${name}`,
+    title: name,
     description: `Data simulasi Valora untuk demonstrasi. ${family.description}`,
     contextAnswer: family.contextAnswer,
     type: family.types[index],
@@ -119,7 +119,7 @@ try {
   if (manifest.version !== 1 || !Array.isArray(manifest.items)) throw new Error('versi atau bentuk manifest tidak dikenal');
   const existingKeys = new Set(manifest.items.map((entry) => entry.key));
   if (definitions.some((entry) => !existingKeys.has(entry.key)) || manifest.items.length !== definitions.length) throw new Error('isi manifest tidak cocok dengan seed versi ini');
-  manifest.items = definitions.map((definition) => ({ ...definition, ...manifest.items.find((entry) => entry.key === definition.key) }));
+  manifest.items = definitions.map((definition) => ({ ...manifest.items.find((entry) => entry.key === definition.key), ...definition }));
 } catch (error) {
   if (error?.code !== 'ENOENT') throw new Error(`Manifest demo Item tidak dapat dibaca: ${error.message}`);
   manifest = newManifest();
@@ -175,7 +175,7 @@ try {
     ownerAccounts.set(email, account);
     ownerProfiles.set(email, profile);
   }
-  const admin = await login('admin.demo@valora.local');
+  const admin = await login('admin@valora.demo');
   const adminProfile = check(await admin.request('/me'), 200, 'Profil admin demo');
   if (adminProfile.role !== 'ADMIN' || adminProfile.status !== 'ACTIVE' || !adminProfile.emailVerifiedAt) throw new Error('Akun admin demo harus aktif dan terverifikasi.');
 
@@ -200,7 +200,7 @@ try {
     const account = ownerAccounts.get(email);
     const rows = await listItems(account);
     for (const row of rows) {
-      if (!row.title.startsWith('Demo Market · ')) continue;
+      if (!definitions.some(entry => entry.title === row.title)) continue;
       if (itemByTitle.has(row.title)) throw new Error(`Ada Item demo ganda dengan judul: ${row.title}`);
       itemByTitle.set(row.title, { ...row, ownerEmail: email });
     }
@@ -377,8 +377,16 @@ try {
   }
 
   const guest = (await import("../helpers/fixtures.mjs")).client();
-  const query = new URLSearchParams({ q: 'Demo Market ·', limit: '50' });
-  const marketPage = check(await guest.request(`/market?${query}`), 200, 'Verifikasi Market demo');
+  const seededIds = new Set(manifest.items.map(entry => entry.listingId));
+  const marketPage = [];
+  let cursor = null;
+  do {
+    const query = new URLSearchParams({ limit: '50' });
+    if (cursor) query.set('cursor', cursor);
+    const response = await guest.request(`/market?${query}`);
+    marketPage.push(...check(response, 200, 'Verifikasi Market demo').filter(row => seededIds.has(row.id)));
+    cursor = response.payload.meta?.nextCursor ?? null;
+  } while (cursor);
   assert.equal(marketPage.length, definitions.length, 'Market harus menampilkan tepat 40 Listing seed');
   const marketCounts = Object.fromEntries(Object.keys(expectedTypeCounts).map((type) => [type, marketPage.filter((row) => row.type === type).length]));
   assert.deepEqual(marketCounts, expectedTypeCounts, 'Market harus berisi komposisi Resell/Exchange/Donate yang ditetapkan');

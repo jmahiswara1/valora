@@ -36,8 +36,8 @@ async function upload(account, itemId, purpose = 'ITEM') {
   check(await account.request(`/media/uploads/${ticket.ticketId}`, { method: 'PUT', body: photo, type: 'image/webp' }), 200, 'Unggah foto');
   return ticket.ticketId;
 }
-const owner = await login('owner.demo@valora.local');
-const other = await login('member.demo@valora.local');
+const owner = await login('owner@valora.demo');
+const other = await login('member@valora.demo');
 const rubric = check(await owner.request('/categories/electronics/rubric'), 200, 'Rubrik publik');
 assert.equal(rubric.questions.length, 6);
 assert.equal(rubric.safetyQuestions.length, 3);

@@ -8,7 +8,7 @@ import { base, client, check, credentials, photo, login, createItem, createListi
 
 if (!new URL(process.env.DATABASE_URL).pathname.endsWith('_test')) throw new Error('Stage 4 smoke hanya boleh memakai database test.');
 const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }) });
-const owner = await login('owner.demo@valora.local'); const bidder = await login('member.demo@valora.local'); const admin = await login('admin.demo@valora.local'); const guest = client();
+const owner = await login('owner@valora.demo'); const bidder = await login('member@valora.demo'); const admin = await login('admin@valora.demo'); const guest = client();
 const ownerProfile = check(await owner.request('/me'), 200, 'Profil owner'); const bidderProfile = check(await bidder.request('/me'), 200, 'Profil penawar');
 const adminProfile = check(await admin.request('/me'), 200, 'Profil admin');
 async function extraUser(role = 'USER') {

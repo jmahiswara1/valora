@@ -11,7 +11,7 @@ if (!process.env.DATABASE_URL || !new URL(process.env.DATABASE_URL).pathname.end
 const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }) });
 const jobLock = new pg.Client({ connectionString: process.env.DATABASE_URL });
 await jobLock.connect(); await jobLock.query("SELECT pg_advisory_lock(hashtextextended('valora-job:saved-search-alerts',0))");
-const seed = await db.user.findUniqueOrThrow({ where: { email: 'owner.demo@valora.local' } });
+const seed = await db.user.findUniqueOrThrow({ where: { email: 'owner@valora.demo' } });
 const service = new SearchesService(db);
 async function drain() { for (let i = 0; i < 200; i++) if (!await service.processBatch()) return; throw new Error('Antrean tidak selesai.'); }
 async function actor(verified = false, role = 'USER') {

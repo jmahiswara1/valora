@@ -61,12 +61,19 @@ try {
     const passwordHash = await hash(password, { algorithm: Algorithm.Argon2id });
     const city = await db.city.findFirstOrThrow({ where: { name: 'Kota Bandung' } });
     const users = [
-      { email: 'owner.demo@valora.local', displayName: 'Nadia Demo', role: 'USER' as const },
-      { email: 'member.demo@valora.local', displayName: 'Raka Demo', role: 'USER' as const },
-      { email: 'buyer.demo@valora.local', displayName: 'Buyer', role: 'USER' as const },
-      { email: 'admin.demo@valora.local', displayName: 'Admin Demo', role: 'ADMIN' as const },
+      { email: 'owner@valora.demo', displayName: 'Nadia Demo', role: 'USER' as const },
+      { email: 'member@valora.demo', displayName: 'Raka Demo', role: 'USER' as const },
+      { email: 'buyer@valora.demo', displayName: 'Buyer', role: 'USER' as const },
+      { email: 'admin@valora.demo', displayName: 'Admin Demo', role: 'ADMIN' as const },
     ];
     for (const user of users) {
+      const legacyEmail = user.email.replace('@valora.demo', '.demo@valora.local');
+      const existing = await db.user.findMany({ where: { email: { in: [user.email, legacyEmail] } } });
+      if (existing.length > 1) throw new Error('Akun demo lama dan baru sama-sama ada; periksa sebelum seed: ' + user.email);
+      if (existing[0]) {
+        await db.user.update({ where: { id: existing[0].id }, data: { email: user.email, role: user.role } });
+        continue;
+      }
       await db.user.upsert({
         where: { email: user.email },
         create: { ...user, passwordHash, cityId: city.id, emailVerifiedAt: new Date() },
