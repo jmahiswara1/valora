@@ -79,7 +79,7 @@ test('global chat opens a dialog, keeps drafts and expands outside the account w
   await expect(dialog.getByRole('textbox', { name: 'Pesan', exact: true })).toHaveValue('Draf tetap tersedia saat diperluas.');
   await expect(dialog.getByText('Siap', { exact: true })).toHaveCount(1);
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  const folder = resolve('.impeccable/review/chat'); await mkdir(folder, { recursive: true });
+  const folder = resolve('test-results/screenshots/chat'); await mkdir(folder, { recursive: true });
   await page.screenshot({ path: resolve(folder, `global-dialog-${info.project.name}.png`), fullPage: false });
   await dialog.getByRole('link', { name: 'Buka halaman chat penuh' }).click();
   await expect(page).toHaveURL(new RegExp(`/pesan/${id(3)}$`)); await expect(dialog).toHaveCount(0);
@@ -176,7 +176,7 @@ test('photos, receipt, profile, lightbox keyboard and responsive composition', a
   await expectWorkspaceFits(page);
   await expect(page.locator('#message-body')).toHaveCSS('color', 'rgb(27, 58, 40)');
   const placeholder = await page.locator('#message-body').evaluate(element => getComputedStyle(element, '::placeholder').color); expect(placeholder).toBe('rgb(91, 109, 96)');
-  const folder = resolve('.impeccable/review/chat'); await mkdir(folder, { recursive: true }); await page.screenshot({ path: resolve(folder, `${info.project.name}.png`), fullPage: true });
+  const folder = resolve('test-results/screenshots/chat'); await mkdir(folder, { recursive: true }); await page.screenshot({ path: resolve(folder, `${info.project.name}.png`), fullPage: true });
   if (info.project.name === 'mobile') { await page.setViewportSize({ width: 320, height: 844 }); await page.evaluate(() => window.scrollTo(0, 0)); await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true); await page.screenshot({ path: resolve(folder, 'mobile-320.png'), fullPage: true }); }
 });
 test('upload errors preserve draft and uncertain commits recover without duplicate send', async ({ page }) => {
@@ -253,7 +253,7 @@ test('inbox search and unread filter compose without affecting the open thread',
   await search.fill('KAMERA'); await expect(list.locator('.conversation-row')).toHaveCount(1);
   await page.getByRole('button', { name: 'Hapus pencarian', exact: true }).click();
   await expectWorkspaceFits(page);
-  const folder = resolve('.impeccable/review/chat'); await mkdir(folder, { recursive: true });
+  const folder = resolve('test-results/screenshots/chat'); await mkdir(folder, { recursive: true });
   await page.screenshot({ path: resolve(folder, `inbox-${info.project.name}.png`), fullPage: true });
   await list.locator('.conversation-row').first().click();
   await expect(page.getByRole('heading', { name: 'Kamera untuk cerita berikutnya' })).toBeVisible();

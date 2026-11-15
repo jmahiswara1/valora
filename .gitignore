@@ -24,11 +24,12 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-# Keep the portable Graphify documentation only
-/graphify-out/*
-!/graphify-out/GRAPH_REPORT.md
-!/graphify-out/graph.html
-!/graphify-out/graph.json
-
-# Review screenshots remain local; reports and fixtures are tracked
-/apps/web/.impeccable/review/**/*.png
+# Internal documentation and development tools remain local
+/docs/
+/graphify-out/
+**/.impeccable/
+**/.agents/
+**/.codex/
+**/AGENTS.md
+**/DESIGN.md
+*.pen

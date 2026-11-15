@@ -83,7 +83,7 @@ test('zero results can be saved and dialog is centered accessible and responsive
   await saveButton(page).click(); await expect(dialog(page)).toBeVisible(); const bounds = await dialog(page).boundingBox(), viewport = page.viewportSize();
   expect(Math.abs(bounds.x + bounds.width / 2 - viewport.width / 2)).toBeLessThan(2); expect(Math.abs(bounds.y + bounds.height / 2 - viewport.height / 2)).toBeLessThan(2);
   await expect(dialog(page).getByRole('button', { name: 'Tutup dialog' })).toBeFocused(); await page.keyboard.press('Shift+Tab'); await expect(dialog(page).getByRole('button', { name: 'Kembali' })).toBeFocused(); await page.keyboard.press('Tab'); await expect(dialog(page).getByRole('button', { name: 'Tutup dialog' })).toBeFocused();
-  await fits(page); const dir = resolve('.impeccable/review/searches'); await mkdir(dir, { recursive: true }); await page.screenshot({ path: resolve(dir, `save-${testInfo.project.name}.png`) });
+  await fits(page); const dir = resolve('test-results/screenshots/searches'); await mkdir(dir, { recursive: true }); await page.screenshot({ path: resolve(dir, `save-${testInfo.project.name}.png`) });
   await page.keyboard.press('Escape'); await expect(dialog(page)).toHaveCount(0); await expect(saveButton(page)).toBeFocused();
 });
 test('manage rename toggle remove and open saved results', async ({ page }, testInfo) => {
@@ -91,7 +91,7 @@ test('manage rename toggle remove and open saved results', async ({ page }, test
   await page.goto('/app/pencarian'); await expect(page.getByRole('heading', { name: 'Pencarian tersimpan', exact: true })).toBeVisible(); await expect(page.locator('.saved-search-list > li')).toHaveCount(3); await fits(page);
   if (page.viewportSize().width > 760) expect((await page.locator('.saved-search-row-actions a').first().boundingBox()).width).toBeGreaterThan(100);
   await expect(page.locator('.saved-search-row-actions button svg').first()).toHaveCSS('width', '18px');
-  const dir = resolve('.impeccable/review/searches'); await mkdir(dir, { recursive: true }); await page.screenshot({ path: resolve(dir, `${testInfo.project.name}.png`), fullPage: true });
+  const dir = resolve('test-results/screenshots/searches'); await mkdir(dir, { recursive: true }); await page.screenshot({ path: resolve(dir, `${testInfo.project.name}.png`), fullPage: true });
   await page.getByRole('button', { name: 'Ubah nama Meja untuk ruang kerja' }).click(); await dialog(page).getByLabel('Nama pencarian').fill('Ruang kerja baru'); await dialog(page).getByRole('button', { name: 'Simpan nama' }).click(); await expect(page.getByRole('heading', { name: 'Ruang kerja baru' })).toBeVisible();
   await page.getByRole('button', { name: 'Nonaktifkan notifikasi Ruang kerja baru' }).click(); await expect(page.getByRole('button', { name: 'Aktifkan notifikasi Ruang kerja baru' })).toBeVisible();
   await page.getByRole('button', { name: 'Hapus Pencarian 11' }).click(); await expect(dialog(page).getByRole('button', { name: 'Hapus pencarian', exact: true })).toHaveClass(/button-danger/); await page.screenshot({ path: resolve(dir, `delete-${testInfo.project.name}.png`) }); await dialog(page).getByRole('button', { name: 'Hapus pencarian', exact: true }).click(); await expect(page.locator('.saved-search-list > li')).toHaveCount(2);

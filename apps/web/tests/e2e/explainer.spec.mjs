@@ -38,8 +38,8 @@ test('manual generation, four action reasons, cached source and no automatic ref
   await section(page).locator('.explanation-details > summary').click();
   for (const action of ['Repair', 'Resell', 'Exchange', 'Donate']) await expect(section(page).locator('dt').filter({ hasText: action })).toBeVisible();
   await page.evaluate(() => { window.dispatchEvent(new Event('focus')); window.dispatchEvent(new Event('online')); }); await page.waitForTimeout(350); expect(state.calls).toBe(1); await fits(page);
-  await mkdir('.impeccable/review/explainer', { recursive: true }); await page.evaluate(() => scrollTo(0, 0));
-  await page.screenshot({ path: `.impeccable/review/explainer/${info.project.name}.png`, fullPage: true }); expect(errors).toEqual([]);
+  await mkdir('test-results/screenshots/explainer', { recursive: true }); await page.evaluate(() => scrollTo(0, 0));
+  await page.screenshot({ path: `test-results/screenshots/explainer/${info.project.name}.png`, fullPage: true }); expect(errors).toEqual([]);
 });
 test('loading lasts beyond the shared default timeout and does not duplicate a click', async ({ page }) => {
   const state = await mock(page, { delay: 16000 }); await generate(page);
@@ -71,7 +71,7 @@ test('historical partial assessment and 320px layout preserve readable reasons',
   await section(page).locator('.explanation-details > summary').click();
   await expect(section(page)).toContainText('Penilaian ini historis'); await expect(section(page).locator('dt').filter({ hasText: 'Resell' })).toContainText('Perlu data');
   await expect(section(page).locator('button')).toHaveCount(0); await fits(page);
-  if (info.project.name === 'mobile') { await page.evaluate(() => scrollTo(0, 0)); await page.screenshot({ path: '.impeccable/review/explainer/narrow.png', fullPage: true }); }
+  if (info.project.name === 'mobile') { await page.evaluate(() => scrollTo(0, 0)); await page.screenshot({ path: 'test-results/screenshots/explainer/narrow.png', fullPage: true }); }
 });
 test('plain text output never executes markup', async ({ page }) => {
   const state = await mock(page); await page.route(`**/api/v1/assessments/${id(20)}/explain`, route => route.fulfill({ json: { data: { ...explanation(state), summary: '<img src=x onerror="alert(1)"> Hasil sintetis.' } } }));

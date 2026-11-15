@@ -84,7 +84,7 @@ async function mock(page, options = {}) {
   }); return state;
 }
 async function fits(page) { expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true); }
-async function capture(page, name, project, target) { const dir = resolve('.impeccable/review/handover'); await mkdir(dir, { recursive: true }); if (target) await target.screenshot({ path: resolve(dir, `${name}-${project}.png`), animations: 'disabled', style: ' .account-toolbar, .account-skip { visibility: hidden; }' }); else await page.screenshot({ path: resolve(dir, `${name}-${project}.png`), fullPage: false }); }
+async function capture(page, name, project, target) { const dir = resolve('test-results/screenshots/handover'); await mkdir(dir, { recursive: true }); if (target) await target.screenshot({ path: resolve(dir, `${name}-${project}.png`), animations: 'disabled', style: ' .account-toolbar, .account-skip { visibility: hidden; }' }); else await page.screenshot({ path: resolve(dir, `${name}-${project}.png`), fullPage: false }); }
 
 for (const actor of [2, 3]) {
   test(`participant ${actor} chooses form or direct chat with the correct counterpart`, async ({ page }) => {

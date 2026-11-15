@@ -48,7 +48,7 @@ async function mock(page, options = {}) {
   return state;
 }
 async function fits(page) { expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true); }
-async function capture(page, name, project) { const dir = resolve('.impeccable/review/profiles'); await mkdir(dir, { recursive: true }); await page.screenshot({ path: resolve(dir, `${name}-${project}.png`), fullPage: ['profile', 'reviews', 'narrow'].includes(name) }); }
+async function capture(page, name, project) { const dir = resolve('test-results/screenshots/profiles'); await mkdir(dir, { recursive: true }); await page.screenshot({ path: resolve(dir, `${name}-${project}.png`), fullPage: ['profile', 'reviews', 'narrow'].includes(name) }); }
 
 test('guest reads public profile and empty reviews with URL tabs', async ({ page }) => {
   await mock(page, { guest: true }); await page.goto(`/profil/${id(2)}`); await expect(page.getByRole('heading', { name: 'Pemilik Valora' })).toBeVisible();
