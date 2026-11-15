@@ -9,7 +9,7 @@ import { base, check, photo, login, createItem, createListing, approve } from '.
 if (!new URL(process.env.DATABASE_URL).pathname.endsWith('_test')) throw new Error('Chat hanya memakai database test.');
 const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }) });
 try {
-  const seed = await db.user.findUniqueOrThrow({ where: { email: 'owner.demo@valora.local' } });
+  const seed = await db.user.findUniqueOrThrow({ where: { email: 'owner@valora.demo' } });
   async function actor(role = 'USER') {
     const user = await db.user.create({ data: { email: `chat-${randomUUID()}@demo.valora.local`, displayName: 'Fixture Chat', cityId: seed.cityId, passwordHash: seed.passwordHash, emailVerifiedAt: new Date(), role } });
     return { user, account: await login(user.email) };

@@ -17,7 +17,7 @@ test('real saved search receives first-publication notification through backgrou
   const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: config.TEST_DATABASE_URL }) });
   const accounts = [];
   try {
-    const seed = await db.user.findUniqueOrThrow({ where: { email: 'owner.demo@valora.local' } });
+    const seed = await db.user.findUniqueOrThrow({ where: { email: 'owner@valora.demo' } });
     async function actor(role = 'USER', verified = true) {
       const user = await db.user.create({ data: { email: `search-browser-${randomUUID()}@demo.valora.local`, displayName: 'Pencarian Browser', cityId: seed.cityId, passwordHash: seed.passwordHash, role, emailVerifiedAt: verified ? new Date() : null } });
       return user;

@@ -21,7 +21,8 @@
     "db:studio": "prisma studio",
     "demo:stage5": "pnpm run build && node scripts/demo/operations.mjs",
     "demo:stage6": "pnpm run build && node scripts/demo/session.mjs",
-    "demo:items": "pnpm run build && node scripts/demo/items.mjs"
+    "demo:items": "pnpm run build && node scripts/demo/items.mjs",
+    "demo:tidy": "node scripts/demo/tidy.mjs --apply"
   },
   "dependencies": {
     "@nestjs/common": "^12.0.0",

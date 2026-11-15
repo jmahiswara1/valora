@@ -11,7 +11,7 @@ import { exclusiveJob } from "../../dist/infrastructure/jobs/lock.js";
 import { base, client, check, login, credentials, createItem, createListing, approve } from "../helpers/fixtures.mjs";
 if (!new URL(process.env.DATABASE_URL).pathname.endsWith('_test')) throw new Error('Stage 6 requires the test database.');
 const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }) });
-const seed = await db.user.findUniqueOrThrow({ where: { email: 'owner.demo@valora.local' } });
+const seed = await db.user.findUniqueOrThrow({ where: { email: 'owner@valora.demo' } });
 const second = spawn(process.execPath, ['dist/main.js'], { env: { ...process.env, API_PORT: '4004' }, stdio: ['ignore', 'ignore', 'ignore'] });
 const counts = {}; const mark = (name) => { counts[name] = true; };
 async function actor(role = 'USER') { const row = await db.user.create({ data: { email: `stage6-${randomUUID()}@demo.valora.local`, displayName: 'Fixture tahap enam', role, cityId: seed.cityId, passwordHash: seed.passwordHash, emailVerifiedAt: new Date() } }); return { ...row, account: await login(row.email) }; }

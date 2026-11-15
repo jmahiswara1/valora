@@ -19,7 +19,7 @@ async function inventory(root = resolve('src/app'), prefix = '') {
   return routes.sort();
 }
 async function actor(role = 'USER', verified = true) {
-  const seed = await db.user.findUniqueOrThrow({ where: { email: 'owner.demo@valora.local' } });
+  const seed = await db.user.findUniqueOrThrow({ where: { email: 'owner@valora.demo' } });
   const user = await db.user.create({ data: { email: `browser6-${randomUUID()}@demo.valora.local`, displayName: 'Akun browser enam', role, cityId: seed.cityId, passwordHash: seed.passwordHash, emailVerifiedAt: verified ? new Date() : null } });
   return { user, account: await login(user.email) };
 }

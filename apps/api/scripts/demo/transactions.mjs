@@ -16,16 +16,16 @@ try {
   }
   if (!ready) throw new Error('API fixture demo tidak siap.');
   const { login, check, createItem, createListing, approve } = await import("../helpers/fixtures.mjs");
-  const owner = await login('owner.demo@valora.local'); const member = await login('member.demo@valora.local'); const admin = await login('admin.demo@valora.local');
+  const owner = await login('owner@valora.demo'); const member = await login('member@valora.demo'); const admin = await login('admin@valora.demo');
   const profile = check(await owner.request('/me'), 200, 'Profil demo');
   const mutate = (account, path, body) => account.request(path, { method: 'POST', body, extraHeaders: { 'Idempotency-Key': randomUUID() } });
   const fixtures = {};
   for (const type of ['RESELL', 'DONATE', 'EXCHANGE']) {
-    const fixture = await createItem(owner, 'electronics', `Demo tahap 4 ${type} ${randomUUID().slice(0, 6)}`);
+    const fixture = await createItem(owner, 'electronics', { RESELL: 'Keyboard Mekanis', DONATE: 'Keyboard USB', EXCHANGE: 'Keyboard Kompak' }[type]);
     if (type === 'DONATE') fixture.assessment = check(await owner.request(`/items/${fixture.item.id}/assessments`, { method: 'POST', body: { ...fixture.assessment.answers, economic: {} } }), 201, 'Donate parsial');
     const submitted = await createListing(owner, fixture.item, fixture.assessment, profile.city.id, type, fixture.item.title);
     const listing = await approve(admin, submitted);
-    const other = type === 'EXCHANGE' ? await createItem(member, 'electronics', 'Demo Item penukar ' + randomUUID().slice(0, 6)) : null;
+    const other = type === 'EXCHANGE' ? await createItem(member, 'electronics', 'Keyboard Cadangan') : null;
     const offer = check(await mutate(member, `/listings/${listing.id}/offers`, { expectedListingVersion: listing.version, listingRevisionId: listing.revision.id, clientRequestId: randomUUID(), ...(type === 'RESELL' ? { priceIdr: 300000 } : {}), ...(other ? { exchangeItemId: other.item.id } : {}) }), 201, 'Offer demo');
     let row = check(await mutate(owner, `/offers/${offer.id}/accept`, { expectedVersion: offer.version, offerRevisionId: offer.currentRevision.id, listingRevisionId: offer.listingRevisionId }), 201, 'Reservasi demo');
     if (type === 'DONATE') row = check(await mutate(owner, `/transactions/${row.id}/confirmations`, { expectedVersion: row.version, itemId: fixture.item.id, kind: 'HANDED_OVER' }), 201, 'Konfirmasi pertama demo');

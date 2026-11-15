@@ -11,8 +11,8 @@ import { base, client, check, login, photo, createItem, createListing, approve }
 
 if (!new URL(process.env.DATABASE_URL).pathname.endsWith('_test')) throw new Error('Stage 5 smoke requires the test database.');
 const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }) });
-const admin = await login('admin.demo@valora.local'); const guest = client();
-const seed = await db.user.findUniqueOrThrow({ where: { email: 'owner.demo@valora.local' } });
+const admin = await login('admin@valora.demo'); const guest = client();
+const seed = await db.user.findUniqueOrThrow({ where: { email: 'owner@valora.demo' } });
 async function actor(role = 'USER') {
   const user = await db.user.create({ data: { email: `stage5-${randomUUID()}@demo.valora.local`, displayName: 'Pengguna tahap lima', role, cityId: seed.cityId, passwordHash: seed.passwordHash, emailVerifiedAt: new Date() } });
   return { id: user.id, account: await login(user.email) };

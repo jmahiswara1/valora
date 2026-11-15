@@ -20,7 +20,8 @@
     "db:seed": "pnpm --filter @valora/api run db:seed",
     "demo:stage5": "pnpm --filter @valora/api run demo:stage5",
     "demo:stage6": "pnpm --filter @valora/api run demo:stage6",
-    "demo:items": "pnpm --filter @valora/api run demo:items"
+    "demo:items": "pnpm --filter @valora/api run demo:items",
+    "demo:tidy": "pnpm --filter @valora/api run demo:tidy"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"

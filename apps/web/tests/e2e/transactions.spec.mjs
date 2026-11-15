@@ -26,9 +26,9 @@ async function approveDialog(page, button = 'Simpan konfirmasi') {
 }
 
 test('Exchange, pemulihan jaringan, bukti privat dan putusan admin', async ({ browser }, testInfo) => {
-  const owner = await login('owner.demo@valora.local');
-  const member = await login('member.demo@valora.local');
-  const admin = await login('admin.demo@valora.local');
+  const owner = await login('owner@valora.demo');
+  const member = await login('member@valora.demo');
+  const admin = await login('admin@valora.demo');
   const profile = check(await owner.request('/me'), 200, 'Profil');
   const title = `Browser ${testInfo.project.name} ${randomUUID().slice(0, 8)}`;
   async function published(type, label) {
@@ -42,7 +42,7 @@ test('Exchange, pemulihan jaringan, bukti privat dan putusan admin', async ({ br
   const exchange = await published('EXCHANGE', title + ' Exchange');
   const other = await createItem(member, 'electronics', title + ' penukar');
   await offer(exchange, other.item.id);
-  const contexts = await Promise.all(['owner', 'member', 'admin'].map((name) => browserLogin(browser, name + '.demo@valora.local', testInfo.project.use.viewport)));
+  const contexts = await Promise.all(['owner', 'member', 'admin'].map((name) => browserLogin(browser, name + '@valora.demo', testInfo.project.use.viewport)));
   const [sellerPage, buyerPage, adminPage] = await Promise.all(contexts.map((c) => c.newPage()));
   const errors = [];
   for (const page of [sellerPage, buyerPage, adminPage]) page.on('pageerror', (e) => errors.push(e.message));
@@ -134,7 +134,7 @@ test('Exchange, pemulihan jaringan, bukti privat dan putusan admin', async ({ br
 
 
 test('Usulan muncul di chat, disetujui pihak lain, dan laporan terpisah dari sengketa', async ({ browser }, testInfo) => {
-  const owner = await login('owner.demo@valora.local'), buyer = await login('member.demo@valora.local'), admin = await login('admin.demo@valora.local');
+  const owner = await login('owner@valora.demo'), buyer = await login('member@valora.demo'), admin = await login('admin@valora.demo');
   const profile = check(await owner.request('/me'), 200, 'Profil pemilik');
   const label = 'Koordinasi chat ' + testInfo.project.name + ' ' + randomUUID().slice(0, 8);
   const fixture = await createItem(owner, 'electronics', label);
