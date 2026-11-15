@@ -1,5 +1,5 @@
 'use client';
-import { CashSettlement } from '@/features/exchange/settlement';
+import { DemoPaymentPanel } from '@/features/payments/panel';
 import { HandoverPanel } from '@/features/handover/panel';
 import { TransactionTimeline } from '@/features/handover/timeline';
 import { TransactionReviews } from '@/features/reviews/transaction';
@@ -78,10 +78,10 @@ export function TransactionDetail({ id }: { id: string }) {
     <TransactionFlow transaction={row} />
     <div className="transaction-layout"><div className="transaction-main">
       {row.disputes.map((record) => involved ? <ParticipantCase key={record.id} record={record} conversationId={row.conversationId} /> : null)}
-      <CashSettlement transaction={row} userId={userId} action={action} />
+      {involved && <DemoPaymentPanel transaction={row} userId={userId} />}
       {involved && <HandoverPanel transaction={row} />}
       <section className="app-panel transaction-confirmations"><h2>Konfirmasi serah terima</h2><p>Sudah menyerahkan atau menerima barang? Konfirmasikan sesuai peranmu di bawah.</p>
-        {row.type === 'RESELL' && <p className="transaction-payment-note">Pembayaran dilakukan langsung antar pengguna. Valora tidak memverifikasi pembayaran atau menyediakan pengembalian dana.</p>}
+        {row.type === 'RESELL' && <p className="transaction-payment-note">Pembayaran QRIS di halaman ini hanya simulasi. Konfirmasi serah terima dilakukan setelah barang benar-benar diserahkan atau diterima.</p>}
         <div className="confirmation-list">{row.requiredConfirmations.map((expected) => {
           const done = row.confirmations.find((c) => c.actorId === expected.actorId && c.itemId === expected.itemId && c.kind === expected.kind);
           const item = row.snapshot.items.find((i) => i.id === expected.itemId)!;

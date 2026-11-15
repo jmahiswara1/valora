@@ -54,6 +54,7 @@ async function mock(page, options = {}) {
     if (path === '/auth/session') return ok(route, { state: 'AUTHENTICATED', user: { ...user(state.actor), role: state.admin ? 'ADMIN' : 'USER' }, sessionId: id(99), serverTime: now(), expiresAt: future(), reauthenticatedUntil: future(), reason: null });
     if (path === '/me') return ok(route, { ...user(state.actor), role: state.admin ? 'ADMIN' : 'USER' }); if (path === '/auth/csrf') return ok(route, { token: 'fixture-handover-csrf' }); if (path === '/me/notifications/summary') return ok(route, { unreadCount: 0, recent: [] });
     if (path === '/me/actions/status') return ok(route, { status: state.recovery ? 'COMMITTED' : 'NOT_FOUND', completedAt: now() });
+    if (path.endsWith('/demo-payment')) return ok(route, { transactionId: id(10), mode: 'DEMO', method: 'QRIS', status: 'UNPAID', amountIdr: 250000, payerId: id(3), receiverId: id(2), paidAt: null, reference: null, version: state.version, canSimulate: state.actor === 3, reason: null });
     if (path === '/transactions/' + id(10)) return ok(route, { ...tx(), requiredConfirmations: state.showConfirmations ? [{ actorId: id(2), itemId: id(20), kind: 'HANDED_OVER' }, { actorId: id(3), itemId: id(20), kind: 'RECEIVED' }] : [], snapshot: { ...tx().snapshot, handoverMethods: state.methods ?? tx().snapshot.handoverMethods }, version: state.version, conversationId: state.conversationId });
     if (path === '/reports' && req.method() === 'POST') { state.reports ??= []; state.reports.push(req.postDataJSON()); return state.reportFail ? route.fulfill({ status: 503, json: { error: { code: 'DEPENDENCY_UNAVAILABLE', message: 'Laporan belum tersimpan. Coba lagi.' } } }) : ok(route, { id: id(90) }); }
     if (path === '/conversations') return ok(route, state.conversationId ? [conversation()] : []);
@@ -267,7 +268,7 @@ async function openProposalChat(page) {
 }
 test('transaction layout puts coordination first and report stays separate from dispute', async ({ page }, info) => {
   const state = await mock(page, { showConfirmations: true, reportFail: true }); await page.goto('/app/transaksi/' + id(10));
-  await expect(page.locator('.transaction-main > section').first()).toHaveClass(/handover-panel/);
+  await expect(page.locator('.transaction-main > section').first()).toHaveAttribute('aria-label', 'Pembayaran QRIS demo');
   await expect(page.getByRole('list', { name: 'Progres transaksi' })).toContainText('Disepakati');
   await expect(page.getByRole('button', { name: 'Konfirmasi penyerahan', exact: true })).toBeVisible();
   await fits(page); await capture(page, 'transaction-flow', info.project.name);

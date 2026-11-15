@@ -68,6 +68,9 @@ export function requiredCash(row: Transaction) {
 export async function cashReady(tx: Prisma.TransactionClient, row: Transaction) {
   const required = requiredCash(row);
   if (!required.length) return true;
+  const adjustment = (row.snapshot as unknown as TransactionSnapshot).cashAdjustment!;
+  // QRIS demo can satisfy the cash step in a demo exchange; it never creates a real cash report.
+  if (await tx.demoPayment.count({ where: { transactionId: row.id, mode: 'DEMO', method: 'QRIS', amountIdr: BigInt(adjustment.amountIdr), payerId: required[0].actorId, receiverId: required[1].actorId } })) return true;
   const confirmations = await tx.cashConfirmation.findMany({ where: { transactionId: row.id } });
   return required.every(need => confirmations.some(value => value.actorId === need.actorId && value.kind === need.kind));
 }
