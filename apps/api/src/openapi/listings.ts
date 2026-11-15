@@ -26,6 +26,7 @@ export const listingsRoutes: Route[] = [
 { order: 119, method: 'get', path: '/listings/mine', auth: true, output: array(ref('Listing')) },
 { order: 120, method: 'get', path: '/listings/{id}', auth: true, output: ref('Listing') },
 { order: 121, method: 'patch', path: '/listings/{id}', auth: true, input: 'ListingPatchInput', output: ref('Listing') },
+{ order: 121.1, method: 'delete', path: '/listings/{id}', auth: true, input: 'VersionActionInput', output: object({ id: uuid, deleted: { type: 'boolean' } }) },
 { order: 122, method: 'post', path: '/listings/{id}/submit', auth: true, input: 'VersionActionInput', output: ref('Listing') },
 { order: 123, method: 'post', path: '/listings/{id}/withdraw', auth: true, input: 'VersionActionInput', output: ref('Listing') },
 { order: 124, method: 'get', path: '/admin/listing-reviews', auth: true, output: array(ref('ModerationQueueItem')) },

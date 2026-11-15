@@ -67,8 +67,9 @@ export class MarketService {
   }
 
   async publicPhoto(listingId: string, mediaId: string, response: Response): Promise<void> {
-    const link = await this.db.listingRevisionMedia.findFirst({ where: { mediaId, revision: { listingId, listing: { status: 'ACTIVE', owner: { status: 'ACTIVE' }, currentRevisionId: { not: null } } }, media: { deletedAt: null, repairRecordId: null, caseId: null } }, include: { revision: { include: { listing: true } }, media: true } });
-    if (!link || link.revision.listing.currentRevisionId !== link.revisionId) throw new AppException(404, 'NOT_FOUND', 'Foto tidak ditemukan.');
+    const listing = await this.db.listing.findFirst({ where: { id: listingId, status: 'ACTIVE', deletedAt: null, owner: { status: 'ACTIVE' }, item: { archivedAt: null } }, include: { currentRevision: { include: { media: { where: { mediaId, media: { deletedAt: null, repairRecordId: null, caseId: null } }, include: { media: true } } } } } });
+    const link = listing?.currentRevision?.media[0];
+    if (!link) throw new AppException(404, 'NOT_FOUND', 'Foto tidak ditemukan.');
     const bytes = await this.storage.read(link.media.storageKey);
     response.set({ 'Content-Type': 'image/webp', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });
     response.send(bytes);

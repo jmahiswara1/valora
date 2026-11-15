@@ -35,7 +35,7 @@ function accountRoute(pathname: string) {
   const parts = pathname.split('/').filter(Boolean);
   const correction = pathname === '/app/koreksi' || pathname.startsWith('/app/koreksi/');
   const entry = navigationEntries.find((row) => row.href !== '/app' && (correction ? row.href === '/app/transaksi' : pathname === row.href || pathname.startsWith(row.href + '/')));
-  const leaf = correction ? 'Peninjauan koreksi' : parts.at(-2) === 'penilaian' && parts.at(-1) === 'baru' ? 'Penilaian baru' : routeNames[parts.at(-1) ?? ''] ?? (parts.length > 2 ? 'Detail' : '');
+  const leaf = correction ? 'Peninjauan koreksi' : parts[1] === 'listings' && parts.at(-1) === 'edit' ? 'Edit Listing' : parts.at(-2) === 'penilaian' && parts.at(-1) === 'baru' ? 'Penilaian baru' : routeNames[parts.at(-1) ?? ''] ?? (parts.length > 2 ? 'Detail' : '');
   return { entry, leaf, nested: entry && pathname !== entry.href };
 }
 

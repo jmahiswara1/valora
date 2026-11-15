@@ -128,3 +128,4 @@
 }
 @media (prefers-reduced-motion: reduce) { .catalog-pill { transition: none; } }
 @media (forced-colors: active) { .catalog-pill[aria-pressed="true"], .catalog-filter-chip { border: 2px solid Highlight; } .catalog-skeleton > div, .catalog-skeleton > span { border: 1px solid CanvasText; } }
+.market-card .market-card-handover { margin: 10px 0 0; color: var(--forest); font-size: .75rem; line-height: 1.6; }

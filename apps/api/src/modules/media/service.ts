@@ -139,8 +139,8 @@ export class MediaService {
     if (media.item.archivedAt) throw new AppException(404, 'NOT_FOUND', 'Foto tidak ditemukan.');
     const admin = await this.db.user.findFirst({ where: { id: userId, role: 'ADMIN', status: 'ACTIVE' }, select: { id: true } });
     if (admin && !media.repairRecordId) {
-      const pendingReview = await this.db.listingRevisionMedia.findFirst({ where: { mediaId, revision: { listing: { status: 'PENDING_REVIEW', currentRevisionId: { not: null } } } }, include: { revision: { include: { listing: true } } } });
-      if (pendingReview && pendingReview.revision.listing.currentRevisionId === pendingReview.revisionId) return media;
+      const pendingReview = await this.db.listing.findFirst({ where: { status: 'PENDING_REVIEW', deletedAt: null, currentRevision: { media: { some: { mediaId } } } }, select: { id: true } });
+      if (pendingReview) return media;
     }
     if (media.repairRecordId) {
       if (media.uploadedById !== userId && !(media.item.currentOwnerId === userId && media.repairRecord?.status === 'VALID' && media.repairRecord.shareDetailsWithFutureOwner && media.shareWithFutureOwner)) throw new AppException(404, 'NOT_FOUND', 'Foto tidak ditemukan.');

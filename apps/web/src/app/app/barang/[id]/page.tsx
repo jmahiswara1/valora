@@ -14,6 +14,7 @@ import { AccountSkeleton } from '@/features/account/skeleton';
 import { ConfirmAction } from '@/components/ui/confirm-dialog';
 import { PassportQrButton } from '@/features/passport/qr';
 import { ItemAssessmentSummary } from '@/features/items/assessment-summary';
+import { DeleteOwnedButton } from '@/features/account/delete-owned';
 import '@/styles/item-detail.css';
 
 const conditionFields = [['functionSummary', 'Fungsi'], ['conditionSummary', 'Kondisi'], ['completenessSummary', 'Kelengkapan'], ['issueSummary', 'Kendala']] as const;
@@ -38,7 +39,7 @@ export default function ItemDetail() {
   return <div className="item-detail-page">
     <header className="item-detail-heading">
       <Link className="item-detail-back" href="/app/barang"><ArrowLeft size={17} aria-hidden="true" />Barang saya</Link>
-      <div className="item-detail-title-row"><h1>{item.title}</h1>{!item.reservedByTransactionId && <Link className="button button-secondary" href={`/app/barang/${id}/edit`}><Pencil size={16} aria-hidden="true" />Edit barang</Link>}</div>
+      <div className="item-detail-title-row"><h1>{item.title}</h1><div className="form-actions">{!item.reservedByTransactionId && <Link className="button button-secondary" href={`/app/barang/${id}/edit`}><Pencil size={16} aria-hidden="true" />Edit barang</Link>}<DeleteOwnedButton kind="item" id={id} version={item.version} disabled={Boolean(item.reservedByTransactionId) || removing} /></div></div>
       <div className="item-detail-metadata"><span className="item-detail-category">{categoryNames[item.categoryCode] ?? item.categoryCode}</span><span><LockKeyhole size={14} aria-hidden="true" />Catatan privat</span><span>Diperbarui <time dateTime={item.updatedAt}>{new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium' }).format(new Date(item.updatedAt))}</time></span></div>
     </header>
     {item.reservedByTransactionId && <Notice>Barang sedang direservasi. Perubahan barang, foto, penilaian, dan Repair tersedia setelah transaksi berakhir. <Link href={`/app/transaksi/${item.reservedByTransactionId}`}>Buka transaksi →</Link></Notice>}

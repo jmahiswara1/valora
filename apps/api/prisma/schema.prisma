@@ -488,6 +488,7 @@ model Listing {
   version           Int               @default(1)
   publishedAt       DateTime?
   firstPublishedAt  DateTime?
+  deletedAt         DateTime?
   searchPublication SearchPublication?
   closedAt          DateTime?
   createdAt         DateTime          @default(now())

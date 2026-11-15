@@ -5,7 +5,7 @@ import { type ListingDto, type ListingSaveInput, uuidSchema, type ListingPatchIn
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../../infrastructure/database.service.js';
 import { AppException } from '../../shared/http.js';
-import { serial, lockRows } from '../../shared/transactions.js';
+import { serial, lockRows, validId } from '../../shared/transactions.js';
 import { listingInclude, revisionDto, safetyFlags, recommendations, revisionInclude } from './shared.js';
 
 type ListingRow = Prisma.ListingGetPayload<{ include: typeof listingInclude }>;
@@ -23,6 +23,23 @@ function listingDto(row: ListingRow): ListingDto {
 @Injectable()
 export class ListingService {
   constructor(private readonly db: DatabaseService) {}
+
+  async remove(userId: string, id: string, expectedVersion: number) {
+    validId(id);
+    return serial(this.db, async tx => {
+      await lockRows(tx, 'User', [userId]);
+      const ref = await tx.listing.findFirst({ where: { id, ownerId: userId } });
+      if (!ref) throw new AppException(404, 'NOT_FOUND', 'Listing tidak ditemukan.');
+      await lockRows(tx, 'Item', [ref.itemId]); await lockRows(tx, 'Listing', [id]);
+      const row = await tx.listing.findUniqueOrThrow({ where: { id }, include: { item: true } });
+      if (row.deletedAt) return { id, deleted: true };
+      if (row.status === 'RESERVED' || (row.status !== 'CLOSED' && row.item.reservedByTransactionId)) throw new AppException(409, 'ITEM_RESERVED', 'Listing sedang dalam transaksi. Selesaikan atau batalkan transaksi terlebih dahulu.');
+      if (row.version !== expectedVersion) throw new AppException(409, 'STATE_CONFLICT', 'Listing berubah. Muat ulang sebelum menghapus.');
+      await tx.listing.update({ where: { id }, data: { deletedAt: new Date(), status: row.status === 'CLOSED' ? 'CLOSED' : 'WITHDRAWN', publishedAt: null, closedAt: row.closedAt ?? new Date(), version: { increment: 1 } } });
+      await expireOffers(tx, { listingId: id }, 'LISTING_WITHDRAWN');
+      return { id, deleted: true };
+    });
+  }
 
   private async assertVerified(userId: string): Promise<void> {
     const user = await this.db.user.findUnique({ where: { id: userId }, select: { emailVerifiedAt: true } });
@@ -89,13 +106,13 @@ export class ListingService {
     await this.assertVerified(userId);
     const updatedId = await serial(this.db, async (tx) => {
       await lockRows(tx, 'User', [userId]);
-      const ref = await tx.listing.findFirst({ where: { id, ownerId: userId }, select: { itemId: true } });
+      const ref = await tx.listing.findFirst({ where: { id, ownerId: userId, deletedAt: null }, select: { itemId: true } });
       if (!ref) throw new AppException(404, 'NOT_FOUND', 'Listing tidak ditemukan.');
       await tx.$queryRaw`SELECT id FROM "Item" WHERE id = ${ref.itemId}::uuid FOR UPDATE`;
       await tx.$queryRaw`SELECT id FROM "Listing" WHERE id = ${id}::uuid FOR UPDATE`;
-      const listing = await tx.listing.findFirst({ where: { id, ownerId: userId }, include: { currentRevision: { include: revisionInclude }, item: true } });
+      const listing = await tx.listing.findFirst({ where: { id, ownerId: userId, deletedAt: null }, include: { currentRevision: { include: revisionInclude }, item: true } });
       if (!listing) throw new AppException(404, 'NOT_FOUND', 'Listing tidak ditemukan.');
-      if (listing.status === 'RESERVED' || listing.status === 'CLOSED' || listing.status === 'WITHDRAWN' || listing.status === 'SUSPENDED') throw new AppException(409, 'STATE_CONFLICT', 'Listing tidak dapat diubah pada status ini.');
+      if (listing.status === 'RESERVED' || listing.status === 'CLOSED' || listing.status === 'SUSPENDED') throw new AppException(409, 'STATE_CONFLICT', 'Listing tidak dapat diubah pada status ini.');
       if (listing.version !== input.expectedVersion) throw new AppException(409, 'STATE_CONFLICT', 'Listing berubah. Muat ulang sebelum menyimpan.');
       if (listing.type !== input.type) throw new AppException(400, 'INVALID_INPUT', 'Jenis Listing tidak dapat diubah.');
       const item = await tx.item.findFirst({ where: { id: listing.itemId, currentOwnerId: userId, archivedAt: null } });
@@ -111,12 +128,12 @@ export class ListingService {
         && previous.recipientNote === (input.type === 'DONATE' ? input.recipientNote ?? null : null)
         && JSON.stringify(previous.handoverMethods) === JSON.stringify(input.handoverMethods);
       if (input.copyOnlyCorrection && !sameSnapshot) throw new AppException(400, 'INVALID_INPUT', 'Koreksi teks saja tidak boleh mengubah fakta Listing.');
-      if ((listing.status === 'ACTIVE' || listing.status === 'PAUSED') && !sameSnapshot && input.assessmentId === previous.assessmentId) throw new AppException(422, 'STALE_ASSESSMENT', 'Perubahan Listing memerlukan penilaian baru.');
+      // currentAssessment checks the latest assessment and item revision; listing-only changes can reuse it.
       if (listing.status === 'ACTIVE') {
         await tx.listing.update({ where: { id }, data: { status: 'PAUSED', publishedAt: null, version: { increment: 1 } } });
         await expireOffers(tx, { listingId: id, status: { in: ['PENDING', 'COUNTERED'] } }, 'LISTING_REVISED');
       }
-      if (listing.status === 'PENDING_REVIEW' || listing.status === 'REJECTED') await tx.listing.update({ where: { id }, data: { status: 'DRAFT', version: { increment: 1 } } });
+      if (listing.status === 'PENDING_REVIEW' || listing.status === 'REJECTED' || listing.status === 'WITHDRAWN') await tx.listing.update({ where: { id }, data: { status: 'DRAFT', version: { increment: 1 } } });
       const nextNo = (await tx.listingRevision.aggregate({ where: { listingId: id }, _max: { revisionNo: true } }))._max.revisionNo ?? 0;
       await this.createRevision(tx, userId, item, input, id, nextNo + 1, input.copyOnlyCorrection);
       return id;
@@ -128,11 +145,11 @@ export class ListingService {
     await this.assertVerified(userId);
     await serial(this.db, async (tx) => {
       await lockRows(tx, 'User', [userId]);
-      const ref = await tx.listing.findFirst({ where: { id, ownerId: userId }, select: { itemId: true } });
+      const ref = await tx.listing.findFirst({ where: { id, ownerId: userId, deletedAt: null }, select: { itemId: true } });
       if (!ref) throw new AppException(404, 'NOT_FOUND', 'Listing tidak ditemukan.');
       await tx.$queryRaw`SELECT id FROM "Item" WHERE id = ${ref.itemId}::uuid FOR UPDATE`;
       await tx.$queryRaw`SELECT id FROM "Listing" WHERE id = ${id}::uuid FOR UPDATE`;
-      const listing = await tx.listing.findFirst({ where: { id, ownerId: userId }, include: { currentRevision: true, item: true } });
+      const listing = await tx.listing.findFirst({ where: { id, ownerId: userId, deletedAt: null }, include: { currentRevision: true, item: true } });
       if (!listing) throw new AppException(404, 'NOT_FOUND', 'Listing tidak ditemukan.');
       await assertNoStartedTutorial(tx, listing.itemId);
       if (listing.status === 'PENDING_REVIEW' && listing.version === expectedVersion) return;
@@ -155,7 +172,7 @@ export class ListingService {
     await serial(this.db, async (tx) => {
       await lockRows(tx, 'User', [userId]);
       await tx.$queryRaw`SELECT id FROM "Listing" WHERE id = ${id}::uuid FOR UPDATE`;
-      const listing = await tx.listing.findFirst({ where: { id, ownerId: userId } });
+      const listing = await tx.listing.findFirst({ where: { id, ownerId: userId, deletedAt: null } });
       if (!listing) throw new AppException(404, 'NOT_FOUND', 'Listing tidak ditemukan.');
       if (listing.version !== expectedVersion || !['DRAFT', 'PENDING_REVIEW', 'ACTIVE', 'PAUSED', 'REJECTED'].includes(listing.status)) throw new AppException(409, 'STATE_CONFLICT', 'Listing tidak dapat ditarik pada status ini.');
       await tx.listing.update({ where: { id }, data: { status: 'WITHDRAWN', publishedAt: null, closedAt: new Date(), version: { increment: 1 } } });
@@ -165,13 +182,13 @@ export class ListingService {
   }
 
   async getOwner(userId: string, id: string): Promise<ListingDto> {
-    const row = await this.db.listing.findFirst({ where: { id, ownerId: userId }, include: listingInclude });
+    const row = await this.db.listing.findFirst({ where: { id, ownerId: userId, deletedAt: null }, include: listingInclude });
     if (!row) throw new AppException(404, 'NOT_FOUND', 'Listing tidak ditemukan.');
     return listingDto(row);
   }
 
   async listMine(userId: string): Promise<ListingDto[]> {
-    const rows = await this.db.listing.findMany({ where: { ownerId: userId }, orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }], take: 100, include: listingInclude });
+    const rows = await this.db.listing.findMany({ where: { ownerId: userId, deletedAt: null }, orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }], take: 100, include: listingInclude });
     return rows.map(listingDto);
   }
 }

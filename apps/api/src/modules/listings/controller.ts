@@ -1,5 +1,5 @@
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
-import { Controller, UseGuards, Get, Req, Param, Patch, Body, Post } from '@nestjs/common';
+import { Controller, UseGuards, Get, Req, Param, Patch, Body, Post, Delete } from '@nestjs/common';
 import { SessionGuard } from '../auth/guards.js';
 import { type AppRequest, ZodPipe } from '../../shared/http.js';
 import { listingPatchSchema, type ListingPatchInput, versionActionSchema } from '@valora/contracts';
@@ -10,6 +10,9 @@ import { ListingService } from "./service.js";
 @UseGuards(SessionGuard)
 export class ListingsController {
   constructor(private readonly listings: ListingService) {}
+  @Delete(':id')
+  @ApiOperation({ summary: 'Hapus Listing milik sendiri tanpa menghapus riwayat transaksi' })
+  remove(@Req() request: AppRequest, @Param('id') id: string, @Body(new ZodPipe(versionActionSchema)) input: { expectedVersion: number }) { return this.listings.remove(request.actor!.id, id, input.expectedVersion); }
   @Get('mine')
   @ApiOperation({ summary: 'Daftar Listing milik sendiri' })
   mine(@Req() request: AppRequest) { return this.listings.listMine(request.actor!.id); }

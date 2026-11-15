@@ -18,5 +18,6 @@ export const itemsRoutes: Route[] = [
 { order: 97, method: 'get', path: '/items', auth: true, output: array(ref('Item')) },
 { order: 98, method: 'post', path: '/items', auth: true, input: 'ItemCreateInput', output: ref('Item') },
 { order: 99, method: 'get', path: '/items/{id}', auth: true, output: ref('Item') },
+{ order: 99.1, method: 'delete', path: '/items/{id}', auth: true, input: 'VersionActionInput', output: object({ id: uuid, deleted: { type: 'boolean' } }) },
 { order: 100, method: 'patch', path: '/items/{id}', auth: true, input: 'ItemPatchInput', output: ref('Item') }
 ];

@@ -1,41 +1,46 @@
 'use client';
-
-import { useRouter } from 'next/navigation';
-import { useQueryClient, useQuery, useMutation } from '@tanstack/react-query';
-import { api, ApiClientError } from '@/lib/api';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
+import { api } from '@/lib/api';
 import type { ListingDto, ItemDto } from '@valora/contracts';
 import { useState, useRef } from 'react';
+import { Pencil } from 'lucide-react';
 import { AccountSkeleton } from '../account/skeleton';
-import { Notice, Field, Input, Button } from "../../components/ui/primitives";
+import { Notice, Button } from '@/components/ui/primitives';
 import Link from 'next/link';
-import { listingTypeLabel as typeLabel, listingConditionLabel as conditionLabel, listingMoney as money } from '../market/labels';
-import { ConfirmAction } from '../../components/ui/confirm-dialog';
+import { listingTypeLabel, listingConditionLabel, listingMoney, listingHandoverLabel } from '../market/labels';
+import { ConfirmAction } from '@/components/ui/confirm-dialog';
+import { DeleteOwnedButton } from '../account/delete-owned';
 import { listingStatus } from './shared';
 
 export function ListingOwnerDetail({ id }: { id: string }) {
-  const router = useRouter(); const cache = useQueryClient();
+  const cache = useQueryClient();
   const listing = useQuery({ queryKey: ['listings', id], queryFn: () => api<ListingDto>(`/listings/${id}`) });
-  const item = useQuery({ queryKey: ['items', listing.data?.itemId], queryFn: () => api<ItemDto>(`/items/${listing.data!.itemId}`), enabled: Boolean(listing.data?.itemId) });
-  const [titleEdit, setTitleEdit] = useState<string | null>(null); const [descriptionEdit, setDescriptionEdit] = useState<string | null>(null); const [notice, setNotice] = useState(''); const [error, setError] = useState('');
-  const ownerRunning = useRef(false); const [ownerBusy, setOwnerBusy] = useState(false); const [withdrawOpen, setWithdrawOpen] = useState(false);
-  const title = titleEdit ?? listing.data?.currentRevision?.title ?? '';
-  const description = descriptionEdit ?? listing.data?.currentRevision?.description ?? '';
-  const mutation = useMutation({ mutationFn: async () => {
-    if (!listing.data?.currentRevision || !item.data) throw new Error('Revisi Listing belum tersedia.');
-    const rev = listing.data.currentRevision;
-    const common = { assessmentId: rev.assessmentId, expectedItemVersion: item.data.version, expectedVersion: listing.data.version, title, description, mediaIds: rev.media.map((media) => media.id), cityId: rev.city.id, conditionDisclosure: rev.conditionDisclosure, handoverMethods: rev.handoverMethods, copyOnlyCorrection: true, type: listing.data.type };
-    const body = listing.data.type === 'RESELL' ? { ...common, type: 'RESELL', askingPriceIdr: rev.askingPriceIdr! } : listing.data.type === 'EXCHANGE' ? { ...common, type: 'EXCHANGE', exchangePreference: rev.exchangePreference! } : { ...common, type: 'DONATE', recipientNote: rev.recipientNote };
-    const updated = await api<ListingDto>(`/listings/${id}`, { method: 'PATCH', body });
-    return updated;
-  }, onSuccess: async () => { await cache.invalidateQueries({ queryKey: ['listings'] }); setNotice('Koreksi teks disimpan. Kirim ulang Listing ke review.'); setError(''); }, onError: (cause) => setError(cause instanceof ApiClientError && cause.code === 'STATE_CONFLICT' ? 'Listing telah berubah. Muat ulang detail sebelum menyimpan lagi.' : cause instanceof Error ? cause.message : 'Perubahan belum tersimpan.'), onSettled: () => { ownerRunning.current = false; } });
-  async function submitReview() { if (!listing.data || ownerRunning.current) return; ownerRunning.current = true; setOwnerBusy(true); setError(''); try { await api(`/listings/${id}/submit`, { method: 'POST', body: { expectedVersion: listing.data.version } }); await cache.invalidateQueries({ queryKey: ['listings'] }); setNotice('Listing dikirim untuk review.'); } catch (cause) { setError(cause instanceof Error ? cause.message : 'Listing belum diajukan.'); } finally { ownerRunning.current = false; setOwnerBusy(false); } }
-  async function withdraw() { if (!listing.data || ownerRunning.current) return; ownerRunning.current = true; setOwnerBusy(true); setError(''); try { await api(`/listings/${id}/withdraw`, { method: 'POST', body: { expectedVersion: listing.data.version } }); await cache.invalidateQueries({ queryKey: ['listings'] }); setWithdrawOpen(false); router.refresh(); } catch (cause) { setError(cause instanceof Error ? cause.message : 'Listing belum ditarik.'); } finally { ownerRunning.current = false; setOwnerBusy(false); } }
+  const item = useQuery({ queryKey: ['item', listing.data?.itemId], queryFn: () => api<ItemDto>(`/items/${listing.data!.itemId}`), enabled: Boolean(listing.data) });
+  const [notice, setNotice] = useState(''), [error, setError] = useState(''), [busy, setBusy] = useState(false), [withdrawOpen, setWithdrawOpen] = useState(false); const running = useRef(false);
+  async function act(operation: 'submit' | 'withdraw') {
+    if (!listing.data || running.current) return; running.current = true; setBusy(true); setError('');
+    try {
+      await api(`/listings/${id}/${operation}`, { method: 'POST', body: { expectedVersion: listing.data.version } });
+      setWithdrawOpen(false); await cache.invalidateQueries({ queryKey: ['listings'] });
+      setNotice(operation === 'submit' ? 'Listing dikirim untuk review.' : 'Listing ditarik. Kamu dapat mengeditnya dan mengajukan kembali.');
+    } catch (cause) { setError(cause instanceof Error ? cause.message : 'Tindakan belum berhasil. Coba lagi.'); }
+    finally { running.current = false; setBusy(false); }
+  }
   if (listing.isPending) return <AccountSkeleton />;
-  if (listing.isError || !listing.data) return <Notice kind="error">Listing tidak ditemukan.</Notice>;
-  const row = listing.data; const rev = row.currentRevision;
-  return <><div className="app-heading"><div><span className="badge">{listingStatus[row.status]}</span><h1>{rev?.title ?? 'Draft Listing'}</h1><p>{rev?.city.name ?? 'Lokasi belum diatur'} · revisi {rev?.revisionNo ?? 0}</p></div><Link href="/app/listings" className="button button-secondary">Semua Listing</Link></div>
-    {row.status === 'PENDING_REVIEW' && <Notice>Listing sedang ditinjau. Kamu dapat menariknya untuk melakukan perubahan.</Notice>}
-    {row.status === 'ACTIVE' && <Notice kind="success">Listing sedang tampil di Market. Perubahan teks akan menjeda penawaran sampai review berikutnya selesai.</Notice>}
-    {rev && <div className="listing-owner-layout"><section className="app-panel"><h2>Ringkasan Listing</h2><p>{rev.description}</p><div className="detail-list"><div><dt>Jenis</dt><dd>{typeLabel[row.type]}</dd></div><div><dt>Kondisi</dt><dd>{conditionLabel(rev.condition)} · Score {rev.score ?? 'belum tersedia'}</dd></div><div><dt>Penilaian</dt><dd>{rev.ruleVersion}</dd></div><div><dt>Harga</dt><dd>{rev.askingPriceIdr === null ? '—' : money(rev.askingPriceIdr)}</dd></div><div><dt>Serah terima</dt><dd>{rev.handoverMethods.map((method) => method === 'MEETUP' ? 'Bertemu langsung' : 'Pengiriman').join(' · ')}</dd></div></div></section>
-    <form className="app-panel form-stack" onSubmit={(e) => { e.preventDefault(); if (ownerRunning.current) return; ownerRunning.current = true; mutation.mutate(); }} aria-busy={mutation.isPending || ownerBusy}><h2>Perbarui judul atau deskripsi.</h2><p>Perubahan fakta kondisi, foto, harga, kota, atau serah terima dilakukan lewat Item atau revisi Listing dan memerlukan Assessment terkini.</p><Field label="Judul" htmlFor="owner-listing-title"><Input id="owner-listing-title" disabled={ownerBusy || mutation.isPending} value={title} onChange={(e) => setTitleEdit(e.target.value)} minLength={3} maxLength={120} required /></Field><Field label="Deskripsi" htmlFor="owner-listing-description"><textarea className="textarea" id="owner-listing-description" disabled={ownerBusy || mutation.isPending} value={description} onChange={(e) => setDescriptionEdit(e.target.value)} minLength={10} maxLength={3000} required /></Field>{error && <Notice kind="error">{error} <Button type="button" variant="quiet" onClick={() => { void listing.refetch(); void item.refetch(); }}>Muat ulang detail</Button></Notice>}{notice && <Notice kind="success">{notice}</Notice>}<div className="form-actions"><Button type="submit" disabled={ownerBusy || mutation.isPending || ['RESERVED', 'CLOSED', 'WITHDRAWN', 'SUSPENDED'].includes(row.status)}>{mutation.isPending ? 'Menyimpan…' : 'Simpan koreksi teks'}</Button>{['DRAFT', 'PAUSED', 'REJECTED'].includes(row.status) && <Button type="button" variant="secondary" disabled={ownerBusy || mutation.isPending} onClick={submitReview}>Kirim untuk review</Button>}{['ACTIVE', 'PAUSED', 'PENDING_REVIEW', 'DRAFT', 'REJECTED'].includes(row.status) && <Button type="button" variant="danger" disabled={ownerBusy || mutation.isPending} onClick={() => { setError(''); setWithdrawOpen(true); }}>Tarik Listing</Button>}</div></form></div>}{withdrawOpen && <ConfirmAction title="Tarik Listing" buttonLabel="Tarik Listing" pending={ownerBusy} onClose={() => setWithdrawOpen(false)} onConfirm={withdraw}><p>Listing akan ditarik dan penawaran yang belum selesai akan berakhir.</p>{error && <Notice kind="error">{error}</Notice>}</ConfirmAction>}</>;
+  if (listing.isError || !listing.data) return <Notice kind="error">Listing tidak ditemukan. <Link href="/app/listings">Kembali ke Listing saya</Link></Notice>;
+  const row = listing.data, rev = row.currentRevision;
+  const reserved = row.status === 'RESERVED' || (row.status !== 'CLOSED' && Boolean(item.data?.reservedByTransactionId));
+  const ready = Boolean(item.data) && !item.isError && !busy;
+  const editable = !['RESERVED', 'CLOSED', 'SUSPENDED'].includes(row.status) && !reserved;
+  return <><Link className="back-link" href="/app/listings">← Semua Listing</Link><div className="app-heading"><div><span className="badge">{listingStatus[row.status]}</span><h1>{rev?.title ?? 'Draf Listing'}</h1><p>{rev?.city.name ?? 'Lokasi belum diatur'} · revisi {rev?.revisionNo ?? 0}</p></div><div className="form-actions">{editable && <Link className="button button-secondary" href={`/app/listings/${id}/edit`}><Pencil size={16} aria-hidden="true" />Edit Listing</Link>}<DeleteOwnedButton kind="listing" id={id} version={row.version} disabled={busy || reserved || (!ready && row.status !== 'CLOSED')} /></div></div>
+    {reserved && <Notice>Listing sedang dalam transaksi. Edit dan hapus tersedia setelah transaksi selesai atau dibatalkan.</Notice>}
+    {row.status === 'PENDING_REVIEW' && <Notice>Listing sedang ditinjau. Kamu bisa mengeditnya; perubahan disimpan sebagai draf untuk diajukan ulang.</Notice>}
+    {row.status === 'ACTIVE' && <Notice kind="success">Listing tampil di Market. Menyimpan perubahan akan menjeda Listing dan mengakhiri penawaran terbuka sampai review berikutnya.</Notice>}
+    {row.status === 'SUSPENDED' && <Notice>Listing ditangguhkan. Hubungi admin untuk menindaklanjuti statusnya.</Notice>}
+    {error && !withdrawOpen && <Notice kind="error">{error} <Button variant="quiet" onClick={() => void listing.refetch()}>Muat ulang detail</Button></Notice>}{notice && <Notice kind="success">{notice}</Notice>}
+    {rev && <section className="app-panel form-stack"><h2>Ringkasan Listing</h2><p className="preserve-lines">{rev.description}</p><dl className="detail-list"><div><dt>Jenis</dt><dd>{listingTypeLabel[row.type]}</dd></div><div><dt>Kondisi</dt><dd>{listingConditionLabel(rev.condition)}</dd></div><div><dt>Keterangan kondisi</dt><dd>{rev.conditionDisclosure}</dd></div><div><dt>Harga</dt><dd>{rev.askingPriceIdr === null ? '—' : listingMoney(rev.askingPriceIdr)}</dd></div><div><dt>Serah terima</dt><dd>{listingHandoverLabel(rev.handoverMethods)}</dd></div>{rev.exchangePreference && <div><dt>Barang yang dicari</dt><dd>{rev.exchangePreference}</dd></div>}{rev.recipientNote && <div><dt>Pesan penerima</dt><dd>{rev.recipientNote}</dd></div>}</dl><Link href={`/app/barang/${row.itemId}`}>Buka barang</Link>
+      <div className="form-actions">{['DRAFT', 'PAUSED', 'REJECTED'].includes(row.status) && <Button disabled={!ready} onClick={() => void act('submit')}>{busy ? 'Mengirim…' : 'Kirim untuk review'}</Button>}{['DRAFT', 'PENDING_REVIEW', 'ACTIVE', 'PAUSED', 'REJECTED'].includes(row.status) && <Button variant="quiet" disabled={!ready || reserved} onClick={() => { setError(''); setWithdrawOpen(true); }}>Tarik Listing</Button>}</div>
+    </section>}
+    {withdrawOpen && <ConfirmAction title="Tarik Listing" buttonLabel="Tarik Listing" pending={busy} onClose={() => setWithdrawOpen(false)} onConfirm={() => act('withdraw')}><p>Listing berhenti tampil di Market dan penawaran terbuka berakhir. Listing tetap tersedia di daftar milikmu untuk diedit.</p>{error && <Notice kind="error">{error}</Notice>}</ConfirmAction>}
+  </>;
 }
