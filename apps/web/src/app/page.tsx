@@ -6,7 +6,7 @@ import { PublicShell } from '@/components/layout/public-shell';
 import { RecordItemLink } from '@/components/ui/public-actions';
 import { LandingMarket } from '@/features/market/landing';
 import { PassportStack } from '@/features/passport/stack';
-import { AiLauncher } from '@/features/tutorials/ai-launcher';
+
 
 const steps = [
   {
@@ -64,8 +64,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-
-        <AiLauncher />
 
         <section className="landing-intro" aria-labelledby="intro-heading">
           <div className="public-section-heading public-section-heading-center">

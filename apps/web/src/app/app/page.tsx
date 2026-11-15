@@ -25,7 +25,6 @@ import { listingMoney } from '@/features/market/labels';
 import { DashboardNotifications } from '@/features/notifications/dashboard';
 import { offerPhase } from '@/features/offers/phase';
 import { ProfileAvatar } from '@/features/profile/avatar';
-import { AiLauncher } from '@/features/tutorials/ai-launcher';
 
 import '@/styles/dashboard.css';
 
@@ -118,8 +117,6 @@ export default function Dashboard() {
           </Link>
         }
       />
-
-      <AiLauncher />
 
       {noItems && recentItems}
 

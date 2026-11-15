@@ -341,3 +341,234 @@ body:has(.account-shell) .transaction-dialog .input { border-radius: 10px; font-
 .explanation-actions dt { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; }
 .explanation-actions dd { margin: 8px 0 0; }
 .explanation-section li { overflow-wrap: anywhere; }
+/* =========================================================
+   1. RINGKASAN AKUN — Barang terbaru dan tiga kartu aktivitas
+   ========================================================= */
+
+/* Rapikan jarak judul, deskripsi, dan tombol pada kartu kosong. */
+.account-main .dashboard-page .dashboard-recent .empty-state {
+  display: grid;
+  justify-items: start;
+  align-content: start;
+  gap: 8px;
+  padding: clamp(20px, 3vw, 28px);
+}
+
+.account-main .dashboard-page .dashboard-recent .empty-state h3,
+.account-main .dashboard-page .dashboard-recent .empty-state p {
+  margin: 0;
+}
+
+.account-main .dashboard-page .dashboard-recent .empty-state .button {
+  margin: 8px 0 0;
+}
+
+/*
+  Dua kartu pertama berada di dalam dashboard-activity-grid.
+  Kabar terbaru berada di luarnya. Jadikan ketiganya bagian
+  dari satu grid agar tepi atas, tepi bawah, dan lebarnya sejajar.
+*/
+.account-main .dashboard-page .dashboard-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: none;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.account-main .dashboard-page .dashboard-workspace > .dashboard-activity-grid {
+  display: contents;
+}
+
+.account-main .dashboard-page .dashboard-workspace > .dashboard-notifications,
+.account-main .dashboard-page .dashboard-workspace > .dashboard-recent {
+  grid-column: 1 / -1;
+  grid-row: auto;
+}
+
+/* Ketiga kartu memakai bingkai dan jarak dalam yang sama. */
+.account-main .dashboard-page .dashboard-workspace .account-activity,
+.account-main .dashboard-page .dashboard-workspace .dashboard-notifications {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  min-width: 0;
+  margin: 0;
+  padding: 20px;
+  border: 1px solid #dce5dc;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.account-main .dashboard-page .account-activity-heading,
+.account-main .dashboard-page .dashboard-news-heading {
+  margin: 0 0 14px;
+  padding: 0 0 12px;
+  border-bottom: 1px solid #e5ebe4;
+}
+
+.account-main .dashboard-page .dashboard-section-title {
+  align-items: center;
+  gap: 10px;
+}
+
+.account-main .dashboard-page .dashboard-section-title h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.35;
+}
+
+.account-main .dashboard-page .dashboard-empty {
+  align-items: flex-start;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+}
+
+.account-main .dashboard-page .dashboard-empty strong {
+  display: block;
+  line-height: 1.45;
+}
+
+.account-main .dashboard-page .dashboard-empty p {
+  margin: 4px 0 0;
+  line-height: 1.55;
+}
+
+.account-main .dashboard-page .dashboard-news-list {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+}
+
+/* Semua tautan aksi berada di bagian bawah kartu. */
+.account-main .dashboard-page .dashboard-workspace .account-activity-footer,
+.account-main .dashboard-page .dashboard-workspace .dashboard-news-footer {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 6px;
+  min-height: 44px;
+  margin: auto 0 0;
+  padding: 12px 0 0;
+}
+
+@container (min-width: 860px) {
+  .account-main .dashboard-page .dashboard-workspace {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .account-main .dashboard-page .dashboard-workspace > .dashboard-notifications {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  /* Saat akun sudah punya barang, galeri mendapat satu baris penuh. */
+  .account-main .dashboard-page .dashboard-workspace > .dashboard-recent {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+
+
+/* =========================================================
+   2. PANDUAN SAYA — Jarak ikon, judul, deskripsi, dan tombol
+   ========================================================= */
+
+.account-main .tutorial-index-page {
+  row-gap: 20px;
+}
+
+/* Daftar kosong sebelumnya tetap menyisakan garis di atas pesan. */
+.account-main .tutorial-index-page .tutorial-session-list:empty {
+  display: none;
+}
+
+.account-main .tutorial-index-page .account-empty {
+  display: grid;
+  justify-items: start;
+  align-content: start;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: clamp(20px, 3vw, 28px);
+  border: 1px solid #dce5dc;
+  border-radius: 16px;
+  background: #f7f9f5;
+  text-align: left;
+}
+
+.account-main .tutorial-index-page .account-empty > svg {
+  display: block;
+  margin: 0 0 4px;
+  color: #315f40;
+}
+
+.account-main .tutorial-index-page .account-empty h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  line-height: 1.35;
+}
+
+.account-main .tutorial-index-page .account-empty p {
+  max-width: 62ch;
+  margin: 0;
+  color: #536458;
+  line-height: 1.6;
+}
+
+.account-main .tutorial-index-page .account-empty .button {
+  justify-self: start;
+  min-height: 44px;
+  margin: 8px 0 0;
+}
+
+
+/* =========================================================
+   3. IMPACT SAYA — Catatan penjelas dan periode laporan
+   ========================================================= */
+
+/* Panel “Cara membaca catatan ini” berada tepat setelah grid metrik. */
+.account-main .impact-grid + .app-panel {
+  display: grid;
+  gap: 14px;
+  padding: clamp(20px, 3vw, 28px);
+  border: 1px solid #dce5dc;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.account-main .impact-grid + .app-panel h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  line-height: 1.35;
+}
+
+.account-main .impact-grid + .app-panel ul {
+  display: grid;
+  gap: 8px;
+  max-width: 76ch;
+  margin: 0;
+  padding-inline-start: 1.3rem;
+  list-style: disc outside;
+}
+
+.account-main .impact-grid + .app-panel li {
+  display: list-item;
+  margin: 0;
+  padding-inline-start: 3px;
+  color: #34483a;
+  line-height: 1.6;
+}
+
+.account-main .impact-grid + .app-panel li::marker {
+  color: #55785d;
+}
+
+.account-main .impact-grid + .app-panel > .muted {
+  margin: 2px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid #e4ebe3;
+  color: #56685b;
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
