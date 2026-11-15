@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { mock as accountMock, id, items } from '../../.impeccable/review/app/fixtures.mjs';
+import { mock as accountMock, id, items } from '../fixtures/account.mjs';
 
 async function mock(page) {
   const base = await accountMock(page);

@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 import {randomUUID} from 'node:crypto';
 import {mkdir} from 'node:fs/promises';
 import {login,createItem,createListing,approve,check} from '../../../api/scripts/helpers/fixtures.mjs';
-async function capture(page,name,project) {await mkdir('.impeccable/review/owner',{recursive:true});await page.screenshot({path:'.impeccable/review/owner/'+name+'-'+project+'.png',fullPage:true});}
+async function capture(page,name,project) {await mkdir('test-results/screenshots/owner',{recursive:true});await page.screenshot({path:'test-results/screenshots/owner/'+name+'-'+project+'.png',fullPage:true});}
 async function confirm(page,label) {const dialog=page.getByRole('dialog',{name:label,exact:true});await expect(dialog.getByRole('button',{name:label,exact:true})).toBeDisabled();await dialog.getByRole('checkbox').check();await dialog.getByRole('button',{name:label,exact:true}).dblclick();await expect(dialog).not.toBeVisible();}
 test('owner edits all listing fields and deletes listing then item',async({browser},info)=>{
  const owner=await login('owner.demo@valora.local'),admin=await login('admin.demo@valora.local');

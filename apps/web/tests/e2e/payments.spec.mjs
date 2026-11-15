@@ -25,7 +25,7 @@ async function mock(page, options = {}) {
   });
   return state;
 }
-async function capture(page, name, project) { const dir = 'apps/web/.impeccable/review/payments'; await mkdir(dir, { recursive: true }); await page.screenshot({ path: `${dir}/${name}-${project}.png`, fullPage: false }); }
+async function capture(page, name, project) { const dir = 'test-results/screenshots/payments'; await mkdir(dir, { recursive: true }); await page.screenshot({ path: `${dir}/${name}-${project}.png`, fullPage: false }); }
 
 test('QRIS demo shows the entire supplied image and persists one simulated payment', async ({ page }, info) => {
   const state = await mock(page), errors = []; page.on('pageerror', error => errors.push(error.message));

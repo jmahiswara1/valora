@@ -3,3 +3,11 @@
 
 # Trailing spaces in Markdown can represent intentional hard line breaks.
 *.md whitespace=-blank-at-eol
+
+# Keep internal material out of source archives.
+docs export-ignore
+graphify-out export-ignore
+.impeccable export-ignore
+apps/web/.impeccable export-ignore
+apps/web/AGENTS.md export-ignore
+apps/web/DESIGN.md export-ignore
