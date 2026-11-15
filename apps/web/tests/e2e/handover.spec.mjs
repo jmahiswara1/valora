@@ -3,10 +3,46 @@ import { mkdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
 const id = n => `10000000-0000-4000-8000-${String(n).padStart(12, '0')}`;
 const meetingInput = new Date(Date.now() + 2 * 86400000).toISOString().slice(0, 16);
+const pickerDisplay = value => value.slice(8, 10) + '/' + value.slice(5, 7) + '/' + value.slice(0, 4) + ' ' + value.slice(11, 16);
 const now = () => new Date().toISOString(), future = () => new Date(Date.now() + 2 * 86400000).toISOString();
 const user = n => ({ id: id(n), displayName: n === 2 ? 'Dara' : 'Bima', email: 'fixture@valora.local', role: 'USER', status: 'ACTIVE', emailVerified: true, emailVerifiedAt: now(), version: 1, profilePhotoUrl: null, city: { id: id(9), name: 'Kota Kediri', province: 'Jawa Timur' } });
 const tx = () => ({ id: id(10), listingId: id(11), offerId: id(12), type: 'RESELL', status: 'AWAITING_HANDOVER', sellerOrDonorId: id(2), buyerOrRecipientId: id(3), finalPriceIdr: 250000, snapshot: { parties: [user(2), user(3)], items: [{ id: id(20), title: 'Keyboard mekanik', description: 'Keyboard siap digunakan kembali.', conditionSummary: 'Bekas pakai ringan.', mediaIds: [], fromUserId: id(2), toUserId: id(3) }], handoverMethods: ['MEETUP', 'DELIVERY'] }, acceptedAt: now(), targetHandoverAt: new Date(Date.now() + 14 * 86400000).toISOString(), completedAt: null, correctedAt: null, overdueAt: null, cancellations: [], confirmations: [], disputes: [], corrections: [], requiredConfirmations: [], conversationId: null, version: 1 });
 const plan = (method = 'MEETUP') => ({ id: id(30), transactionId: id(10), proposedById: id(2), method, plannedAt: future(), timeZone: 'Asia/Jakarta', status: 'APPROVED', createdAt: now(), respondedAt: now(), respondedById: id(3), purgedAt: null, endReason: null, privateDetails: { location: method === 'MEETUP' ? 'Perpustakaan Kota Kediri, lobi utama' : null, note: 'Hubungi lewat percakapan saat berangkat.', responseReason: null, destinations: method === 'DELIVERY' ? [{ userId: id(3), details: { recipientName: 'Bima', phone: '081234567890', address: 'Jalan Melati nomor 12, Kota Kediri' } }] : [] } });
+test('Valora calendar selects date and time with keyboard and preserves the handover dialog', async ({ page }, info) => {
+  const state = await mock(page); await page.goto('/app/transaksi/' + id(10)); await page.getByRole('button', { name: 'Atur serah terima', exact: true }).click();
+  const handover = page.getByRole('dialog', { name: 'Atur serah terima', exact: true });
+  await page.getByRole('radio', { name: 'WIB UTC+07', exact: true }).check();
+  const trigger = page.getByRole('button', { name: 'Buka kalender', exact: true }); await trigger.click();
+  const calendar = page.getByRole('dialog', { name: 'Pilih tanggal dan waktu', exact: true });
+  await expect(calendar).toBeVisible(); await expect(calendar.getByRole('columnheader').first()).toHaveText('Sen');
+  await expect(calendar.locator('button[data-day]:disabled').first()).toBeDisabled();
+  await expect(calendar.locator('button[data-day][tabindex="0"]')).toBeFocused();
+  const firstDay = await page.evaluate(() => document.activeElement.dataset.day);
+  await page.keyboard.press('ArrowRight'); await page.keyboard.press('Enter');
+  const chosen = new Date(firstDay + 'T12:00:00Z'); chosen.setUTCDate(chosen.getUTCDate() + 1); const day = chosen.toISOString().slice(0, 10);
+  await expect(calendar.locator('td[aria-selected="true"] button')).toHaveAttribute('data-day', day);
+  await calendar.getByLabel('Jam', { exact: true }).click(); await page.getByRole('option', { name: '14', exact: true }).click();
+  await calendar.getByLabel('Menit', { exact: true }).click(); await page.getByRole('option', { name: '30', exact: true }).click();
+  await expect(page.getByLabel('Tanggal dan waktu pertemuan')).toHaveValue(pickerDisplay(day + 'T14:30'));
+  await expect(calendar.getByRole('button', { name: 'Selesai', exact: true })).toBeInViewport();
+  const rect = await calendar.boundingBox(); const viewport = page.viewportSize(); expect(rect.x).toBeGreaterThanOrEqual(8); expect(rect.x + rect.width).toBeLessThanOrEqual(viewport.width - 8); expect(rect.y).toBeGreaterThanOrEqual(0); expect(rect.y + rect.height).toBeLessThanOrEqual(viewport.height);
+  await capture(page, 'valora-calendar', info.project.name);
+  await page.keyboard.press('Escape'); await expect(calendar).not.toBeVisible(); await expect(handover).toBeVisible(); await expect(trigger).toBeFocused();
+  await page.getByLabel('Lokasi pertemuan').fill('Lobi perpustakaan, pintu utama'); await handover.getByRole('button', { name: 'Kirim usulan', exact: true }).click();
+  expect(state.writes).toHaveLength(1); expect(state.writes[0].body.plannedAt).toBe(new Date(Date.parse(day + 'T14:30:00Z') - 7 * 3600000).toISOString());
+});
+
+test('calendar input rejects invalid dates and deadlines and fits 320px', async ({ page }, info) => {
+  const state = await mock(page); await page.setViewportSize({ width: 320, height: 720 }); await page.goto('/app/transaksi/' + id(10)); await page.getByRole('button', { name: 'Atur serah terima', exact: true }).click();
+  await page.getByRole('radio', { name: 'WIB UTC+07', exact: true }).check(); const input = page.getByLabel('Tanggal dan waktu pertemuan');
+  await input.fill(meetingInput); await input.press('End'); await input.press('Backspace'); await expect(input).not.toHaveValue('');
+  await input.fill('31/02/2026 12:00'); await page.getByRole('button', { name: 'Kirim usulan', exact: true }).click(); await expect(input).toBeFocused(); expect(await input.evaluate(element => element.checkValidity())).toBe(false); expect(state.writes).toHaveLength(0);
+  const afterDeadline = new Date(Date.now() + 20 * 86400000).toISOString().slice(0, 16); await input.fill(pickerDisplay(afterDeadline)); await page.getByRole('button', { name: 'Kirim usulan', exact: true }).click(); await expect(page.getByText('Waktu melewati batas transaksi.', { exact: true })).toBeVisible(); expect(state.writes).toHaveLength(0);
+  await input.fill(meetingInput); await page.getByRole('button', { name: 'Buka kalender', exact: true }).click(); const calendar = page.getByRole('dialog', { name: 'Pilih tanggal dan waktu', exact: true });
+  const rect = await calendar.boundingBox(); expect(rect.x).toBeGreaterThanOrEqual(8); expect(rect.x + rect.width).toBeLessThanOrEqual(312); await fits(page); await capture(page, 'valora-calendar-320', info.project.name);
+  await calendar.getByRole('button', { name: 'Selesai', exact: true }).click(); await expect(calendar).not.toBeVisible();
+});
+
 async function mock(page, options = {}) {
   const state = { actor: 2, version: 1, pending: null, agreed: null, writes: [], requests: [], conversationId: id(88), fail: false, recovery: false, locked: false, resi: null, timelineMore: false, ...options };
   const conversation = () => ({ id: state.conversationId, transactionId: id(10), listingId: id(11), listingTitle: 'Keyboard mekanik', participant: user(state.actor === 2 ? 3 : 2), lastMessage: null, unreadCount: 0, readSequence: 0, peerReadSequence: 0, messageSequence: 0, updatedAt: now() });
@@ -123,11 +159,11 @@ test('horizontal timezone choices support keyboard and preserve the scheduled in
   await wib.check(); await page.getByLabel('Tanggal dan waktu pertemuan').fill(meetingInput);
   await wib.focus(); await page.keyboard.press('ArrowRight');
   await expect(zones.getByRole('radio', { name: 'WITA UTC+08', exact: true })).toBeChecked();
-  await expect(page.getByLabel('Tanggal dan waktu pertemuan')).toHaveValue(new Date(Date.parse(meetingInput + ':00Z') + 3600000).toISOString().slice(0, 16));
+  await expect(page.getByLabel('Tanggal dan waktu pertemuan')).toHaveValue(pickerDisplay(new Date(Date.parse(meetingInput + ':00Z') + 3600000).toISOString().slice(0, 16)));
   await page.keyboard.press('ArrowRight');
   await expect(zones.getByRole('radio', { name: 'WIT UTC+09', exact: true })).toBeChecked();
-  await expect(page.getByLabel('Tanggal dan waktu pertemuan')).toHaveValue(new Date(Date.parse(meetingInput + ':00Z') + 2 * 3600000).toISOString().slice(0, 16));
-  await wib.check(); await expect(page.getByLabel('Tanggal dan waktu pertemuan')).toHaveValue(meetingInput);
+  await expect(page.getByLabel('Tanggal dan waktu pertemuan')).toHaveValue(pickerDisplay(new Date(Date.parse(meetingInput + ':00Z') + 2 * 3600000).toISOString().slice(0, 16)));
+  await wib.check(); await expect(page.getByLabel('Tanggal dan waktu pertemuan')).toHaveValue(pickerDisplay(meetingInput));
   await page.getByRole('button', { name: 'Kirim usulan', exact: true }).click(); expect(state.writes).toHaveLength(0);
   await expect(page.getByLabel('Lokasi pertemuan')).toBeFocused();
   await page.getByLabel('Lokasi pertemuan').fill('Lobi perpustakaan, pintu utama');

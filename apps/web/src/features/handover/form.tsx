@@ -4,6 +4,7 @@ import { CalendarClock, MapPin, Truck, Check, Info } from 'lucide-react';
 import { handoverMethods, type HandoverDto, type HandoverProposalDto, type HandoverDestination, type HandoverDirectionDto, type TransactionDto } from '@valora/contracts';
 import { Field, Notice, Button } from '@/components/ui/primitives';
 import { Select } from '@/components/ui/select';
+import { DateTimePicker } from '@/components/ui/date-time-picker';
 import { ActionFeedback } from '@/components/ui/action-feedback';
 import { useCriticalAction } from '@/hooks/use-critical-action';
 import { HandoverDialog } from './dialog';
@@ -49,7 +50,7 @@ export function HandoverForm({ transaction, coordination, actorId, mode, action,
               <span className="handover-zone-label"><span><strong>{item.label}</strong><Check size={14} aria-hidden="true" /></span><small>UTC+{String(item.offset).padStart(2, '0')}</small></span>
             </label>)}
           </div></fieldset>
-          <Field label={method === 'MEETUP' ? 'Tanggal dan waktu pertemuan' : 'Perkiraan tanggal dan waktu diterima'} htmlFor={prefix + '-time'} hint={'Batas transaksi: ' + plannedTime(coordination.deadlineAt, zone)}><input id={prefix + '-time'} type="datetime-local" className="input" required max={localTime(coordination.deadlineAt, zone)} value={plannedAt} onChange={event => setPlannedAt(event.target.value)} /></Field>
+          <Field label={method === 'MEETUP' ? 'Tanggal dan waktu pertemuan' : 'Perkiraan tanggal dan waktu diterima'} htmlFor={prefix + '-time'} hint={'Batas transaksi: ' + plannedTime(coordination.deadlineAt, zone)}><DateTimePicker id={prefix + '-time'} required min={localTime(new Date(Date.parse(coordination.serverTime) + 60000).toISOString(), zone)} max={localTime(coordination.deadlineAt, zone)} today={localTime(coordination.serverTime, zone).slice(0, 10)} zoneLabel={zones[zone].label} disabled={action.pending || !available || stale || action.hasSaved()} value={plannedAt} onChange={setPlannedAt} /></Field>
         </section>
         <section className="handover-form-section" aria-labelledby={prefix + '-details'}>
           <div className="handover-section-heading">{method === 'MEETUP' ? <MapPin size={19} strokeWidth={1.7} aria-hidden="true" /> : <Truck size={19} strokeWidth={1.7} aria-hidden="true" />}<h3 id={prefix + '-details'}>{method === 'MEETUP' ? 'Lokasi dan catatan' : needsDestination ? 'Alamat dan catatan' : 'Detail pengiriman'}</h3></div>
