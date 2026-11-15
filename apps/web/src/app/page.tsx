@@ -3,7 +3,6 @@ import Image from 'next/image';
 import { ArrowRight, ArrowUpRight, MoveDownRight } from 'lucide-react';
 
 import { PublicShell } from '@/components/layout/public-shell';
-import { RecordItemLink } from '@/components/ui/public-actions';
 import { LandingMarket } from '@/features/market/landing';
 import { PassportStack } from '@/features/passport/stack';
 
@@ -60,7 +59,6 @@ export default function Home() {
                 <ArrowUpRight size={20} aria-hidden="true" />
               </Link>
 
-              <RecordItemLink className="button button-secondary" />
             </div>
           </div>
         </section>
@@ -179,7 +177,6 @@ export default function Home() {
             </p>
           </div>
 
-          <RecordItemLink />
         </section>
       </main>
     </PublicShell>

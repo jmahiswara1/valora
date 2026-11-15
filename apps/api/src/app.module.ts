@@ -55,6 +55,8 @@ import { ItemAssessmentsController } from './modules/assessments/items.controlle
 import { RubricController } from './modules/assessments/rubric.controller.js';
 
 import { TransactionsService } from './modules/transactions/service.js';
+import { DemoPaymentsService } from './modules/transactions/payments.js';
+import { DemoPaymentsController } from './modules/transactions/payments.controller.js';
 import { TransactionsController } from './modules/transactions/controller.js';
 import { MyTransactionsController } from './modules/transactions/me.controller.js';
 import { OfferAcceptanceController } from './modules/transactions/acceptance.controller.js';
@@ -128,6 +130,7 @@ import { SearchJobs } from './infrastructure/jobs/searches.service.js';
     RetentionController,
     ExplainerController,
     TransactionsController,
+    DemoPaymentsController,
     MyTransactionsController,
     OfferAcceptanceController,
     NotificationsController,
@@ -181,6 +184,7 @@ import { SearchJobs } from './infrastructure/jobs/searches.service.js';
     RetentionService,
     ExplainerService,
     TransactionsService,
+    DemoPaymentsService,
     DisputesService,
     DatabaseService,
     MailService,

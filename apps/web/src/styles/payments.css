@@ -1,0 +1,22 @@
+.account-main .payment-panel { display: grid; gap: 18px; }
+.payment-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.account-main .payment-heading > h2 { margin: 0; }
+.payment-demo-label { font-size: .75rem; font-weight: 600; color: var(--muted); }
+.payment-summary { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
+.payment-summary .payment-amount { margin: 0 0 6px; font-size: 1.625rem; font-weight: 700; color: var(--forest); font-variant-numeric: tabular-nums; letter-spacing: -.025em; }
+.payment-parties { color: var(--muted); font-size: .8125rem; }
+.payment-status { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: .8125rem; }
+.payment-status.is-paid { color: var(--green); font-weight: 600; }
+.payment-demo-note { max-width: 72ch; color: var(--muted); font-size: .8125rem; line-height: 1.7; }
+.payment-receipt { display: grid; gap: 10px; font-size: .875rem; }
+.payment-receipt .meta { overflow-wrap: anywhere; }
+.payment-dialog-amount { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.payment-dialog-amount > span { color: var(--muted); font-size: .875rem; }
+.payment-dialog-amount > strong { font-size: 1.375rem; font-variant-numeric: tabular-nums; }
+.payment-qris-image { display: grid; justify-items: center; gap: 14px; margin: 0; }
+.payment-qris-image > img { display: block; width: min(100%, 300px); height: auto; object-fit: contain; }
+.payment-qris-image > figcaption { font-size: .8125rem; text-underline-offset: 4px; }
+.payment-qris-image a { text-decoration: underline; }
+.payment-demo-consent { display: flex; align-items: flex-start; gap: 10px; color: var(--forest); font-size: .875rem; line-height: 1.7; }
+.payment-demo-consent > input { flex-shrink: 0; width: 18px; height: 18px; margin-top: 3px; accent-color: var(--forest); }
+@media (max-width: 600px) { .payment-summary { gap: 12px; } .payment-dialog-amount > strong { font-size: 1.25rem; } }

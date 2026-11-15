@@ -8,8 +8,10 @@ Panel pada `/app/transaksi/[id]` menyediakan jadwal dan detail privat untuk Rese
 
 - Tenggat tetap 14 hari sejak penawaran diterima. Pilih waktu mendatang yang tidak melewati `targetHandoverAt`.
 - Pertemuan memakai lokasi dan waktu; pengiriman memakai perkiraan waktu diterima. Waktu disimpan UTC dengan zona tampilan WIB, WITA atau WIT.
-- Metode harus tersedia dalam snapshot transaksi. Satu usulan menunggu per transaksi; hanya pihak lain boleh menyetujui atau menolak. Pengusul dapat menarik usulannya.
+- Pemilih tanggal dan waktu memakai kalender Valora berbahasa Indonesia, dengan pilihan jam/menit 24 jam. Tanggal di luar tenggat dinonaktifkan; input manual memakai `dd/mm/yyyy jj:mm`. Tombol panah menavigasi tanggal, Enter memilih, dan Escape menutup kalender serta memulihkan fokus tanpa menutup formulir. Pergantian zona menjaga waktu absolut yang sama.
+- Metode mengikuti snapshot Listing saat kesepakatan dibuat, untuk transaksi lama maupun baru. Kedua opsi tetap terlihat pada dropdown; opsi yang tidak didukung Listing dinonaktifkan, dan API menolak usulan dengan metode tersebut. Jadwal dan detail tetap memerlukan persetujuan kedua pihak. Satu usulan menunggu per transaksi; pengusul tidak dapat menyetujui usulannya sendiri dan dapat menarik usulannya.
 - Usulan tidak diedit. Buat usulan baru untuk perubahan; kesepakatan sebelumnya tetap berlaku sampai pengganti disetujui. Usulan yang ditolak, ditarik, kedaluwarsa atau ditutup tetap tercatat.
+- Setiap usulan baru dari penjual maupun pembeli juga menjadi kartu di percakapan transaksi. Pihak lain dapat menerima atau menolak lewat chat; pengusul hanya dapat menarik usulannya. Penerimaan pengiriman tetap meminta alamat milik penerima. Kartu mengambil status dan izin terbaru; kartu lama tidak menawarkan tanggapan ulang.
 - Pada pengiriman, setiap penerima mengisi nama, telepon dan alamatnya sendiri. Exchange memakai satu jadwal dan metode, dengan alamat serta resi terpisah per arah barang.
 - Konfirmasi formal pertama mengunci metode, jadwal dan alamat. Usulan menunggu ditutup saat konfirmasi pertama, permintaan pembatalan, sengketa atau penutupan transaksi.
 - Pengirim boleh mencatat kurir dan resi pada kesepakatan pengiriman yang berlaku, termasuk setelah konfirmasi penyerahan, sampai penerimaan barang tersebut dikonfirmasi. Perbaikan wajib beralasan dan menambah revisi.
@@ -19,6 +21,12 @@ Panel pada `/app/transaksi/[id]` menyediakan jadwal dan detail privat untuk Rese
 ## Penyimpanan dan konkurensi
 
 Migrasi `20261009010000_handover_coordination` menambah `HandoverProposal`, `ShipmentRecord`, `HandoverEvent` dan pointer `Transaction.agreedHandoverId`. Migrasi aditif tidak membuat jadwal atau aktivitas koordinasi rekaan pada data lama. Partial unique index membatasi satu usulan `PENDING` per transaksi; usulan lama tetap `APPROVED` sebagai riwayat setelah pointer aktif berganti.
+
+Migrasi aditif `20261115130000_handover_chat` menambah referensi unik opsional `Message.handoverProposalId`. Proposal dan pesan dibuat dalam transaksi database yang sama, dengan urutan serta notifikasi pesan biasa; replay tidak menggandakan kartu. Isi pesan dan event realtime hanya memuat teks umum dan referensi ID. Lokasi, catatan, dan alamat tetap dibaca melalui endpoint koordinasi privat sehingga retensi dan pemeriksaan akses tetap berlaku. Usulan sebelum migrasi tetap tersedia pada riwayat transaksi dan tidak dibuatkan pesan lama secara otomatis.
+
+## Detail transaksi dan bantuan
+
+Detail transaksi menempatkan koordinasi, pengiriman, dan konfirmasi sebelum riwayat, dengan ringkasan barang di samping pada desktop dan sesudah alur utama pada ponsel. Aksi **Laporkan transaksi** terlihat di dekat status dan mengirim laporan ke antrean admin tanpa mengubah versi atau status transaksi. **Buka sengketa** tetap aksi terpisah dengan persetujuan eksplisit untuk menahan penyelesaian. Koreksi riwayat selesai tetap tersedia melalui alurnya sendiri.
 
 Mutasi memakai `expectedVersion`, `Idempotency-Key`, gate transaksi dan penguncian transaksi/barang yang sudah dipakai domain. Status/izin sesi diperiksa lagi setelah gate. Hasil idempotensi hanya metadata ID, versi dan status; alamat/resi tidak dimasukkan ke respons pemulihan. Formulir mempertahankan draft dalam memori saat respons belum pasti dan meminta pemeriksaan status sebelum mutasi lain. Pergantian sesi membatalkan permintaan serta menghapus cache privat melalui mekanisme aplikasi yang berlaku.
 

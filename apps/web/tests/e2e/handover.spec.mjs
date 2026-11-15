@@ -3,10 +3,46 @@ import { mkdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
 const id = n => `10000000-0000-4000-8000-${String(n).padStart(12, '0')}`;
 const meetingInput = new Date(Date.now() + 2 * 86400000).toISOString().slice(0, 16);
+const pickerDisplay = value => value.slice(8, 10) + '/' + value.slice(5, 7) + '/' + value.slice(0, 4) + ' ' + value.slice(11, 16);
 const now = () => new Date().toISOString(), future = () => new Date(Date.now() + 2 * 86400000).toISOString();
 const user = n => ({ id: id(n), displayName: n === 2 ? 'Dara' : 'Bima', email: 'fixture@valora.local', role: 'USER', status: 'ACTIVE', emailVerified: true, emailVerifiedAt: now(), version: 1, profilePhotoUrl: null, city: { id: id(9), name: 'Kota Kediri', province: 'Jawa Timur' } });
 const tx = () => ({ id: id(10), listingId: id(11), offerId: id(12), type: 'RESELL', status: 'AWAITING_HANDOVER', sellerOrDonorId: id(2), buyerOrRecipientId: id(3), finalPriceIdr: 250000, snapshot: { parties: [user(2), user(3)], items: [{ id: id(20), title: 'Keyboard mekanik', description: 'Keyboard siap digunakan kembali.', conditionSummary: 'Bekas pakai ringan.', mediaIds: [], fromUserId: id(2), toUserId: id(3) }], handoverMethods: ['MEETUP', 'DELIVERY'] }, acceptedAt: now(), targetHandoverAt: new Date(Date.now() + 14 * 86400000).toISOString(), completedAt: null, correctedAt: null, overdueAt: null, cancellations: [], confirmations: [], disputes: [], corrections: [], requiredConfirmations: [], conversationId: null, version: 1 });
 const plan = (method = 'MEETUP') => ({ id: id(30), transactionId: id(10), proposedById: id(2), method, plannedAt: future(), timeZone: 'Asia/Jakarta', status: 'APPROVED', createdAt: now(), respondedAt: now(), respondedById: id(3), purgedAt: null, endReason: null, privateDetails: { location: method === 'MEETUP' ? 'Perpustakaan Kota Kediri, lobi utama' : null, note: 'Hubungi lewat percakapan saat berangkat.', responseReason: null, destinations: method === 'DELIVERY' ? [{ userId: id(3), details: { recipientName: 'Bima', phone: '081234567890', address: 'Jalan Melati nomor 12, Kota Kediri' } }] : [] } });
+test('Valora calendar selects date and time with keyboard and preserves the handover dialog', async ({ page }, info) => {
+  const state = await mock(page); await page.goto('/app/transaksi/' + id(10)); await page.getByRole('button', { name: 'Atur serah terima', exact: true }).click();
+  const handover = page.getByRole('dialog', { name: 'Atur serah terima', exact: true });
+  await page.getByRole('radio', { name: 'WIB UTC+07', exact: true }).check();
+  const trigger = page.getByRole('button', { name: 'Buka kalender', exact: true }); await trigger.click();
+  const calendar = page.getByRole('dialog', { name: 'Pilih tanggal dan waktu', exact: true });
+  await expect(calendar).toBeVisible(); await expect(calendar.getByRole('columnheader').first()).toHaveText('Sen');
+  await expect(calendar.locator('button[data-day]:disabled').first()).toBeDisabled();
+  await expect(calendar.locator('button[data-day][tabindex="0"]')).toBeFocused();
+  const firstDay = await page.evaluate(() => document.activeElement.dataset.day);
+  await page.keyboard.press('ArrowRight'); await page.keyboard.press('Enter');
+  const chosen = new Date(firstDay + 'T12:00:00Z'); chosen.setUTCDate(chosen.getUTCDate() + 1); const day = chosen.toISOString().slice(0, 10);
+  await expect(calendar.locator('td[aria-selected="true"] button')).toHaveAttribute('data-day', day);
+  await calendar.getByLabel('Jam', { exact: true }).click(); await page.getByRole('option', { name: '14', exact: true }).click();
+  await calendar.getByLabel('Menit', { exact: true }).click(); await page.getByRole('option', { name: '30', exact: true }).click();
+  await expect(page.getByLabel('Tanggal dan waktu pertemuan')).toHaveValue(pickerDisplay(day + 'T14:30'));
+  await expect(calendar.getByRole('button', { name: 'Selesai', exact: true })).toBeInViewport();
+  const rect = await calendar.boundingBox(); const viewport = page.viewportSize(); expect(rect.x).toBeGreaterThanOrEqual(8); expect(rect.x + rect.width).toBeLessThanOrEqual(viewport.width - 8); expect(rect.y).toBeGreaterThanOrEqual(0); expect(rect.y + rect.height).toBeLessThanOrEqual(viewport.height);
+  await capture(page, 'valora-calendar', info.project.name);
+  await page.keyboard.press('Escape'); await expect(calendar).not.toBeVisible(); await expect(handover).toBeVisible(); await expect(trigger).toBeFocused();
+  await page.getByLabel('Lokasi pertemuan').fill('Lobi perpustakaan, pintu utama'); await handover.getByRole('button', { name: 'Kirim usulan', exact: true }).click();
+  expect(state.writes).toHaveLength(1); expect(state.writes[0].body.plannedAt).toBe(new Date(Date.parse(day + 'T14:30:00Z') - 7 * 3600000).toISOString());
+});
+
+test('calendar input rejects invalid dates and deadlines and fits 320px', async ({ page }, info) => {
+  const state = await mock(page); await page.setViewportSize({ width: 320, height: 720 }); await page.goto('/app/transaksi/' + id(10)); await page.getByRole('button', { name: 'Atur serah terima', exact: true }).click();
+  await page.getByRole('radio', { name: 'WIB UTC+07', exact: true }).check(); const input = page.getByLabel('Tanggal dan waktu pertemuan');
+  await input.fill(meetingInput); await input.press('End'); await input.press('Backspace'); await expect(input).not.toHaveValue('');
+  await input.fill('31/02/2026 12:00'); await page.getByRole('button', { name: 'Kirim usulan', exact: true }).click(); await expect(input).toBeFocused(); expect(await input.evaluate(element => element.checkValidity())).toBe(false); expect(state.writes).toHaveLength(0);
+  const afterDeadline = new Date(Date.now() + 20 * 86400000).toISOString().slice(0, 16); await input.fill(pickerDisplay(afterDeadline)); await page.getByRole('button', { name: 'Kirim usulan', exact: true }).click(); await expect(page.getByText('Waktu melewati batas transaksi.', { exact: true })).toBeVisible(); expect(state.writes).toHaveLength(0);
+  await input.fill(meetingInput); await page.getByRole('button', { name: 'Buka kalender', exact: true }).click(); const calendar = page.getByRole('dialog', { name: 'Pilih tanggal dan waktu', exact: true });
+  const rect = await calendar.boundingBox(); expect(rect.x).toBeGreaterThanOrEqual(8); expect(rect.x + rect.width).toBeLessThanOrEqual(312); await fits(page); await capture(page, 'valora-calendar-320', info.project.name);
+  await calendar.getByRole('button', { name: 'Selesai', exact: true }).click(); await expect(calendar).not.toBeVisible();
+});
+
 async function mock(page, options = {}) {
   const state = { actor: 2, version: 1, pending: null, agreed: null, writes: [], requests: [], conversationId: id(88), fail: false, recovery: false, locked: false, resi: null, timelineMore: false, ...options };
   const conversation = () => ({ id: state.conversationId, transactionId: id(10), listingId: id(11), listingTitle: 'Keyboard mekanik', participant: user(state.actor === 2 ? 3 : 2), lastMessage: null, unreadCount: 0, readSequence: 0, peerReadSequence: 0, messageSequence: 0, updatedAt: now() });
@@ -18,10 +54,12 @@ async function mock(page, options = {}) {
     if (path === '/auth/session') return ok(route, { state: 'AUTHENTICATED', user: { ...user(state.actor), role: state.admin ? 'ADMIN' : 'USER' }, sessionId: id(99), serverTime: now(), expiresAt: future(), reauthenticatedUntil: future(), reason: null });
     if (path === '/me') return ok(route, { ...user(state.actor), role: state.admin ? 'ADMIN' : 'USER' }); if (path === '/auth/csrf') return ok(route, { token: 'fixture-handover-csrf' }); if (path === '/me/notifications/summary') return ok(route, { unreadCount: 0, recent: [] });
     if (path === '/me/actions/status') return ok(route, { status: state.recovery ? 'COMMITTED' : 'NOT_FOUND', completedAt: now() });
-    if (path === '/transactions/' + id(10)) return ok(route, { ...tx(), version: state.version, conversationId: state.conversationId });
+    if (path.endsWith('/demo-payment')) return ok(route, { transactionId: id(10), mode: 'DEMO', method: 'QRIS', status: 'UNPAID', amountIdr: 250000, payerId: id(3), receiverId: id(2), paidAt: null, reference: null, version: state.version, canSimulate: state.actor === 3, reason: null });
+    if (path === '/transactions/' + id(10)) return ok(route, { ...tx(), requiredConfirmations: state.showConfirmations ? [{ actorId: id(2), itemId: id(20), kind: 'HANDED_OVER' }, { actorId: id(3), itemId: id(20), kind: 'RECEIVED' }] : [], snapshot: { ...tx().snapshot, handoverMethods: state.methods ?? tx().snapshot.handoverMethods }, version: state.version, conversationId: state.conversationId });
+    if (path === '/reports' && req.method() === 'POST') { state.reports ??= []; state.reports.push(req.postDataJSON()); return state.reportFail ? route.fulfill({ status: 503, json: { error: { code: 'DEPENDENCY_UNAVAILABLE', message: 'Laporan belum tersimpan. Coba lagi.' } } }) : ok(route, { id: id(90) }); }
     if (path === '/conversations') return ok(route, state.conversationId ? [conversation()] : []);
     if (state.conversationId && path === `/conversations/${state.conversationId}`) return ok(route, conversation());
-    if (state.conversationId && path === `/conversations/${state.conversationId}/messages`) return ok(route, [], { nextCursor: null });
+    if (state.conversationId && path === `/conversations/${state.conversationId}/messages`) return ok(route, state.chatMessages ?? [], { nextCursor: null });
     if (path.endsWith('/timeline') && url.searchParams.has('cursor') && state.timelineFail) return route.fulfill({ status: 503, json: { error: { code: 'DEPENDENCY_UNAVAILABLE', message: 'Halaman berikutnya gagal.' } } });
     if (path.endsWith('/timeline')) return ok(route, [{ id: url.searchParams.has('cursor') ? 'older' : 'newer', type: 'HANDOVER_APPROVED', actorId: id(3), label: url.searchParams.has('cursor') ? 'Penawaran disepakati' : 'Koordinasi serah terima disepakati', occurredAt: now(), proposalId: id(30), itemId: null }], { nextCursor: state.timelineMore && !url.searchParams.has('cursor') ? 'fixture' : null });
     if (path === `/admin/disputes/${id(77)}`) return ok(route, { id: id(77), transactionId: id(10), transactionTitle: 'Keyboard mekanik', assignedAdminId: id(2), status: 'IN_REVIEW', reason: 'Jadwal pengiriman perlu ditinjau.', version: 1, transaction: { ...tx(), status: 'DISPUTED' }, resolution: null, resolutionReason: null });
@@ -29,14 +67,14 @@ async function mock(page, options = {}) {
     if (path === `/admin/cases/${id(77)}/handover` && url.searchParams.has('cursor') && state.adminPageFail) return route.fulfill({ status: 503, json: { error: { code: 'DEPENDENCY_UNAVAILABLE', message: 'Halaman admin gagal.' } } });
     if (path === `/admin/cases/${id(77)}/handover`) return ok(route, { coordination: coordination(), history: [plan('DELIVERY')], shipments: [], accessExpiresAt: new Date(Date.now() + (state.grantMs ?? 2000)).toISOString(), nextCursor: state.adminPaging && !url.searchParams.has('cursor') ? id(31) : null, shipmentNextCursor: null });
     if (path.endsWith('/handover') && req.method() === 'GET') return state.fail ? route.fulfill({ status: 503, json: { error: { code: 'DEPENDENCY_UNAVAILABLE', message: 'Koordinasi belum tersedia.' } } }) : ok(route, coordination());
-    if (path.endsWith('/proposals/' + id(30))) return ok(route, state.agreed ?? state.pending ?? plan()); if (path.endsWith('/shipments') && req.method() === 'GET') {
+    if (path.endsWith('/proposals/' + id(30))) return state.privateDenied ? route.fulfill({ status: 404, json: { error: { code: 'NOT_FOUND', message: 'Usulan tidak tersedia.' } } }) : ok(route, state.proposalHistory ?? state.pending ?? state.agreed ?? plan()); if (path.endsWith('/shipments') && req.method() === 'GET') {
       if (state.revisionPaging) { if (url.searchParams.has('cursor') && state.revisionFail) return route.fulfill({ status: 503, json: { error: { code: 'DEPENDENCY_UNAVAILABLE', message: 'Halaman revisi gagal.' } } }); return ok(route, [{ id: url.searchParams.has('cursor') ? id(41) : id(40), proposalId: id(30), itemId: id(20), senderId: id(2), courier: 'Kurir Riwayat', trackingNumber: 'HISTORY-001', revision: url.searchParams.has('cursor') ? 1 : 2, recordedAt: now(), purgedAt: null, reason: null }], { nextCursor: url.searchParams.has('cursor') ? null : id(41) }); }
       return ok(route, state.resi ? [state.resi] : [], { nextCursor: null });
     }
     if (path.includes('/handover/') && req.method() === 'POST') {
       const body = req.postDataJSON(); state.writes.push({ path, body, key: req.headers()['idempotency-key'] }); state.version++;
       if (path.endsWith('/proposals')) state.pending = { ...plan(body.method), status: 'PENDING', plannedAt: body.plannedAt, timeZone: body.timeZone, privateDetails: { location: body.location ?? null, note: body.note ?? null, responseReason: null, destinations: [] } };
-      else if (path.endsWith('/respond')) { if (body.accept) state.agreed = { ...state.pending, status: 'APPROVED', privateDetails: { ...state.pending.privateDetails, destinations: body.destination ? [{ userId: id(state.actor), details: body.destination }] : [] } }; state.pending = null; }
+      else if (path.endsWith('/respond')) { state.proposalHistory = { ...state.pending, status: body.accept ? 'APPROVED' : 'REJECTED', privateDetails: { ...state.pending.privateDetails, responseReason: body.reason ?? null, destinations: body.destination ? [{ userId: id(state.actor), details: body.destination }] : [] } }; if (body.accept) state.agreed = state.proposalHistory; state.pending = null; }
       else if (path.includes('/shipments/')) state.resi = { id: id(40), proposalId: id(30), itemId: id(20), senderId: id(2), courier: body.courier, trackingNumber: body.trackingNumber, reason: body.reason ?? null, revision: state.resi ? 2 : 1, recordedAt: now(), purgedAt: null };
       else state.pending = null;
       if (state.recovery) return route.fulfill({ status: 503, json: { error: { code: 'DEPENDENCY_UNAVAILABLE', message: 'Respons hilang.' } } });
@@ -122,11 +160,11 @@ test('horizontal timezone choices support keyboard and preserve the scheduled in
   await wib.check(); await page.getByLabel('Tanggal dan waktu pertemuan').fill(meetingInput);
   await wib.focus(); await page.keyboard.press('ArrowRight');
   await expect(zones.getByRole('radio', { name: 'WITA UTC+08', exact: true })).toBeChecked();
-  await expect(page.getByLabel('Tanggal dan waktu pertemuan')).toHaveValue(new Date(Date.parse(meetingInput + ':00Z') + 3600000).toISOString().slice(0, 16));
+  await expect(page.getByLabel('Tanggal dan waktu pertemuan')).toHaveValue(pickerDisplay(new Date(Date.parse(meetingInput + ':00Z') + 3600000).toISOString().slice(0, 16)));
   await page.keyboard.press('ArrowRight');
   await expect(zones.getByRole('radio', { name: 'WIT UTC+09', exact: true })).toBeChecked();
-  await expect(page.getByLabel('Tanggal dan waktu pertemuan')).toHaveValue(new Date(Date.parse(meetingInput + ':00Z') + 2 * 3600000).toISOString().slice(0, 16));
-  await wib.check(); await expect(page.getByLabel('Tanggal dan waktu pertemuan')).toHaveValue(meetingInput);
+  await expect(page.getByLabel('Tanggal dan waktu pertemuan')).toHaveValue(pickerDisplay(new Date(Date.parse(meetingInput + ':00Z') + 2 * 3600000).toISOString().slice(0, 16)));
+  await wib.check(); await expect(page.getByLabel('Tanggal dan waktu pertemuan')).toHaveValue(pickerDisplay(meetingInput));
   await page.getByRole('button', { name: 'Kirim usulan', exact: true }).click(); expect(state.writes).toHaveLength(0);
   await expect(page.getByLabel('Lokasi pertemuan')).toBeFocused();
   await page.getByLabel('Lokasi pertemuan').fill('Lobi perpustakaan, pintu utama');
@@ -180,6 +218,17 @@ test('delivery proposal groups recipient details and validates before submitting
   await page.getByRole('button', { name: 'Kirim usulan', exact: true }).click(); await expect(page.getByRole('dialog')).toHaveCount(0);
   expect(state.writes[0].body.destination.recipientName).toBe('Bima'); expect(state.writes[0].body).not.toHaveProperty('location');
 });
+for (const allowed of ['MEETUP', 'DELIVERY']) {
+  test('listing snapshot keeps both methods visible and disables unsupported ' + allowed, async ({ page }) => {
+    await mock(page, { methods: [allowed] }); await page.goto('/app/transaksi/' + id(10));
+    await page.getByRole('button', { name: 'Atur serah terima', exact: true }).click();
+    const method = page.getByLabel('Metode serah terima'); await expect(method).toHaveText(allowed === 'MEETUP' ? 'Bertemu langsung' : 'Pengiriman'); await method.click();
+    await expect(page.getByRole('option', { name: allowed === 'MEETUP' ? 'Pengiriman' : 'Bertemu langsung', exact: true })).toBeDisabled();
+    await expect(page.getByRole('option', { name: allowed === 'MEETUP' ? 'Bertemu langsung' : 'Pengiriman', exact: true })).toBeEnabled();
+    await page.keyboard.press('Escape'); await expect(method).toHaveText(allowed === 'MEETUP' ? 'Bertemu langsung' : 'Pengiriman');
+  });
+}
+
 test('receiver approves delivery with own destination and compares existing plan', async ({ page }) => {
   const state = await mock(page, { actor: 3, agreed: plan(), pending: { ...plan('DELIVERY'), status: 'PENDING', privateDetails: { ...plan('DELIVERY').privateDetails, destinations: [] } } }); await page.goto(`/app/transaksi/${id(10)}`); await page.getByRole('button', { name: 'Tinjau usulan' }).click(); await expect(page.getByText('Bandingkan kesepakatan saat ini')).toBeVisible(); await page.getByLabel('Nama penerima', { exact: true }).fill('Bima'); await page.getByLabel('Nomor telepon penerima').fill('081234567890'); await page.getByLabel('Alamat lengkap').fill('Jalan Melati nomor 12, Kota Kediri'); await page.getByRole('button', { name: 'Setujui usulan', exact: true }).click(); await expect(page.getByRole('dialog')).toHaveCount(0); expect(state.writes[0].body.destination.recipientName).toBe('Bima'); await expect(page.getByText('Pengirim belum mencatat resi.')).toBeVisible();
 });
@@ -210,4 +259,93 @@ test('revision pagination failure retains private revisions and retries that pag
 });
 test('admin paging failure retains agreement and already loaded proposals', async ({ page }, info) => {
   const state = await mock(page, { admin: true, agreed: plan('DELIVERY'), adminPaging: true, adminPageFail: true, grantMs: 300000 }); await page.goto(`/app/admin/sengketa/${id(77)}`); await page.getByLabel('Alasan akses koordinasi').fill('Memeriksa riwayat koordinasi kasus.'); await page.getByRole('button', { name: 'Buka koordinasi dengan audit' }).click(); await page.getByRole('button', { name: 'Muat usulan sebelumnya' }).click(); await expect(page.getByText('Usulan sebelumnya belum dapat dimuat.')).toBeVisible(); await expect(page.getByText('Jalan Melati nomor 12, Kota Kediri').first()).toBeVisible(); await expect(page.locator('.handover-comparison')).toHaveCount(1); await capture(page, 'admin-pagination', info.project.name, page.locator('.handover-panel')); state.adminPageFail = false; await page.getByRole('button', { name: 'Coba muat usulan lagi' }).click(); await expect(page.locator('.handover-comparison')).toHaveCount(2);
+});
+
+const proposalMessage = () => ({ id: id(91), conversationId: id(88), senderId: id(2), body: 'Usulan serah terima baru.', clientMessageId: id(30), sequence: 1, attachments: [], sentAt: now(), handover: { transactionId: id(10), proposalId: id(30) } });
+async function openProposalChat(page) {
+  await page.getByRole('group', { name: 'Pilihan koordinasi serah terima' }).getByRole('link', { name: 'Langsung ke chat', exact: true }).click();
+  return page.locator('.chat-handover-card');
+}
+test('transaction layout puts coordination first and report stays separate from dispute', async ({ page }, info) => {
+  const state = await mock(page, { showConfirmations: true, reportFail: true }); await page.goto('/app/transaksi/' + id(10));
+  await expect(page.locator('.transaction-main > section').first()).toHaveAttribute('aria-label', 'Pembayaran QRIS demo');
+  await expect(page.getByRole('list', { name: 'Progres transaksi' })).toContainText('Disepakati');
+  await expect(page.getByRole('button', { name: 'Konfirmasi penyerahan', exact: true })).toBeVisible();
+  await fits(page); await capture(page, 'transaction-flow', info.project.name);
+  await page.getByRole('button', { name: 'Laporkan transaksi', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Laporkan transaksi', exact: true });
+  await expect(dialog).toContainText('tidak menahan penyelesaian transaksi');
+  await dialog.getByLabel('Isi laporan transaksi', { exact: true }).fill('Penjual tidak datang pada jadwal yang disepakati.');
+  await dialog.getByRole('button', { name: 'Kirim laporan transaksi', exact: true }).click();
+  await expect(dialog.getByText('Laporan belum tersimpan. Coba lagi.')).toBeVisible();
+  await expect(dialog.getByLabel('Isi laporan transaksi', { exact: true })).toHaveValue('Penjual tidak datang pada jadwal yang disepakati.');
+  state.reportFail = false;
+  await dialog.getByRole('button', { name: 'Kirim laporan transaksi', exact: true }).dblclick();
+  await expect(dialog).toContainText('Laporan terkirim untuk ditinjau admin.');
+  expect(state.reports).toHaveLength(2); expect(state.reports[1].targetType).toBe('TRANSACTION'); expect(state.writes).toHaveLength(0);
+  await capture(page, 'transaction-report', info.project.name);
+  await dialog.getByRole('button', { name: 'Tutup', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Laporkan transaksi', exact: true })).toBeFocused();
+});
+for (const method of ['MEETUP', 'DELIVERY']) {
+  test('recipient accepts ' + method + ' proposal within chat', async ({ page }, info) => {
+    const state = await mock(page, { actor: 3, pending: { ...plan(method), status: 'PENDING', privateDetails: { ...plan(method).privateDetails, destinations: [] } }, chatMessages: [proposalMessage()] });
+    await page.goto('/app/transaksi/' + id(10)); const card = await openProposalChat(page);
+    await expect(card.getByRole('button', { name: 'Terima usulan', exact: true })).toBeVisible();
+    await expect(card.getByRole('button', { name: 'Tarik usulan', exact: true })).toHaveCount(0);
+    await fits(page); await capture(page, 'chat-proposal-' + method.toLowerCase(), info.project.name);
+    await card.getByRole('button', { name: 'Terima usulan', exact: true }).click();
+    const dialog = page.getByRole('dialog', { name: 'Tinjau dan setujui usulan', exact: true });
+    if (method === 'DELIVERY') {
+      await dialog.getByLabel('Nama penerima', { exact: true }).fill('Bima'); await dialog.getByLabel('Nomor telepon penerima', { exact: true }).fill('081234567890'); await dialog.getByLabel('Alamat lengkap', { exact: true }).fill('Jalan Melati nomor 12, Kota Kediri');
+    }
+    await capture(page, 'chat-response-' + method.toLowerCase(), info.project.name);
+    await dialog.getByRole('button', { name: 'Setujui usulan', exact: true }).dblclick();
+    await expect(dialog).not.toBeVisible(); await expect(page.getByRole('dialog', { name: 'Pesan', exact: true })).toBeVisible();
+    await expect(card.getByRole('status').filter({ hasText: 'Disepakati' })).toBeVisible();
+    await expect(card.getByRole('button', { name: 'Terima usulan', exact: true })).toHaveCount(0);
+    expect(state.writes).toHaveLength(1); expect(state.writes[0].body.accept).toBe(true); expect(state.writes[0].key).toBeTruthy();
+    if (method === 'DELIVERY') expect(state.writes[0].body.destination.address).toContain('Jalan Melati');
+    await fits(page); await page.goto('/pesan/' + id(88));
+    await expect(page.locator('.chat-handover-card')).toContainText('Disepakati');
+  });
+}
+test('rejection in chat keeps prior agreement and disables historical card', async ({ page }) => {
+  const prior = { ...plan(), id: id(31), privateDetails: { ...plan().privateDetails, location: 'Jadwal semula' } };
+  const state = await mock(page, { actor: 3, agreed: prior, pending: { ...plan(), status: 'PENDING' }, chatMessages: [proposalMessage()] });
+  await page.goto('/app/transaksi/' + id(10)); const card = await openProposalChat(page);
+  await card.getByRole('button', { name: 'Tolak usulan', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Tolak usulan', exact: true });
+  await dialog.getByLabel('Alasan penolakan', { exact: true }).fill('Waktu baru belum cocok untuk saya.');
+  await dialog.getByRole('button', { name: 'Tolak usulan', exact: true }).click();
+  await expect(dialog).not.toBeVisible(); await expect(card).toContainText('Ditolak'); await expect(card).toContainText('Waktu baru belum cocok untuk saya.');
+  await expect(card.getByRole('button', { name: 'Terima usulan', exact: true })).toHaveCount(0); expect(state.agreed.id).toBe(id(31));
+});
+test('proposer cannot accept own chat proposal and child Escape keeps chat open', async ({ page }) => {
+  await mock(page, { pending: { ...plan(), status: 'PENDING' }, chatMessages: [proposalMessage()] });
+  await page.goto('/app/transaksi/' + id(10)); const card = await openProposalChat(page);
+  await expect(card.getByRole('button', { name: 'Terima usulan', exact: true })).toHaveCount(0);
+  await card.getByRole('button', { name: 'Tarik usulan', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Tarik usulan', exact: true }); await expect(dialog).toBeVisible();
+  await page.keyboard.press('Escape'); await expect(dialog).not.toBeVisible(); await expect(page.getByRole('dialog', { name: 'Pesan', exact: true })).toBeVisible();
+  await expect(card.getByRole('button', { name: 'Tarik usulan', exact: true })).toBeFocused();
+});
+test('old chat proposal reflects remote rejection and removes private data after access fails', async ({ page }) => {
+  await page.clock.install(); const state = await mock(page, { actor: 3, pending: { ...plan(), status: 'PENDING' }, chatMessages: [proposalMessage()] });
+  await page.goto('/app/transaksi/' + id(10)); const card = await openProposalChat(page);
+  await expect(card.getByRole('button', { name: 'Terima usulan', exact: true })).toBeVisible();
+  state.proposalHistory = { ...state.pending, status: 'REJECTED' }; state.pending = null; state.version++;
+  await page.clock.fastForward(16000); await expect(card).toContainText('Ditolak'); await expect(card.getByRole('button', { name: 'Terima usulan', exact: true })).toHaveCount(0);
+  state.privateDenied = true; await page.clock.fastForward(16000); await expect(card).toContainText('Detail usulan belum dapat dibuka.');
+  await expect(card).not.toContainText('Perpustakaan Kota Kediri');
+});
+
+
+test('unsupported legacy pending method can be rejected but cannot be approved', async ({ page }) => {
+  await mock(page, { actor: 3, methods: ['MEETUP'], pending: { ...plan('DELIVERY'), status: 'PENDING' } });
+  await page.goto('/app/transaksi/' + id(10)); await page.getByRole('button', { name: 'Tinjau usulan', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Tinjau dan setujui usulan', exact: true });
+  await expect(dialog.getByRole('button', { name: 'Setujui usulan', exact: true })).toBeDisabled();
+  await expect(dialog).toContainText('Metode usulan ini tidak didukung Listing.');
+  await page.keyboard.press('Escape'); await expect(page.getByRole('button', { name: 'Tolak usulan', exact: true })).toBeEnabled();
 });

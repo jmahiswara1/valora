@@ -1,8 +1,9 @@
-import { confirmationSchema, cashConfirmationSchema, cancellationSchema, cancellationResponseSchema } from '@valora/contracts';
+import { confirmationSchema, cashConfirmationSchema, cancellationSchema, cancellationResponseSchema, demoPaymentSchema } from '@valora/contracts';
 import { obj, uuid, num, str, nil, arr, ref, date } from './helpers.js';
 import type { Route } from './types.js';
 
 export const transactionsInputs = {
+DemoPaymentInput: demoPaymentSchema,
 CashConfirmationInput: cashConfirmationSchema,
 ConfirmationInput: confirmationSchema,
 CancellationInput: cancellationSchema,
@@ -10,6 +11,7 @@ CancellationResponseInput: cancellationResponseSchema
 };
 
 export const transactionsOutputs = {
+DemoPayment: obj({ transactionId: uuid, mode: { type: 'string', enum: ['DEMO'] }, method: { type: 'string', enum: ['QRIS'] }, status: { type: 'string', enum: ['NOT_REQUIRED', 'UNPAID', 'PAID'] }, amountIdr: num, payerId: nil(uuid), receiverId: nil(uuid), paidAt: nil(date), reference: nil(uuid), version: num, canSimulate: { type: 'boolean' }, reason: nil(str) }),
 CashConfirmation: obj({ id: uuid, actorId: uuid, kind: { type: 'string', enum: ['SENT', 'RECEIVED'] }, confirmedAt: date, source: { type: 'string', enum: ['USER_REPORTED'] } }),
 TransactionItemSnapshot: obj({ id: uuid, itemRevision: num, assessmentId: uuid, title: str, description: str, conditionSummary: nil(str), categoryCode: str, subcategoryCode: nil(str), estimatedWeightGrams: nil(num), mediaIds: arr(uuid), fromUserId: uuid, toUserId: uuid }),
 TransactionSnapshot: obj({ listingRevisionId: uuid, offerRevisionId: uuid, items: arr(ref('TransactionItemSnapshot')), parties: arr(obj({ id: uuid, displayName: str })), handoverMethods: arr(str), cashAdjustment: nil(ref('CashAdjustment')) }),
@@ -22,6 +24,8 @@ Notification: obj({ id: uuid, userId: uuid, eventKey: str, type: str, payload: o
 };
 
 export const transactionsRoutes: Route[] = [
+{ order: 21.1, method: 'get', path: '/transactions/{id}/demo-payment', output: ref('DemoPayment'), auth: true },
+{ order: 21.2, method: 'post', path: '/transactions/{id}/demo-payment/confirm', input: 'DemoPaymentInput', output: ref('DemoPayment'), auth: true, idempotent: true },
 { order: 21, method: 'post', path: '/transactions/{id}/cash-confirmations', input: 'CashConfirmationInput', output: ref('Transaction'), auth: true, idempotent: true },
 { order: 0, method: 'post', path: '/admin/transactions/{id}/open-case', input: 'CancellationInput', output: obj({ caseId: uuid }), auth: true, idempotent: true },
 { order: 1, method: 'post', path: '/offers/{id}/accept', input: 'OfferAcceptInput', output: ref('Transaction'), auth: true, idempotent: true },

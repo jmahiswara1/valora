@@ -1043,6 +1043,14 @@ Dalam forced colors, kategori terpilih mendapat penanda Highlight dan kartu mema
 
 ## Do's and Don'ts
 
+### Penawaran pengguna
+
+Daftar `/app/penawaran` memakai baris datar dan tombol navigasi eksplisit.
+Tinjau penawaran membuka detail sebelum pengguna menerima, mengajukan tawaran
+balik, atau menolak. Penawaran diterima mengutamakan Buka transaksi; status
+tetap berupa informasi dan tenggat lama tidak ditampilkan sebagai tugas aktif.
+Spesifikasi: [brief Penawaran](.impeccable/briefs/offers.md).
+
 ### Do:
 
 - Do gunakan token frontmatter sebagai sumber nilai dan periksa lingkup PublicShell, AuthShell, AccountShell, serta SiteHeader bersama sebelum menerapkan pola baru.
@@ -1093,7 +1101,7 @@ saat disimpan, tanggal, status, dan kontrol hapus; tidak membawa foto/detail
 lama. Loading, empty, retry, pagination, respons terputus, dan fokus setelah
 penghapusan mengikuti [brief Favorit](.impeccable/briefs/favorites.md).
 
-Ikon hati tampil di navbar publik termasuk mobile. Navbar tetap sticky tanpa
+Ikon hati tampil di navbar publik termasuk mobile setelah login. Navbar tetap sticky tanpa
 shadow/border luar; notifikasi/cart mobile tetap tersembunyi. Sidebar/drawer
 dan toolbar akun menyediakan akses Favorit; label Market pada toolbar ponsel
 menjadi ikon Store untuk menjaga kontrol 44px pada lebar 320px.

@@ -8,7 +8,8 @@ Market/home/related cards, and listing detail.
 Use a separate sibling button and link inside each market card. Heart controls
 have a 44px target and 36px visual surface. Filled green means server-confirmed
 membership. Pending/unknown/error states do not claim the item is unsaved.
-Guest login returns to detail without automatically saving through a URL.
+Favorite controls on cards, detail pages, and navigation render only for
+authenticated sessions. Guests make no private Favorite requests.
 
 The account list at /app/favorit uses four columns from 1024px and two below,
 retaining compact mobile cards. Reuse photos/current public projection for active

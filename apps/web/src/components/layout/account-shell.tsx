@@ -1,13 +1,13 @@
 'use client';
 
 import { HeaderAccountActions } from './header-account-actions';
-import { Search, BookOpen, LayoutDashboard, Bell, Heart, Package, Leaf, Store, Handshake, ReceiptText, Menu, X, Settings, ShieldCheck, LogOut, ChevronRight, ArrowUpRight } from 'lucide-react';
+import { Search, BookOpen, LayoutDashboard, Bell, Heart, Package, Leaf, Store, Handshake, ReceiptText, Menu, X, ShieldCheck, LogOut, ChevronRight, ArrowUpRight } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useSession, useMe } from '@/lib/session';
 import { useState, useRef, useEffect } from 'react';
 import { Notice, Button } from "../ui/primitives";
-import { ProfileAvatar } from '../../features/profile/avatar';
+import { ProfileAvatar } from '@/features/profile/avatar';
 
 const sections = [
   { label: 'Ruang saya', entries: [
@@ -35,7 +35,7 @@ function accountRoute(pathname: string) {
   const parts = pathname.split('/').filter(Boolean);
   const correction = pathname === '/app/koreksi' || pathname.startsWith('/app/koreksi/');
   const entry = navigationEntries.find((row) => row.href !== '/app' && (correction ? row.href === '/app/transaksi' : pathname === row.href || pathname.startsWith(row.href + '/')));
-  const leaf = correction ? 'Peninjauan koreksi' : parts.at(-2) === 'penilaian' && parts.at(-1) === 'baru' ? 'Penilaian baru' : routeNames[parts.at(-1) ?? ''] ?? (parts.length > 2 ? 'Detail' : '');
+  const leaf = correction ? 'Peninjauan koreksi' : parts[1] === 'listings' && parts.at(-1) === 'edit' ? 'Edit Listing' : parts.at(-2) === 'penilaian' && parts.at(-1) === 'baru' ? 'Penilaian baru' : routeNames[parts.at(-1) ?? ''] ?? (parts.length > 2 ? 'Detail' : '');
   return { entry, leaf, nested: entry && pathname !== entry.href };
 }
 
@@ -48,8 +48,25 @@ function AccountNavigation({ onNavigate }: { onNavigate?: () => void }) {
   </div>)}</nav>;
 }
 
-function AccountDrawer({ onOpen }: { onOpen: () => void }) {
+function AccountFooter({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname(); const session = useSession(); const me = useMe();
+  if (!me.data) return null;
+  const user = me.data;
+  return <div className="account-sidebar-bottom">
+    <Link href="/app/profil" className="account-profile-link account-sidebar-person" aria-label="Profil saya" aria-current={pathname === '/app/profil' ? 'page' : undefined} onClick={onNavigate}>
+      <ProfileAvatar photoUrl={user.profilePhotoUrl} displayName={user.displayName} className="account-avatar" />
+      <div><strong title={user.displayName}>{user.displayName}</strong><span title={user.city.name}>{user.city.name}</span></div>
+      <ChevronRight size={16} strokeWidth={1.7} aria-hidden="true" />
+    </Link>
+    {user.role === 'ADMIN' && <Link href="/app/admin" className="account-profile-link" onClick={onNavigate}><ShieldCheck size={18} aria-hidden="true" />Area admin</Link>}
+    <button type="button" className="account-profile-link" disabled={session.logoutBusy} onClick={() => { onNavigate?.(); void session.logout(); }}>
+      <LogOut size={19} strokeWidth={1.7} aria-hidden="true" /><span>Keluar</span>
+    </button>
+  </div>;
+}
+
+function AccountDrawer({ onOpen }: { onOpen: () => void }) {
+  const pathname = usePathname();
   const [openPath, setOpenPath] = useState<string | null>(null);
   const dialog = useRef<HTMLDialogElement>(null); const trigger = useRef<HTMLButtonElement>(null);
   const open = openPath === pathname;
@@ -63,7 +80,7 @@ function AccountDrawer({ onOpen }: { onOpen: () => void }) {
     <dialog ref={dialog} id="account-drawer" className="account-drawer" aria-labelledby="account-drawer-title" onCancel={(event) => { event.preventDefault(); setOpenPath(null); }} onClick={(event) => { if (event.target === event.currentTarget) { const bounds = event.currentTarget.getBoundingClientRect(); if (event.clientX > bounds.right || event.clientY > bounds.bottom || event.clientY < bounds.top) setOpenPath(null); } }}>
       <div className="account-drawer-top"><Link href="/app" className="wordmark" id="account-drawer-title" onClick={() => setOpenPath(null)}>valora</Link><button type="button" className="account-icon-button" aria-label="Tutup navigasi" onClick={() => setOpenPath(null)}><X size={21} /></button></div>
       <AccountNavigation onNavigate={() => setOpenPath(null)} /><Link href="/market" className="account-profile-link account-drawer-market" onClick={() => setOpenPath(null)}><Store size={19} aria-hidden="true" />Jelajahi Market</Link>
-      <div className="account-sidebar-bottom"><Link href="/app/profil" className="account-profile-link" onClick={() => setOpenPath(null)}><Settings size={19} />Profil saya</Link>{me.data?.role === 'ADMIN' && <Link href="/app/admin" className="account-profile-link"><ShieldCheck size={19} />Area admin</Link>}<button type="button" className="account-profile-link" onClick={() => session.logout()}><LogOut size={19} />Keluar</button></div>
+      <AccountFooter onNavigate={() => setOpenPath(null)} />
     </dialog>
   </>;
 }
@@ -85,11 +102,7 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
   const personalWorkspace = pathname === '/app' || sections[0].entries.some(({ href }) => href !== '/app' && (pathname === href || pathname.startsWith(href + '/')));
   return <div className="account-shell">
     <a className="account-skip" href="#account-main">Langsung ke konten</a>
-    <aside className="account-sidebar"><Link href="/" className="wordmark">valora</Link><AccountNavigation /><div className="account-sidebar-bottom">
-      <Link href="/app/profil" className="account-sidebar-person" aria-current={pathname === '/app/profil' ? 'page' : undefined}><ProfileAvatar photoUrl={user.profilePhotoUrl} displayName={user.displayName} className="account-avatar" /><div><strong>{user.displayName}</strong><span>{user.city.name}</span></div><Settings size={17} aria-hidden="true" /></Link>
-      {user.role === 'ADMIN' && <Link href="/app/admin" className="account-profile-link"><ShieldCheck size={18} />Area admin</Link>}
-      <button type="button" className="account-profile-link" onClick={() => session.logout()}><LogOut size={18} />Keluar</button>
-    </div></aside>
+    <aside className="account-sidebar"><Link href="/" className="wordmark">valora</Link><AccountNavigation /><AccountFooter /></aside>
     <div className="account-workspace"><header className="account-toolbar"><div className="account-toolbar-start"><AccountDrawer onOpen={() => setAccountMenuOpen(false)} /><Breadcrumbs /><Link href="/app" className="wordmark account-mobile-wordmark">valora</Link></div><div className="account-toolbar-end"><Link href="/market" className="account-market-link" aria-label="Market" title="Market" onClick={() => setAccountMenuOpen(false)}><span>Market</span> <ArrowUpRight className="account-market-arrow" size={16} aria-hidden="true" /><Store className="account-market-icon" size={19} aria-hidden="true" /></Link><HeaderAccountActions context="account" open={accountMenuOpen} onOpenChange={setAccountMenuOpen} /></div></header>
       <main id="account-main" className="account-main" data-workspace={personalWorkspace ? 'personal' : undefined} tabIndex={-1}>{!user.emailVerifiedAt && <div className="account-verification"><Notice>Alamat email belum diverifikasi. <Link href={`/verifikasi-email?email=${encodeURIComponent(user.email)}`}>Kirim ulang tautan</Link>. Kamu tetap bisa menyimpan barang.</Notice></div>}{children}</main>
     </div>

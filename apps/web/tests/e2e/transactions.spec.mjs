@@ -48,7 +48,8 @@ test('Exchange, pemulihan jaringan, bukti privat dan putusan admin', async ({ br
   for (const page of [sellerPage, buyerPage, adminPage]) page.on('pageerror', (e) => errors.push(e.message));
   try {
     await sellerPage.goto('/app/penawaran');
-    const card = sellerPage.locator('.offer-card').filter({ hasText: exchange.item.title });
+    await sellerPage.locator('.offer-list-row').filter({ hasText: exchange.item.title }).getByRole('link', { name: 'Tinjau penawaran' }).click();
+    const card = sellerPage.locator('.offer-card');
     await card.getByRole('button', { name: 'Terima penawaran', exact: true }).click();
     await approveDialog(sellerPage, 'Terima dan reservasi barang');
     await sellerPage.waitForURL(/\/app\/transaksi\/[^/]+$/);
@@ -129,4 +130,58 @@ test('Exchange, pemulihan jaringan, bukti privat dan putusan admin', async ({ br
     await fit(buyerPage);
     expect(errors).toEqual([]);
   } finally { await Promise.all(contexts.map((c) => c.close())); }
+});
+
+
+test('Usulan muncul di chat, disetujui pihak lain, dan laporan terpisah dari sengketa', async ({ browser }, testInfo) => {
+  const owner = await login('owner.demo@valora.local'), buyer = await login('member.demo@valora.local'), admin = await login('admin.demo@valora.local');
+  const profile = check(await owner.request('/me'), 200, 'Profil pemilik');
+  const label = 'Koordinasi chat ' + testInfo.project.name + ' ' + randomUUID().slice(0, 8);
+  const fixture = await createItem(owner, 'electronics', label);
+  const listing = await approve(admin, await createListing(owner, fixture.item, fixture.assessment, profile.city.id, 'RESELL', label));
+  const offer = check(await mutate(buyer, '/listings/' + listing.id + '/offers', { clientRequestId: randomUUID(), expectedListingVersion: listing.version, listingRevisionId: listing.revision.id, priceIdr: 300000 }), 201, 'Penawaran koordinasi');
+  const transaction = check(await mutate(owner, '/offers/' + offer.id + '/accept', { expectedVersion: offer.version, offerRevisionId: offer.currentRevision.id, listingRevisionId: offer.listingRevisionId }), 201, 'Kesepakatan koordinasi');
+  const contexts = await Promise.all([owner, buyer].map(async account => {
+    const context = await browser.newContext({ viewport: testInfo.project.use.viewport, baseURL: 'http://127.0.0.1:3002' });
+    await context.addCookies(account.cookieHeader().split('; ').map(cookie => {
+      const split = cookie.indexOf('=');
+      return { name: cookie.slice(0, split), value: cookie.slice(split + 1), url: 'http://127.0.0.1:3002', sameSite: 'Lax' };
+    }));
+    return context;
+  }));
+  const [sellerPage, buyerPage] = await Promise.all(contexts.map(context => context.newPage()));
+  const errors = []; for (const page of [sellerPage, buyerPage]) page.on('pageerror', error => errors.push(error.message));
+  try {
+    await Promise.all([sellerPage.goto('/app/transaksi/' + transaction.id), buyerPage.goto('/pesan/' + transaction.conversationId)]);
+    await expect(buyerPage.getByRole('heading', { name: label, exact: true })).toBeVisible();
+    await sellerPage.getByRole('button', { name: 'Atur serah terima', exact: true }).click();
+    const proposalDialog = sellerPage.getByRole('dialog', { name: 'Atur serah terima', exact: true });
+    await proposalDialog.getByLabel('Tanggal dan waktu pertemuan', { exact: true }).fill(new Date(Date.now() + 2 * 86400000).toISOString().slice(0, 16));
+    await proposalDialog.getByLabel('Lokasi pertemuan', { exact: true }).fill('Lobi perpustakaan untuk koordinasi chat.');
+    await proposalDialog.getByRole('button', { name: 'Kirim usulan', exact: true }).click();
+    await expect(proposalDialog).not.toBeVisible();
+    const buyerCard = buyerPage.locator('.chat-handover-card');
+    await expect(buyerCard).toContainText('Lobi perpustakaan untuk koordinasi chat.');
+    await buyerCard.getByRole('button', { name: 'Terima usulan', exact: true }).click();
+    const responseDialog = buyerPage.getByRole('dialog', { name: 'Tinjau dan setujui usulan', exact: true });
+    await responseDialog.getByRole('button', { name: 'Setujui usulan', exact: true }).click();
+    await expect(responseDialog).not.toBeVisible(); await expect(buyerCard).toContainText('Disepakati');
+    await expect(sellerPage.getByRole('heading', { name: 'Kesepakatan saat ini', exact: true })).toBeVisible();
+    await sellerPage.getByRole('group', { name: 'Pilihan koordinasi serah terima', exact: true }).getByRole('link', { name: 'Langsung ke chat', exact: true }).click();
+    const sellerCard = sellerPage.locator('.chat-handover-card'); await expect(sellerCard).toContainText('Disepakati');
+    await expect(sellerCard.getByRole('button', { name: 'Terima usulan', exact: true })).toHaveCount(0);
+    await sellerPage.getByRole('button', { name: 'Tutup chat', exact: true }).click();
+    const before = check(await buyer.request('/transactions/' + transaction.id), 200, 'Status sebelum laporan');
+    await sellerPage.getByRole('button', { name: 'Laporkan transaksi', exact: true }).click();
+    const reportDialog = sellerPage.getByRole('dialog', { name: 'Laporkan transaksi', exact: true });
+    await reportDialog.getByLabel('Isi laporan transaksi', { exact: true }).fill('Laporan pengujian untuk ditinjau admin tanpa membuka sengketa.');
+    await reportDialog.getByRole('button', { name: 'Kirim laporan transaksi', exact: true }).click();
+    await expect(reportDialog).toContainText('Laporan terkirim untuk ditinjau admin.');
+    const after = check(await buyer.request('/transactions/' + transaction.id), 200, 'Status setelah laporan');
+    expect(after.status).toBe(before.status); expect(after.version).toBe(before.version); expect(after.disputes).toHaveLength(0);
+    const history = check(await buyer.request('/conversations/' + transaction.conversationId + '/messages'), 200, 'Histori kartu');
+    expect(history.filter(message => message.handover?.transactionId === transaction.id)).toHaveLength(1);
+    expect(history[0].body).not.toContain('Lobi perpustakaan');
+    expect(errors).toEqual([]); await fit(sellerPage); await fit(buyerPage);
+  } finally { await Promise.all(contexts.map(context => context.close())); }
 });

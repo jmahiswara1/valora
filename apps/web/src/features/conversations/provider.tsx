@@ -8,7 +8,6 @@ import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { useSession } from '@/lib/session';
 import { ChatContext } from './context';
-import { ChatTrigger } from './trigger';
 import { ConversationsPage } from './list';
 import { ConversationThread } from './thread';
 import { ChatVerificationNotice } from './verification';
@@ -29,7 +28,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     setSelectedId(id); setOpenedAt(pathname);
   }, [authenticated, isChatPage, pathname, router]);
   const value = useMemo(() => ({ open, close, isOpen, count }), [open, close, isOpen, count]);
-  return <ChatContext.Provider value={value}>{children}<ChatTrigger floating />{isOpen && <ChatModal key={pathname} selectedId={selectedId} onSelect={setSelectedId} onClose={close} />}</ChatContext.Provider>;
+  return <ChatContext.Provider value={value}>{children}{isOpen && <ChatModal key={pathname} selectedId={selectedId} onSelect={setSelectedId} onClose={close} />}</ChatContext.Provider>;
 }
 
 function ChatModal({ selectedId, onSelect, onClose }: { selectedId?: string; onSelect: (id?: string) => void; onClose: () => void }) {

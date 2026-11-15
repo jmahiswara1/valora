@@ -2,6 +2,11 @@
 .account-main .handover-panel { display: grid; gap: 18px; }
 .handover-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
 .handover-heading > h2, .handover-heading > h3 { margin: 0; }
+.account-main .handover-panel .handover-heading h2 { margin: 0; }
+.account-main .handover-panel > .handover-next-step { max-width: 72ch; margin: 0; font-size: .875rem; line-height: 1.75; }
+.handover-coordination-option:first-child:not(:only-child) { border-color: var(--forest); background: var(--forest); color: white; }
+.handover-coordination-option:first-child:not(:only-child) .handover-option-copy > span { color: #E2E8DF; }
+.handover-coordination-option:first-child:not(:only-child):where(:hover, :focus-visible):not(:disabled) { background: var(--green); }
 .handover-coordination-options { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
 .handover-coordination-option { display: grid; grid-template-columns: 21px minmax(0, 1fr) 18px; align-items: start; gap: 12px; min-height: 88px; min-width: 0; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: white; color: var(--forest); font: inherit; text-align: left; text-decoration: none; }
 .handover-coordination-option > svg { margin-top: 2px; flex-shrink: 0; }
@@ -31,12 +36,16 @@
 .handover-comparison summary { min-height: 44px; display: list-item; cursor: pointer; padding-block: 12px; font-size: .875rem; font-weight: 600; }
 .handover-comparison .handover-details { padding: 12px 0; }
 .handover-history-row { padding-block: 12px; border-bottom: 1px solid #E2E8DF; }
-.account-main .transaction-dialog.handover-dialog { width: min(600px, calc(100dvw - 32px)); max-height: calc(100dvh - 32px); padding: 0; overflow: hidden; }
+.transaction-dialog.handover-dialog { width: min(600px, calc(100dvw - 32px)); max-height: calc(100dvh - 32px); padding: 0; overflow: hidden; border: 1px solid #E2E8DF; border-radius: 16px; background: #fff; color: var(--forest); }
+.handover-dialog::backdrop { background: rgb(15 34 22 / 40%); }
+.handover-dialog :focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+.account-main .transaction-dialog.handover-dialog { padding: 0; width: min(600px, calc(100dvw - 32px)); }
+.handover-dialog.handover-dialog .handover-dialog-header h2 { font-size: 1.125rem; line-height: 1.5; }
 .handover-dialog[open] { display: flex; flex-direction: column; }
 .handover-dialog-header { flex-shrink: 0; display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding: 24px 28px; border-bottom: 1px solid #E2E8DF; }
 .handover-dialog-header > div { min-width: 0; }
-.account-main .handover-dialog .handover-dialog-header h2 { margin: 0; }
-.account-main .handover-dialog .handover-dialog-header p { max-width: 72ch; margin: 8px 0 0; color: var(--muted); font-size: .8125rem; line-height: 1.65; }
+.handover-dialog .handover-dialog-header h2 { margin: 0; }
+.handover-dialog .handover-dialog-header p { max-width: 72ch; margin: 8px 0 0; color: var(--muted); font-size: .8125rem; line-height: 1.65; }
 .handover-dialog-close { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin: -8px -8px 0 0; border: 0; border-radius: 50%; color: var(--forest); background: transparent; }
 .handover-dialog-close:hover { background: #EDF1EA; }
 .handover-dialog-form { display: flex; flex: 1; flex-direction: column; min-height: 0; }
@@ -46,7 +55,8 @@
 .handover-dialog-actions .button { min-height: 44px; }
 .handover-feedback { display: grid; gap: 14px; }
 .handover-feedback:has(> .notice, > button, > [role="status"]:not(:empty)) { margin-top: 20px; }
-.account-main .transaction-dialog.handover-proposal-dialog { width: min(1040px, calc(100dvw - 48px)); height: min(720px, calc(100dvh - 48px)); max-height: calc(100dvh - 48px); }
+.transaction-dialog.handover-proposal-dialog { width: min(1040px, calc(100dvw - 48px)); height: min(720px, calc(100dvh - 48px)); max-height: calc(100dvh - 48px); }
+.account-main .transaction-dialog.handover-proposal-dialog { width: min(1040px, calc(100dvw - 48px)); }
 .handover-proposal-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; }
 .handover-form-section { display: grid; align-content: start; gap: 20px; min-width: 0; }
 .handover-form-section + .handover-form-section { padding-top: 24px; border-top: 1px solid #E2E8DF; }
@@ -69,8 +79,8 @@
 .handover-zone-choice > input:focus-visible + .handover-zone-label { outline: 2px solid var(--green); outline-offset: 3px; }
 .handover-zone-choice > input:disabled { cursor: not-allowed; }
 .handover-zone-choice > input:disabled + .handover-zone-label { opacity: .55; }
-.account-main .handover-dialog .textarea { min-height: 100px; }
-.account-main .handover-dialog input[type="datetime-local"] { min-width: 0; max-width: 100%; }
+.handover-dialog .textarea { min-height: 100px; }
+.handover-dialog input[type="datetime-local"] { min-width: 0; max-width: 100%; }
 .handover-delivery-hint { color: var(--muted); font-size: .875rem; line-height: 1.7; }
 .handover-agreement-note { display: flex; align-items: flex-start; gap: 10px; padding-top: 20px; border-top: 1px solid #E2E8DF; color: var(--muted); font-size: .8125rem; line-height: 1.7; }
 .handover-agreement-note svg { flex-shrink: 0; margin-top: 2px; }
@@ -79,7 +89,8 @@
   .handover-form-section + .handover-form-section { padding: 0 0 0 32px; border-top: 0; border-left: 1px solid #E2E8DF; }
 }
 @media (orientation: portrait) {
-  .account-main .transaction-dialog.handover-proposal-dialog { width: min(600px, calc(100dvw - 32px)); height: min(900px, calc(100dvh - 32px)); max-height: calc(100dvh - 32px); }
+  .transaction-dialog.handover-proposal-dialog { width: min(600px, calc(100dvw - 32px)); height: min(900px, calc(100dvh - 32px)); max-height: calc(100dvh - 32px); }
+  .account-main .transaction-dialog.handover-proposal-dialog { width: min(600px, calc(100dvw - 32px)); }
 }
 @media (max-width: 600px) {
   .handover-heading { align-items: flex-start; }

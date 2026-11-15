@@ -17,6 +17,8 @@ import "../styles/searches.css";
 import "../styles/reviews.css";
 import "../styles/chat.css";
 import "../styles/handover.css";
+import "../styles/date-time-picker.css";
+import "../styles/payments.css";
 import { Providers } from '@/components/layout/providers';
 
 export const metadata: Metadata = {

@@ -488,6 +488,7 @@ model Listing {
   version           Int               @default(1)
   publishedAt       DateTime?
   firstPublishedAt  DateTime?
+  deletedAt         DateTime?
   searchPublication SearchPublication?
   closedAt          DateTime?
   createdAt         DateTime          @default(now())
@@ -693,9 +694,22 @@ model Transaction {
   disputes DisputeCase[]
   transfers OwnershipTransfer[]
   corrections CorrectionCase[]
+  demoPayment DemoPayment?
   @@index([sellerOrDonorId, acceptedAt, id])
   @@index([buyerOrRecipientId, acceptedAt, id])
   @@index([status, targetHandoverAt])
+}
+
+model DemoPayment {
+  id String @id @default(uuid()) @db.Uuid
+  transactionId String @unique @db.Uuid
+  transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Restrict)
+  payerId String @db.Uuid
+  receiverId String @db.Uuid
+  amountIdr BigInt
+  method String @default("QRIS") @db.VarChar(12)
+  mode String @default("DEMO") @db.VarChar(12)
+  paidAt DateTime @default(now())
 }
 
 model HandoverConfirmation {
@@ -936,6 +950,8 @@ model Message {
   reports         Report[]
   requestHash String? @db.VarChar(64)
   attachments MessageAttachment[]
+  handoverProposalId String? @unique @db.Uuid
+  handoverProposal HandoverProposal? @relation(fields: [handoverProposalId], references: [id], onDelete: Restrict)
 
   @@unique([conversationId, senderId, clientMessageId])
   @@unique([conversationId, sequence])
@@ -1240,6 +1256,7 @@ model HandoverProposal {
   respondedById String? @db.Uuid
   purgedAt DateTime?
   shipments ShipmentRecord[]
+  message Message?
   @@index([transactionId, createdAt, id])
   @@index([status, plannedAt])
 }

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useRef, useState, type FormEvent } from 'react';
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import type {
   AssessmentDto,
@@ -17,6 +17,7 @@ import { useMe } from '@/lib/session';
 import { CityPicker } from '@/components/ui/city-picker';
 import { Button, Field, Input, Notice } from '@/components/ui/primitives';
 import { Select } from '@/components/ui/select';
+import { PrivatePhoto } from '../items/photo';
 
 type ListingType = 'RESELL' | 'DONATE' | 'EXCHANGE';
 type HandoverMethod = 'MEETUP' | 'DELIVERY';
@@ -188,26 +189,31 @@ interface OfferFormProps {
   setType: (value: ListingType) => void;
   initialCity: City;
   refreshItem: () => void;
+  listing?: ListingDto;
 }
 
-function OfferForm({
+export function OfferForm({
   item,
   type,
   setType,
   initialCity,
   refreshItem,
+  listing,
 }: OfferFormProps) {
   const router = useRouter();
+  const cache = useQueryClient(); const revision = listing?.currentRevision;
+  const [editVersion] = useState(listing?.version);
   const locked = useRef(false);
 
-  const [title, setTitle] = useState(item.title);
-  const [description, setDescription] = useState(item.description);
-  const [condition, setCondition] = useState(item.conditionSummary ?? '');
-  const [price, setPrice] = useState('');
-  const [recipientNote, setRecipientNote] = useState('');
-  const [exchangePreference, setExchangePreference] = useState('');
-  const [cityId, setCityId] = useState(initialCity.id);
-  const [methods, setMethods] = useState<HandoverMethod[]>(['MEETUP']);
+  const [title, setTitle] = useState(revision?.title ?? item.title);
+  const [description, setDescription] = useState(revision?.description ?? item.description);
+  const [condition, setCondition] = useState(revision?.conditionDisclosure ?? item.conditionSummary ?? '');
+  const [price, setPrice] = useState(revision?.askingPriceIdr?.toString() ?? '');
+  const [recipientNote, setRecipientNote] = useState(revision?.recipientNote ?? '');
+  const [exchangePreference, setExchangePreference] = useState(revision?.exchangePreference ?? '');
+  const [cityId, setCityId] = useState(revision?.city.id ?? initialCity.id);
+  const [methods, setMethods] = useState<HandoverMethod[]>(revision?.handoverMethods ?? ['MEETUP']);
+  const [mediaIds, setMediaIds] = useState<string[]>(revision ? revision.media.filter(photo => item.media.some(current => current.id === photo.id)).map(photo => photo.id) : item.media.map(photo => photo.id));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [savedDraft, setSavedDraft] = useState('');
@@ -253,8 +259,8 @@ function OfferForm({
       return;
     }
 
-    if (!cityId || methods.length === 0) {
-      setError('Pilih kota dari daftar dan minimal satu cara serah terima.');
+    if (!cityId || methods.length === 0 || mediaIds.length === 0) {
+      setError('Pilih kota dari daftar, minimal satu foto, dan satu cara serah terima.');
       return;
     }
 
@@ -264,7 +270,7 @@ function OfferForm({
       title: title.trim(),
       description: description.trim(),
       conditionDisclosure: condition.trim(),
-      mediaIds: item.media.map(photo => photo.id),
+      mediaIds,
       cityId,
       handoverMethods: methods,
     };
@@ -283,6 +289,11 @@ function OfferForm({
     setSaving(true);
 
     try {
+      if (listing) {
+        await api<ListingDto>(`/listings/${listing.id}`, { method: 'PATCH', body: { ...body, expectedVersion: editVersion, copyOnlyCorrection: false } });
+        await cache.invalidateQueries({ queryKey: ['listings'] });
+        router.push(`/app/listings/${listing.id}`); return;
+      }
       const draft = await api<ListingDto>(`/items/${item.id}/listings`, {
         method: 'POST',
         body,
@@ -328,15 +339,16 @@ function OfferForm({
         <section className="listing-form-section">
           <h2>{item.title}</h2>
           <p>
-            {item.media.length} foto ·{' '}
-            <Link href="/app/barang">Pilih barang lain</Link>
+            {item.media.length} foto{!listing && ' · '}
+            {!listing && <Link href="/app/barang">Pilih barang lain</Link>}
           </p>
 
-          <Field label="Apa yang ingin kamu lakukan?" htmlFor="offer-type">
+          <Field label={listing ? 'Jenis Listing' : 'Apa yang ingin kamu lakukan?'} htmlFor="offer-type">
             <Select
               id="offer-type"
               className="select"
               value={type}
+              disabled={Boolean(listing)}
               onChange={event => setType(event.target.value as ListingType)}
             >
               <option value="RESELL">Jual barang ini</option>
@@ -506,7 +518,7 @@ function OfferForm({
 
               <CityPicker
                 required
-                initial={initialCity}
+                initial={revision?.city ?? initialCity}
                 value={cityId}
                 onChange={city => setCityId(city.id)}
               />
@@ -533,6 +545,7 @@ function OfferForm({
                 </label>
               </fieldset>
             </section>
+            <section className="listing-form-section"><h2>Foto di Listing</h2><p>Pilih minimal satu foto barang.</p><div className="listing-photo-choices">{item.media.map(photo => <label key={photo.id}><PrivatePhoto mediaId={photo.id} alt="Foto barang untuk Listing" /><span><input type="checkbox" checked={mediaIds.includes(photo.id)} onChange={() => setMediaIds(current => current.includes(photo.id) ? current.filter(id => id !== photo.id) : [...current, photo.id])} />Pakai foto ini</span></label>)}</div></section>
           </>
         )}
       </fieldset>
@@ -542,7 +555,7 @@ function OfferForm({
       {canOffer && (
         <div className="listing-form-footer">
           <p>
-            Tim Valora akan meninjau pengajuanmu. Setelah disetujui,
+            Tim Valora akan meninjau {listing ? 'perubahanmu' : 'pengajuanmu'}. Setelah disetujui,
             barang tampil di Market.{' '}
             <Link href="/app/listings">Pantau pengajuan saya</Link>
           </p>
@@ -550,7 +563,7 @@ function OfferForm({
           <Button type="submit" disabled={saving}>
             {saving
               ? 'Mengirim pengajuan…'
-              : type === 'DONATE'
+              : listing ? 'Simpan perubahan' : type === 'DONATE'
                 ? 'Ajukan donasi'
                 : type === 'EXCHANGE'
                   ? 'Ajukan pertukaran'

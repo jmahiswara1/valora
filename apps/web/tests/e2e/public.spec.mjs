@@ -18,7 +18,7 @@ function listing(type, index, category = 'electronics', options = {}) {
       media: options.missing ? [] : [{ id, mime: 'image/png', bytes: 1, orderIndex: 0, processedAt: '2026-10-03T00:00:00.000Z', url: options.broken ? '/missing-public-ui-photo.png' : '/images/editorial/care-chair.png' }],
       city, condition: 83, score: type === 'RESELL' ? 85 : null, scoreLabel: null, ruleVersion: 'score-v1',
       conditionDisclosure: 'Data kondisi ini simulasi untuk pengujian tampilan dan interaksi.',
-      askingPriceIdr: type === 'RESELL' ? 125000 : null, exchangePreference: null, recipientNote: null, handoverMethods: ['MEETUP'], createdAt: '2026-10-03T00:00:00.000Z',
+      askingPriceIdr: type === 'RESELL' ? 125000 : null, exchangePreference: null, recipientNote: null, handoverMethods: options.methods ?? ['MEETUP'], createdAt: '2026-10-03T00:00:00.000Z',
     },
   };
 }
@@ -209,7 +209,9 @@ test('jenis Listing, judul panjang, serta foto hilang dan gagal tetap terbaca', 
   await expect(page.locator('.preview-grid .market-card')).toHaveCount(3);
   await expect(page.locator('.market-card-bottom strong').nth(0)).toHaveText(/Rp\s*125\.000/);
   await expect(page.locator('.market-card-bottom strong').nth(1)).toHaveText('Tanpa biaya');
-  await expect(page.locator('.market-card-bottom strong').nth(2)).toHaveText('Tukar barang');
+  const exchangeCard = page.locator('.preview-grid .market-card').nth(2);
+  await expect(exchangeCard.locator('.market-card-kicker > span').first()).toHaveText('Tukar barang');
+  await expect(exchangeCard.locator('.market-card-bottom strong')).toHaveCount(0);
   await expect(page.locator('.preview-grid h3').first()).toHaveAttribute('title', longTitle);
   await page.locator('.preview-grid .market-card').nth(2).scrollIntoViewIfNeeded();
   await expect(page.locator('.preview-grid .market-photo-empty')).toHaveCount(2);
@@ -264,4 +266,14 @@ test('CTA akun mengikuti sesi, skip link dan menu mendukung keyboard', async ({ 
     await expect(menu).toBeFocused();
   }
   await fits(page);
+});
+
+
+test('Market shows COD and delivery choices on each listing', async ({ page }) => {
+  const state = await mockPublic(page);
+  state.customListings = [listing('RESELL', 81, 'electronics', { title: 'Kursi COD', methods: ['MEETUP'] }), listing('RESELL', 82, 'electronics', { title: 'Kamera dikirim', methods: ['DELIVERY'] }), listing('DONATE', 83, 'electronics', { title: 'Buku dua metode', methods: ['MEETUP', 'DELIVERY'] })];
+  await page.goto('/market');
+  await expect(page.locator('.market-card').filter({ hasText: 'Kursi COD' })).toContainText('COD · bertemu langsung');
+  await expect(page.locator('.market-card').filter({ hasText: 'Kamera dikirim' })).toContainText('Bisa dikirim');
+  await expect(page.locator('.market-card').filter({ hasText: 'Buku dua metode' })).toContainText('COD atau dikirim');
 });

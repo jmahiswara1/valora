@@ -7,12 +7,12 @@ import { AppException } from '../../shared/http.js';
 import { serial } from '../../shared/transactions.js';
 import { Observable } from 'rxjs';
 import { createHash } from 'node:crypto';
-import { messageDto } from './message.js';
+import { messageDto, messageRelations } from './message.js';
 import { notifyMessage } from '../notifications/events.js';
 import { validId } from '../../shared/transactions.js';
 import { ConversationEvents } from "./events.js";
 
-type ConversationRow = Prisma.ConversationGetPayload<{ include: { participantA: true; participantB: true; listing: { include: { currentRevision: true } }; messages: { include: { attachments: true } } } }>;
+type ConversationRow = Prisma.ConversationGetPayload<{ include: { participantA: true; participantB: true; listing: { include: { currentRevision: true } }; messages: { include: typeof messageRelations } } }>;
 
 const cursorEncode = (sequence: number) => Buffer.from(JSON.stringify({ sequence })).toString('base64url');
 
@@ -39,7 +39,7 @@ export class ConversationsService {
 
   private async conversationRow(userId: string, id: string) {
     validId(id);
-    const row = await this.db.conversation.findUnique({ where: { id }, include: { participantA: true, participantB: true, listing: { include: { currentRevision: true } }, messages: { where: { deletedAt: null }, orderBy: { sequence: 'desc' }, take: 1, include: { attachments: { where: { deletedAt: null }, orderBy: { orderIndex: 'asc' } } } } } });
+    const row = await this.db.conversation.findUnique({ where: { id }, include: { participantA: true, participantB: true, listing: { include: { currentRevision: true } }, messages: { where: { deletedAt: null }, orderBy: { sequence: 'desc' }, take: 1, include: messageRelations } } });
     if (!row || (row.participantAId !== userId && row.participantBId !== userId)) throw new AppException(404, 'NOT_FOUND', 'Percakapan tidak ditemukan.');
     return row;
   }
@@ -65,17 +65,17 @@ export class ConversationsService {
       const ownerId = listing.ownerId;
       if (ownerId === userId) throw new AppException(400, 'INVALID_INPUT', 'Percakapan hanya tersedia dengan pihak lain.');
       const [participantAId, participantBId] = [userId, ownerId].sort();
-      const existing = await tx.conversation.findUnique({ where: { listingId_participantAId_participantBId: { listingId, participantAId, participantBId } }, include: { participantA: true, participantB: true, listing: { include: { currentRevision: true } }, messages: { where: { deletedAt: null }, orderBy: { sequence: 'desc' }, take: 1, include: { attachments: { where: { deletedAt: null }, orderBy: { orderIndex: 'asc' } } } } } });
+      const existing = await tx.conversation.findUnique({ where: { listingId_participantAId_participantBId: { listingId, participantAId, participantBId } }, include: { participantA: true, participantB: true, listing: { include: { currentRevision: true } }, messages: { where: { deletedAt: null }, orderBy: { sequence: 'desc' }, take: 1, include: messageRelations } } });
       if (existing) return existing;
       if (listing.status !== 'ACTIVE') throw new AppException(409, 'STATE_CONFLICT', 'Listing tidak menerima percakapan baru.');
       if (await this.hasActiveBlock(tx, userId, ownerId)) throw new AppException(403, 'FORBIDDEN', 'Interaksi dengan akun ini dibatasi.');
-      return tx.conversation.create({ data: { listingId, participantAId, participantBId }, include: { participantA: true, participantB: true, listing: { include: { currentRevision: true } }, messages: { include: { attachments: true } } } });
+      return tx.conversation.create({ data: { listingId, participantAId, participantBId }, include: { participantA: true, participantB: true, listing: { include: { currentRevision: true } }, messages: { include: messageRelations } } });
     });
     return this.toDto(row, userId);
   }
 
   async list(userId: string): Promise<ConversationDto[]> {
-    const rows = await this.db.conversation.findMany({ where: { OR: [{ participantAId: userId }, { participantBId: userId }] }, include: { participantA: true, participantB: true, listing: { include: { currentRevision: true } }, messages: { where: { deletedAt: null }, orderBy: { sequence: 'desc' }, take: 1, include: { attachments: { where: { deletedAt: null }, orderBy: { orderIndex: 'asc' } } } } }, orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }], take: 100 });
+    const rows = await this.db.conversation.findMany({ where: { OR: [{ participantAId: userId }, { participantBId: userId }] }, include: { participantA: true, participantB: true, listing: { include: { currentRevision: true } }, messages: { where: { deletedAt: null }, orderBy: { sequence: 'desc' }, take: 1, include: messageRelations } }, orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }], take: 100 });
     return Promise.all(rows.map((row) => this.toDto(row, userId)));
   }
 
@@ -83,7 +83,7 @@ export class ConversationsService {
 
   async status(userId: string, id: string, clientMessageId: string) {
     await this.conversationRow(userId, id);
-    const row = await this.db.message.findUnique({ where: { conversationId_senderId_clientMessageId: { conversationId: id, senderId: userId, clientMessageId } }, include: { attachments: { where: { deletedAt: null }, orderBy: { orderIndex: 'asc' } } } });
+    const row = await this.db.message.findUnique({ where: { conversationId_senderId_clientMessageId: { conversationId: id, senderId: userId, clientMessageId } }, include: messageRelations });
     return { committed: Boolean(row), message: row && !row.deletedAt ? messageDto(row) : null };
   }
 
@@ -103,7 +103,7 @@ export class ConversationsService {
         before = parsed.sequence;
       } catch { throw new AppException(400, 'INVALID_INPUT', 'Cursor pesan tidak valid.'); }
     }
-    const rows = await this.db.message.findMany({ where: { conversationId: id, deletedAt: null, ...(before ? { sequence: { lt: before } } : {}) }, orderBy: { sequence: 'desc' }, take: limit + 1, include: { attachments: { where: { deletedAt: null }, orderBy: { orderIndex: 'asc' } } } });
+    const rows = await this.db.message.findMany({ where: { conversationId: id, deletedAt: null, ...(before ? { sequence: { lt: before } } : {}) }, orderBy: { sequence: 'desc' }, take: limit + 1, include: messageRelations });
     const page = rows.slice(0, limit).reverse();
     const oldest = page[0];
     return { data: page.map(messageDto), meta: { nextCursor: rows.length > limit && oldest ? cursorEncode(oldest.sequence) : null } };
@@ -117,7 +117,7 @@ export class ConversationsService {
       const conversation = await tx.conversation.findUnique({ where: { id }, include: { listing: { include: { currentRevision: true } }, participantA: true, participantB: true } });
       if (!conversation || (conversation.participantAId !== userId && conversation.participantBId !== userId)) throw new AppException(404, 'NOT_FOUND', 'Percakapan tidak ditemukan.');
       const otherUserId = conversation.participantAId === userId ? conversation.participantBId : conversation.participantAId;
-      const prior = await tx.message.findUnique({ where: { conversationId_senderId_clientMessageId: { conversationId: id, senderId: userId, clientMessageId: input.clientMessageId } }, include: { attachments: { where: { deletedAt: null }, orderBy: { orderIndex: 'asc' } } } });
+      const prior = await tx.message.findUnique({ where: { conversationId_senderId_clientMessageId: { conversationId: id, senderId: userId, clientMessageId: input.clientMessageId } }, include: messageRelations });
       if (prior) {
         if (prior.deletedAt) throw new AppException(410, 'RESPONSE_RETAINED_AS_TOMBSTONE', 'Pesan telah melewati masa retensi.');
         const priorHash = prior.requestHash ?? createHash('sha256').update(JSON.stringify([prior.body, prior.attachments.map(a => a.sourceTicketId)])).digest('hex');
@@ -137,7 +137,7 @@ export class ConversationsService {
         attachments: { create: input.ticketIds.map((ticketId, orderIndex) => {
           const t = tickets.find(t => t.id === ticketId)!;
           return { uploadedById: userId, sourceTicketId: ticketId, storageKey: t.storageKey!, mime: t.actualMime!, bytes: t.actualBytes!, width: t.width!, height: t.height!, orderIndex };
-        }) } }, include: { attachments: { orderBy: { orderIndex: 'asc' } } } });
+        }) } }, include: messageRelations });
       await tx.uploadTicket.updateMany({ where: { id: { in: input.ticketIds } }, data: { status: 'CONSUMED', consumedAt: new Date() } });
       await tx.conversation.update({ where: { id }, data: { messageSequence: sequence } });
       await notifyMessage(tx, otherUserId, id, row.id, sequence, conversation.listing.currentRevision?.title ?? 'Percakapan');

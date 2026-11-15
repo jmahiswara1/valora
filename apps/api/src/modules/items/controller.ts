@@ -3,7 +3,7 @@ import { Controller, UseGuards, Get, Req, Query, Post, Body, Param, Patch, Delet
 import { SessionGuard } from '../auth/guards.js';
 import { MediaService } from "../media/service.js";
 import { type AppRequest, ZodPipe } from '../../shared/http.js';
-import { type ItemDto, itemCreateSchema, type ItemCreateInput, itemPatchSchema, type ItemPatchInput, mediaTicketSchema, type MediaTicketInput, mediaFinalizeSchema } from '@valora/contracts';
+import { type ItemDto, itemCreateSchema, type ItemCreateInput, itemPatchSchema, type ItemPatchInput, mediaTicketSchema, type MediaTicketInput, mediaFinalizeSchema, versionActionSchema } from '@valora/contracts';
 import { ItemsService } from "./service.js";
 
 @ApiTags('items')
@@ -11,6 +11,10 @@ import { ItemsService } from "./service.js";
 @UseGuards(SessionGuard)
 export class ItemsController {
   constructor(private readonly items: ItemsService, private readonly media: MediaService) {}
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Hapus barang milik sendiri dan tutup Listing terkait' })
+  remove(@Req() request: AppRequest, @Param('id') id: string, @Body(new ZodPipe(versionActionSchema)) input: { expectedVersion: number }) { return this.items.remove(request.actor!.id, id, input.expectedVersion); }
 
   @Get()
   @ApiOperation({ summary: 'Daftar Item privat milik sendiri' })

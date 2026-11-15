@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Optional } from '@nestjs/common';
 import type { HandoverDto, HandoverProposalInput, HandoverResponseInput, HandoverPrivateDetails, HandoverProposalDto, ShipmentDto, ShipmentInput, TransactionSnapshot, HandoverMutationDto } from '@valora/contracts';
 import { DatabaseService } from '../../infrastructure/database.service.js';
 import type { Prisma, Transaction, HandoverProposal, ShipmentRecord } from '../../generated/prisma/client.js';
@@ -7,6 +7,8 @@ import { idempotent, json, lockTransaction, mutable, participant, serial, validI
 import { notify } from '../notifications/events.js';
 import { assignedCase } from '../disputes/helpers.js';
 import { timeline } from './timeline.js';
+import { ConversationEvents } from '../conversations/events.js';
+import { recordProposalMessage } from './chat.js';
 
 export const proposalDto = (row: HandoverProposal): HandoverProposalDto => ({ id: row.id, transactionId: row.transactionId, proposedById: row.proposedById, method: row.method as HandoverProposalDto['method'], plannedAt: row.plannedAt.toISOString(), timeZone: row.timeZone as HandoverProposalDto['timeZone'], status: row.status as HandoverProposalDto['status'], endReason: row.endReason, privateDetails: row.purgedAt ? null : row.privateDetails as HandoverPrivateDetails | null, createdAt: row.createdAt.toISOString(), respondedAt: row.respondedAt?.toISOString() ?? null, respondedById: row.respondedById, purgedAt: row.purgedAt?.toISOString() ?? null });
 export const shipmentDto = (row: ShipmentRecord): ShipmentDto => ({ id: row.id, proposalId: row.proposalId, itemId: row.itemId, senderId: row.senderId, courier: row.courier, trackingNumber: row.trackingNumber, reason: row.reason, revision: row.revision, recordedAt: row.recordedAt.toISOString(), purgedAt: row.purgedAt?.toISOString() ?? null });
@@ -16,7 +18,16 @@ const ownsDestination = (row: Transaction, actorId: string) => snapshot(row).ite
 
 @Injectable()
 export class HandoverService {
-  constructor(private readonly db: DatabaseService) {}
+  constructor(private readonly db: DatabaseService, @Optional() private readonly conversations?: ConversationEvents) {}
+
+  private async publishProposal(proposalId: string) {
+    if (!this.conversations) return;
+    const message = await this.db.message.findUnique({ where: { handoverProposalId: proposalId }, include: { conversation: true } });
+    if (!message) return;
+    for (const userId of [message.conversation.participantAId, message.conversation.participantBId]) {
+      this.conversations.publish({ userId, conversationId: message.conversationId, sequence: message.sequence, kind: 'HANDOVER' });
+    }
+  }
 
   private async row(tx: Prisma.TransactionClient, actorId: string, id: string) {
     validId(id); const row = await tx.transaction.findUnique({ where: { id } });
@@ -85,28 +96,31 @@ export class HandoverService {
     });
   }
   async propose(actorId: string, id: string, input: HandoverProposalInput, key?: string) {
-    return idempotent(this.db, actorId, 'handover-propose:' + id, key, input, async tx => {
+    const result = await idempotent(this.db, actorId, 'handover-propose:' + id, key, input, async tx => {
       const row = await lockTransaction(tx, id); participant(row, actorId); mutable(row, input.expectedVersion);
       const reason = await this.editable(tx, row); if (reason) conflict(reason);
       await this.expire(tx, row, new Date());
       if (await tx.handoverProposal.count({ where: { transactionId: id, status: 'PENDING' } })) conflict('Tanggapi atau tarik usulan yang masih menunggu.');
-      if (!snapshot(row).handoverMethods.includes(input.method)) throw new AppException(422, 'ACTION_NEEDS_DATA', 'Metode ini tidak tersedia dalam kesepakatan transaksi.');
+      if (!snapshot(row).handoverMethods.includes(input.method)) throw new AppException(422, 'ACTION_NEEDS_DATA', 'Metode ini tidak tersedia pada Listing dalam kesepakatan ini.');
       const plannedAt = new Date(input.plannedAt); this.date(row, plannedAt);
       const needsAddress = input.method === 'DELIVERY' && ownsDestination(row, actorId);
       if (Boolean(input.destination) !== needsAddress) throw new AppException(422, 'ACTION_NEEDS_DATA', needsAddress ? 'Lengkapi alamat barang yang akan kamu terima.' : 'Alamat hanya dapat diisi penerima barang.');
       const details: HandoverPrivateDetails = { location: input.location ?? null, note: input.note || null, responseReason: null, destinations: input.destination ? [{ userId: actorId, details: input.destination }] : [] };
       const proposal = await tx.handoverProposal.create({ data: { transactionId: id, proposedById: actorId, method: input.method, plannedAt, timeZone: input.timeZone, privateDetails: json(details) } });
+      await recordProposalMessage(tx, row, proposal);
       const event = await this.event(tx, row, 'HANDOVER_PROPOSED', proposal.id, actorId); await this.alert(tx, row, 'HANDOVER_PROPOSED', event.id, proposal.id, actorId);
       return this.changed(tx, row, proposal.id, proposal.status);
     });
+    await this.publishProposal(result.id); return result;
   }
   async respond(actorId: string, id: string, proposalId: string, input: HandoverResponseInput, key?: string) {
-    validId(proposalId); return idempotent(this.db, actorId, 'handover-respond:' + id + ':' + proposalId, key, input, async tx => {
+    validId(proposalId); const result = await idempotent(this.db, actorId, 'handover-respond:' + id + ':' + proposalId, key, input, async tx => {
       const row = await lockTransaction(tx, id); participant(row, actorId); mutable(row, input.expectedVersion);
       const reason = await this.editable(tx, row); if (reason) conflict(reason);
       const proposal = await tx.handoverProposal.findFirst({ where: { id: proposalId, transactionId: id, status: 'PENDING', purgedAt: null } });
       if (!proposal) conflict('Usulan ini tidak lagi menunggu tanggapan.');
       if (proposal.proposedById === actorId) throw new AppException(403, 'FORBIDDEN', 'Hanya pihak lain yang dapat menanggapi usulan.');
+      if (input.accept && !snapshot(row).handoverMethods.includes(proposal.method as HandoverProposalDto['method'])) throw new AppException(422, 'ACTION_NEEDS_DATA', 'Metode usulan ini tidak tersedia pada Listing. Tolak usulan dan gunakan metode yang tersedia.');
       this.date(row, proposal.plannedAt);
       const details = proposal.privateDetails as unknown as HandoverPrivateDetails;
       const needsAddress = input.accept && proposal.method === 'DELIVERY' && ownsDestination(row, actorId);
@@ -121,9 +135,10 @@ export class HandoverService {
       const event = await this.event(tx, row, type, proposalId, actorId); await this.alert(tx, row, type, event.id, proposalId, actorId);
       return this.changed(tx, row, proposalId, status);
     });
+    await this.publishProposal(proposalId); return result;
   }
   async withdraw(actorId: string, id: string, proposalId: string, expectedVersion: number, key?: string) {
-    validId(proposalId); return idempotent(this.db, actorId, 'handover-withdraw:' + id + ':' + proposalId, key, { expectedVersion }, async tx => {
+    validId(proposalId); const result = await idempotent(this.db, actorId, 'handover-withdraw:' + id + ':' + proposalId, key, { expectedVersion }, async tx => {
       const row = await lockTransaction(tx, id); participant(row, actorId); mutable(row, expectedVersion);
       const reason = await this.editable(tx, row); if (reason) conflict(reason);
       const proposal = await tx.handoverProposal.findFirst({ where: { id: proposalId, transactionId: id, status: 'PENDING', proposedById: actorId } });
@@ -132,6 +147,7 @@ export class HandoverService {
       const event = await this.event(tx, row, 'HANDOVER_WITHDRAWN', proposalId, actorId); await this.alert(tx, row, 'HANDOVER_WITHDRAWN', event.id, proposalId, actorId);
       return this.changed(tx, row, proposalId, 'WITHDRAWN');
     });
+    await this.publishProposal(proposalId); return result;
   }
   async shipment(actorId: string, id: string, itemId: string, input: ShipmentInput, key?: string) {
     validId(itemId); return idempotent(this.db, actorId, 'shipment-update:' + id + ':' + itemId, key, input, async tx => {

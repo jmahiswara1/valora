@@ -11,3 +11,4 @@ export const listingTypeLabel: Record<ActiveListing['type'], string> = {
 };
 
 export const listingConditionLabel = (value: number) => value >= 75 ? 'Kondisi sangat baik' : value >= 50 ? 'Kondisi baik' : 'Perlu perhatian';
+export const listingHandoverLabel = (methods: readonly string[]) => methods.includes('MEETUP') && methods.includes('DELIVERY') ? 'COD atau dikirim' : methods.includes('DELIVERY') ? 'Bisa dikirim' : methods.includes('MEETUP') ? 'COD · bertemu langsung' : 'Serah terima belum diatur';

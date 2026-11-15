@@ -6,7 +6,9 @@ import { DatabaseService } from '../../infrastructure/database.service.js';
 import { MediaService } from "../media/service.js";
 import { StorageService } from '../../infrastructure/storage.service.js';
 import { AppException } from '../../shared/http.js';
-import { serial, lockRows } from '../../shared/transactions.js';
+import { serial, lockRows, validId } from '../../shared/transactions.js';
+import { expireOffers } from '../notifications/events.js';
+import { transactionUsingItem } from '../../shared/exchange.js';
 import { event } from '../history/ledger.js';
 import { pauseListingsForItem } from '../listings/state.js';
 
@@ -31,6 +33,26 @@ function itemDto(item: ItemWithMedia): ItemDto {
 @Injectable()
 export class ItemsService {
   constructor(private readonly db: DatabaseService, private readonly media: MediaService, private readonly storage: StorageService) {}
+
+  async remove(userId: string, id: string, expectedVersion: number) {
+    validId(id);
+    return serial(this.db, async tx => {
+      await lockRows(tx, 'User', [userId]); await lockRows(tx, 'Item', [id]);
+      const row = await tx.item.findFirst({ where: { id, currentOwnerId: userId } });
+      if (!row) throw new AppException(404, 'NOT_FOUND', 'Barang tidak ditemukan.');
+      if (row.archivedAt) return { id, deleted: true };
+      if (row.reservedByTransactionId || await tx.transaction.count({ where: { AND: [transactionUsingItem(id), { status: { in: ['AWAITING_HANDOVER', 'ONE_SIDE_CONFIRMED', 'DISPUTED'] } }] } })) throw new AppException(409, 'ITEM_RESERVED', 'Barang sedang dalam transaksi. Selesaikan atau batalkan transaksi terlebih dahulu.');
+      if (row.version !== expectedVersion) throw new AppException(409, 'STATE_CONFLICT', 'Barang berubah. Muat ulang sebelum menghapus.');
+      const listings = await tx.listing.findMany({ where: { itemId: id, ownerId: userId, deletedAt: null }, select: { id: true } });
+      await lockRows(tx, 'Listing', listings.map(listing => listing.id));
+      await expireOffers(tx, { OR: [{ listingId: { in: listings.map(listing => listing.id) } }, { exchangeItemId: id }] }, 'ITEM_UNAVAILABLE');
+      await tx.listing.updateMany({ where: { id: { in: listings.map(listing => listing.id) }, status: { not: 'CLOSED' } }, data: { status: 'WITHDRAWN', publishedAt: null, closedAt: new Date(), deletedAt: new Date(), version: { increment: 1 } } });
+      await tx.listing.updateMany({ where: { id: { in: listings.map(listing => listing.id) }, status: 'CLOSED' }, data: { deletedAt: new Date(), version: { increment: 1 } } });
+      await invalidateTutorials(tx, id);
+      await tx.item.update({ where: { id }, data: { archivedAt: new Date(), version: { increment: 1 } } });
+      return { id, deleted: true };
+    });
+  }
 
   private async validateCategory(categoryCode: string, subcategoryCode: string | null | undefined): Promise<void> {
     const category = await this.db.category.findUnique({ where: { code: categoryCode } });

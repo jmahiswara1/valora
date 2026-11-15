@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { CircleUserRound, Heart, LayoutDashboard, LogOut, ShoppingCart } from 'lucide-react';
+import { CircleUserRound, Handshake, Heart, LayoutDashboard, LogOut } from 'lucide-react';
 import { useSession } from '@/lib/session';
 import { ChatTrigger } from '@/features/conversations/trigger';
 import { NotificationBell } from '@/features/notifications/bell';
@@ -19,7 +19,6 @@ export function HeaderAccountActions({ open, onOpenChange, onInteract, context =
   const trigger = useRef<HTMLButtonElement>(null), container = useRef<HTMLDivElement>(null);
   const menuId = context === 'account' ? 'account-user-menu' : 'header-account-menu';
   const active = (href: string) => pathname === href || pathname.startsWith(href + '/') ? 'page' as const : undefined;
-  const accountHref = (href: string) => signedIn ? href : '/masuk?next=' + encodeURIComponent(href);
   const close = () => { onOpenChange(false); onInteract?.(); };
 
   useEffect(() => { onOpenChange(false); }, [pathname, signedIn, user?.id, onOpenChange]);
@@ -40,9 +39,9 @@ export function HeaderAccountActions({ open, onOpenChange, onInteract, context =
     {signedIn && <>
       <ChatTrigger onOpen={close} />
       <NotificationBell onOpen={close} />
-      <Link className="header-icon-link header-activity-link" href="/app/penawaran" prefetch={false} aria-label="Penawaran saya" title="Penawaran saya" aria-current={active('/app/penawaran')} onClick={close}><ShoppingCart size={19} strokeWidth={1.6} aria-hidden="true" /></Link>
+      <Link className="header-icon-link header-activity-link" href="/app/penawaran" prefetch={false} aria-label="Penawaran saya" title="Penawaran saya" aria-current={active('/app/penawaran')} onClick={close}><Handshake size={19} strokeWidth={1.6} aria-hidden="true" /></Link>
+      <Link className="header-icon-link header-favorite-link" href="/app/favorit" prefetch={false} aria-label="Favorit" title="Favorit" aria-current={active('/app/favorit')} onClick={close}><Heart size={19} strokeWidth={1.6} aria-hidden="true" /></Link>
     </>}
-    <Link className="header-icon-link header-favorite-link" href={accountHref('/app/favorit')} prefetch={false} aria-label="Favorit" title="Favorit" aria-current={active('/app/favorit')} onClick={close}><Heart size={19} strokeWidth={1.6} aria-hidden="true" /></Link>
     <div className="header-account" ref={container} onBlur={event => { if (event.relatedTarget instanceof Node && !event.currentTarget.contains(event.relatedTarget)) onOpenChange(false); }}>
       <button ref={trigger} className="header-icon-link header-account-trigger" type="button" aria-label="Menu akun" title="Menu akun" aria-expanded={open} aria-controls={menuId} onClick={() => { onInteract?.(); onOpenChange(!open); }}><CircleUserRound size={19} strokeWidth={1.6} aria-hidden="true" /></button>
       <div id={menuId} className="header-account-popover" role="group" aria-label="Menu akun" hidden={!open}>

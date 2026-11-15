@@ -21,6 +21,6 @@ export const blockUserSchema = z.object({ userId: uuidSchema });
 export type MessageCreateInput = z.infer<typeof messageCreateSchema>;
 
 export interface MessageAttachmentDto { id: string; mime: string; bytes: number; width: number; height: number; orderIndex: number }
-export interface MessageDto { id: string; conversationId: string; senderId: string; body: string; clientMessageId: string; sequence: number; attachments: MessageAttachmentDto[]; sentAt: string }
+export interface MessageDto { id: string; conversationId: string; senderId: string; body: string; clientMessageId: string; sequence: number; attachments: MessageAttachmentDto[]; sentAt: string; handover?: { transactionId: string; proposalId: string } }
 
 export interface ConversationDto { id: string; listingId: string; listingTitle: string; transactionId?: string | null; participant: { id: string; displayName: string; profilePhotoUrl: string | null }; lastMessage: MessageDto | null; unreadCount: number; readSequence: number; peerReadSequence: number; messageSequence: number; updatedAt: string }
